@@ -4,6 +4,8 @@ from typing import List, Optional, Dict
 import json
 import re
 
+from .change_logger import ChangeLogger
+
 logger = logging.getLogger(__name__)
 
 
@@ -14,6 +16,7 @@ class QASystem:
         self.wiki_dir = wiki_dir
         self.llm_client = llm_client
         self.search_engine = search_engine
+        self.change_logger = ChangeLogger(self.wiki_dir)
     
     def query(
         self,
@@ -43,6 +46,9 @@ class QASystem:
         # Follow links to enrich context
         if follow_links:
             context_docs = self._collect_linked_docs(context_docs, max_total=max_total_docs)
+
+        # Log the query
+        self.change_logger.log_query(question, len(context_docs))
 
         # Generate answer using LLM
         answer = self._generate_answer(question, context_docs, output_format)
@@ -135,10 +141,13 @@ Always cite your sources and indicate if information is not found in the knowled
     def search_and_summarize(self, topic: str) -> str:
         """Search for articles on a topic and generate a summary"""
         search_results = self.search_engine.search(topic, limit=10)
-        
+
+        # Log the summarize operation
+        self.change_logger.log_query(f"summarize: {topic}", len(search_results))
+
         if not search_results:
             return f"No articles found about '{topic}'."
-        
+
         # Collect content
         docs_content = ""
         for result in search_results:
@@ -147,7 +156,7 @@ Always cite your sources and indicate if information is not found in the knowled
                 docs_content += f"\n## {Path(result['path']).stem}\n{content}\n---\n"
             except Exception as e:
                 logger.error(f"Error reading {result['path']}: {e}")
-        
+
         # Generate summary
         prompt = f"""Create a comprehensive summary of these articles about '{topic}':
 
@@ -159,13 +168,13 @@ Generate a well-structured markdown summary that:
 3. Suggests connections between articles
 4. Lists any questions that remain unanswered
 5. Recommends areas for further research"""
-        
+
         system_prompt = "You are an expert at synthesizing and summarizing research materials into coherent overviews."
-        
+
         summary = self.llm_client.generate(
             prompt=prompt,
             system=system_prompt,
             max_tokens=3000,
         )
-        
+
         return summary

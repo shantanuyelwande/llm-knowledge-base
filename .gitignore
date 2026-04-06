@@ -38,15 +38,16 @@ ENV/
 .env
 .env.local
 
-# Data
+# Data - Keep compiled wiki in git for version control, exclude raw inputs and outputs
 data/raw/*
 !data/raw/.gitkeep
-data/wiki/*
-!data/wiki/.gitkeep
 data/output/*
 !data/output/.gitkeep
 *.db
 *.sqlite
+
+# Metadata
+.metadata/
 
 # Logs
 logs/

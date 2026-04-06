@@ -11,6 +11,7 @@ except ImportError:
     PDF_SUPPORT = False
 
 from .metadata_tracker import MetadataTracker
+from .change_logger import ChangeLogger
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +24,13 @@ class WikiCompiler:
         self.wiki_dir = wiki_dir
         self.llm_client = llm_client
         self.wiki_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Initialize metadata tracker
         metadata_dir = self.wiki_dir.parent / ".metadata"
         self.metadata_tracker = MetadataTracker(self.wiki_dir, metadata_dir)
+
+        # Initialize change logger
+        self.change_logger = ChangeLogger(self.wiki_dir)
     
     def compile_document(
         self,
@@ -71,9 +75,17 @@ class WikiCompiler:
         full_content = frontmatter + wiki_content
         
         wiki_file.write_text(full_content, encoding="utf-8")
-        
+
         action = "Updated" if is_update else "Compiled"
         logger.info(f"{action} {source_path} -> {wiki_file}")
+
+        # Log the ingestion
+        action_type = "update" if is_update else "ingest"
+        self.change_logger.log_ingest(title, source_path, action_type)
+
+        # Save updated index
+        self.save_index()
+
         return str(wiki_file)
     
     def _generate_wiki_entry(self, content: str, title: str, source: str) -> str:
@@ -160,42 +172,76 @@ Use proper markdown formatting. Include backlinks using [[topic]] notation for r
     def generate_index(self) -> str:
         """Generate an index/table of contents for the wiki"""
         wiki_files = sorted(self.wiki_dir.rglob("*.md"))
-        
+
         if not wiki_files:
             return "# Wiki Index\n\nNo articles yet."
-        
+
         # Generate index structure
         index_content = "# Wiki Index\n\n"
         index_content += f"Last updated: {datetime.now().isoformat()}\n\n"
-        
+
         # Organize by directory
         by_dir = {}
         for file_path in wiki_files:
             rel_path = file_path.relative_to(self.wiki_dir)
             dir_name = str(rel_path.parent) if rel_path.parent != Path(".") else "Root"
-            
+
             if dir_name not in by_dir:
                 by_dir[dir_name] = []
             by_dir[dir_name].append(file_path)
-        
+
         for dir_name in sorted(by_dir.keys()):
             if dir_name != "Root":
                 index_content += f"\n## {dir_name}\n\n"
             else:
                 index_content += "\n## Articles\n\n"
-            
+
             for file_path in sorted(by_dir[dir_name]):
-                # Extract title from first heading or filename
-                try:
-                    first_line = file_path.read_text(encoding="utf-8").split("\n")[0]
-                    title = first_line.replace("#", "").strip()
-                except:
-                    title = file_path.stem
-                
+                # Extract title from frontmatter or first heading
+                title = self._extract_title_for_index(file_path)
+
                 rel_link = file_path.relative_to(self.wiki_dir)
                 index_content += f"- [{title}]({rel_link})\n"
-        
+
         return index_content
+
+    def _extract_title_for_index(self, file_path: Path) -> str:
+        """Extract title from article for index (from frontmatter or first heading)"""
+        try:
+            content = file_path.read_text(encoding="utf-8")
+
+            # Try to get title from frontmatter
+            if content.startswith("---"):
+                end = content.find("\n---\n", 4)
+                if end > 0:
+                    frontmatter = content[4:end]
+                    for line in frontmatter.split("\n"):
+                        if line.startswith("title:"):
+                            return line.replace("title:", "").strip()
+                    # Frontmatter exists but no title, look for first heading after
+                    body = content[end + 5:]
+                else:
+                    body = content
+            else:
+                body = content
+
+            # Find first heading in body
+            for line in body.split("\n"):
+                if line.startswith("#"):
+                    return line.replace("#", "").strip()
+
+            # Fallback to filename
+            return file_path.stem
+        except:
+            return file_path.stem
+
+    def save_index(self) -> Path:
+        """Generate and save index to index.md"""
+        index_content = self.generate_index()
+        index_file = self.wiki_dir / "index.md"
+        index_file.write_text(index_content, encoding="utf-8")
+        logger.info(f"Saved index to {index_file}")
+        return index_file
     
     def generate_backlinks_index(self) -> dict:
         """Generate backlinks between articles"""
@@ -247,6 +293,12 @@ Use proper markdown formatting. Include backlinks using [[topic]] notation for r
             target_file.write_text(updated_content, encoding="utf-8")
             updated.append(target_topic)
             logger.info(f"Applied forward links to {target_topic} ({len(referencing_articles)} references)")
+
+        # Log forward links operation
+        self.change_logger.log_forward_links(len(updated), len(broken_links))
+
+        # Save updated index after forward links applied
+        self.save_index()
 
         return {
             "updated": updated,

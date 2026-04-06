@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from .metadata_tracker import MetadataTracker
+from .change_logger import ChangeLogger
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ class WikiMerger:
     def __init__(self, wiki_dir: Path, metadata_dir: Path):
         self.wiki_dir = wiki_dir
         self.metadata_tracker = MetadataTracker(wiki_dir, metadata_dir)
+        self.change_logger = ChangeLogger(wiki_dir)
     
     def merge_articles(
         self,
@@ -81,7 +83,10 @@ class WikiMerger:
         # Note: in production, you might want to Git rm this
         logger.info(f"Merged {source_file.name} into {target_file.name}")
         logger.info(f"Archived original to {archive_path}")
-        
+
+        # Log the merge operation
+        self.change_logger.log_merge(str(source_file), str(target_file))
+
         return True
     
     def _extract_body(self, content: str) -> str:

@@ -131,6 +131,33 @@ async def get_wiki_index():
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@app.post("/wiki/save-index")
+async def save_wiki_index():
+    """Save wiki index to index.md file"""
+    try:
+        index_file = wiki_compiler.save_index()
+        return {
+            "status": "success",
+            "message": "Index saved to index.md",
+            "file": str(index_file),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/wiki/log")
+async def get_change_log():
+    """Get recent changes from log.md"""
+    try:
+        recent = wiki_compiler.change_logger.get_recent_entries(limit=20)
+        return {
+            "status": "success",
+            "log": recent,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @app.post("/wiki/refresh")
 async def refresh_wiki():
     """Refresh the search index after adding new documents"""
