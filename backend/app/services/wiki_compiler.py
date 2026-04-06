@@ -137,12 +137,12 @@ Use proper markdown formatting. Include backlinks using [[topic]] notation for r
         if not self.raw_dir.exists():
             logger.warning(f"Raw data directory not found: {self.raw_dir}")
             return 0
-        
+
         # Support markdown, text, HTML, and PDF files
         supported_extensions = [".md", ".txt", ".html"]
         if PDF_SUPPORT:
             supported_extensions.append(".pdf")
-        
+
         count = 0
         for file_path in self.raw_dir.rglob("*"):
             if file_path.is_file() and file_path.suffix.lower() in supported_extensions:
@@ -151,7 +151,10 @@ Use proper markdown formatting. Include backlinks using [[topic]] notation for r
                     count += 1
                 except Exception as e:
                     logger.error(f"Error compiling {file_path}: {e}")
-        
+
+        # Apply forward links after all compilation
+        self.apply_forward_links()
+
         return count
     
     def generate_index(self) -> str:
@@ -197,16 +200,57 @@ Use proper markdown formatting. Include backlinks using [[topic]] notation for r
     def generate_backlinks_index(self) -> dict:
         """Generate backlinks between articles"""
         backlinks = {}
-        
+
         for file_path in self.wiki_dir.rglob("*.md"):
             content = file_path.read_text(encoding="utf-8")
             # Extract [[topic]] references
             import re
-            links = re.findall(r'\[\[([^\]]+)\]\]', content)
-            
+            links = re.findall(r'\[\[([^\]|]+)', content)
+
             for link in links:
                 if link not in backlinks:
                     backlinks[link] = []
                 backlinks[link].append(str(file_path.relative_to(self.wiki_dir)))
-        
+
         return backlinks
+
+    def apply_forward_links(self) -> dict:
+        """Apply forward links: write 'Referenced by' sections into linked articles"""
+        import re
+        backlinks = self.generate_backlinks_index()
+
+        updated = []
+        broken_links = []
+
+        for target_topic, referencing_articles in backlinks.items():
+            # Resolve target topic to a wiki file path
+            target_file = self._get_wiki_path(target_topic)
+
+            if not target_file.exists():
+                broken_links.append(target_topic)
+                continue
+
+            # Read target file content
+            content = target_file.read_text(encoding="utf-8")
+
+            # Remove existing "Referenced by" section if present
+            content = re.sub(r'\n## Referenced by\n.*?(?=\n##|\Z)', '', content, flags=re.DOTALL)
+
+            # Build new "Referenced by" section
+            referenced_by_section = "\n## Referenced by\n\n"
+            for article_path in sorted(referencing_articles):
+                article_name = Path(article_path).stem
+                referenced_by_section += f"- [[{article_name}]]\n"
+
+            # Write updated content
+            updated_content = content.rstrip() + referenced_by_section
+            target_file.write_text(updated_content, encoding="utf-8")
+            updated.append(target_topic)
+            logger.info(f"Applied forward links to {target_topic} ({len(referencing_articles)} references)")
+
+        return {
+            "updated": updated,
+            "broken_links": broken_links,
+            "total_updated": len(updated),
+            "total_broken": len(broken_links),
+        }

@@ -6,9 +6,13 @@ Transform your research materials into an intelligent, queryable knowledge base 
 
 - **Data Ingestion**: Index raw documents (articles, papers, repos, datasets)
 - **Wiki Compilation**: Automatically convert raw documents into structured wiki articles using LLM
-- **Intelligent Search**: BM25 word-based + optional semantic embeddings (sentence-transformers)
-- **Q&A System**: Ask complex questions and get research-based answers
-- **Wiki Linking**: Automatic backlinks and article connections
+- **Article Connections** (NEW): Forward linking, smart traversal, and connection strength weighting
+  - **Forward Links**: Automatically write "Referenced by" sections into linked articles
+  - **Smart Traversal**: During Q&A, follow `[[links]]` to enrich context with related articles
+  - **Connection Strength**: Weight search results by reference count + optional semantic similarity
+- **Intelligent Search**: Word-based indexing + reference count + optional semantic embeddings
+- **Q&A System**: Ask complex questions and get research-based answers with enriched context
+- **Wiki Linking**: Automatic `[[topic]]` backlinks and bidirectional article connections
 - **Duplicate Detection**: Find and merge duplicate articles; auto-detect via title similarity or embeddings
 - **Update Tracking**: Detect when source files change; track versions and compilation history
 - **Multi-Format Exports**: Export knowledge base as JSONL, SQLite, HTML, JSON-LD. See [SHARING.md](SHARING.md)
@@ -67,9 +71,10 @@ python main.py --help
 
 - `init` - Initialize knowledge base directories
 - `compile [SOURCE_PATH]` - Compile a raw document into wiki format
-- `compile-all` - Compile all raw documents
-- `search [QUERY]` - Search the wiki
-- `query [QUESTION]` - Ask a question against the knowledge base
+- `compile-all` - Compile all raw documents (auto-applies forward links)
+- `backlinks` - Apply forward links ("Referenced by") to all wiki articles
+- `search [QUERY]` - Search the wiki (with connection strength weighting)
+- `query [QUESTION]` - Ask a question with optional link traversal (default: enabled)
 - `summarize [TOPIC]` - Summarize a topic
 - `health` - Check system status
 - `lint --find-duplicates` - Find potential duplicate articles
@@ -84,11 +89,16 @@ python main.py init
 
 # Add raw documents to data/raw/ directory, then compile
 python main.py compile research/ai-papers.md --title "AI Research Papers"
-python main.py compile-all
+python main.py compile-all              # Compiles all + applies forward links automatically
+
+# Article Connections (NEW)
+python main.py backlinks               # Manually apply "Referenced by" sections
+python main.py search "transformer"     # Results ranked by reference count + keyword match
+python main.py query "What is attention?" --follow-links  # Default: follows [[links]] for context
 
 # Search and query
-python main.py search "machine learning"
 python main.py query "What are the key concepts in machine learning?"
+python main.py query "Explain transformers" --no-follow-links  # Disable link traversal if needed
 python main.py summarize "neural networks"
 
 # Maintenance
@@ -122,6 +132,67 @@ python -m http.server 5000
 - Compile and manage documents
 - Generate wiki index and summaries
 - View system statistics
+
+## 🔗 Article Connections (Forward Links, Smart Traversal, Connection Strength)
+
+The system implements bidirectional article linking inspired by [Karpathy's LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+
+### How It Works
+
+1. **Forward Linking**
+   - During compilation, the LLM generates `[[topic]]` wiki-links in article text
+   - `apply_forward_links()` scans all articles and writes "Referenced by" sections back into target articles
+   - Each link target automatically shows which articles reference it
+   - **Automatically applied** after `compile-all`; manually with `python cli/main.py backlinks`
+
+2. **Smart Traversal**
+   - During Q&A queries, the system extracts `[[links]]` from matched articles
+   - Related articles are fetched automatically (1 hop depth)
+   - Deduplicates and respects context limits (default: 10 docs max)
+   - Enriches LLM context with related knowledge
+   - **Enabled by default**; disable with `--no-follow-links`
+
+3. **Connection Strength**
+   - Search results weighted by reference count: articles cited by many others rank higher
+   - Optional semantic similarity scoring using embeddings (if sentence-transformers installed)
+   - Composite relevance score: `0.6×keyword + 0.2×reference_count + 0.2×semantic`
+   - Returns `reference_count` and `semantic_score` in search results
+
+### Example Workflow
+
+```bash
+# Step 1: Compile documents (forward links auto-applied)
+python cli/main.py compile-all
+# → Wiki articles now have "Referenced by" sections
+
+# Step 2: Search shows well-connected articles first
+python cli/main.py search "attention"
+# → "Transformer" ranks high (many articles reference it)
+
+# Step 3: Query follows links for richer context
+python cli/main.py query "Explain the attention mechanism"
+# → Pulls in related articles: [[Transformer]], [[Self-Attention]], [[Multi-Head Attention]]
+
+# Step 4: Check which articles link to a topic
+curl http://localhost:8000/wiki/backlinks | jq '.backlinks["transformer"]'
+# → ["attention-is-all-you-need.md", "bert.md", "gpt.md"]
+```
+
+### Frontmatter Metadata
+
+Forward links are tracked in article YAML frontmatter:
+
+```yaml
+---
+title: Transformer Architecture
+source_file: data/raw/attention-is-all-you-need.md
+source_hash: abc123...
+version: 2
+backlinked_by: []  # NEW: populated by apply_forward_links()
+related_topics: []
+tags: []
+---
+```
 
 ## 📁 Directory Structure
 
@@ -175,16 +246,23 @@ llm-knowledge-base/
    - Updates metadata to track merged sources
 
 6. **Search Engine** (`backend/app/core/search.py`)
-   - BM25 word-based indexing
-   - Relevance scoring
+   - Word-based indexing with inverted index
+   - **Connection Strength Scoring** (NEW)
+     - Reference count weighting: articles cited by many others score higher
+     - Optional semantic similarity scoring (requires sentence-transformers)
+     - Composite relevance: `0.6×keyword + 0.2×reference_count + 0.2×semantic`
+   - Returns: path, relevance score, keyword_score, reference_count, semantic_score, preview
 
 7. **Embeddings Service** (`backend/app/services/embeddings.py`) *(Optional)*
-   - Semantic search using sentence-transformers
+   - Semantic search using sentence-transformers (all-MiniLM-L6-v2)
+   - Cosine similarity computation
    - Graceful fallback if not installed
 
 8. **Q&A System** (`backend/app/services/qa_system.py`)
-   - Retrieves relevant context from wiki
-   - Generates answers using LLM
+   - Retrieves relevant context from wiki using search engine
+   - **Smart Traversal** (NEW): Follows `[[links]]` from matched articles to enrich context
+   - Deduplicates and respects context limits (default: 10 docs max)
+   - Generates answers using LLM with expanded context
 
 9. **Export Service** (`backend/app/services/export.py`)
    - JSONL, SQLite, HTML, JSON-LD exports
@@ -199,11 +277,13 @@ llm-knowledge-base/
 ```
 Raw Data (raw/)
     ↓
-[Wiki Compiler] ← LLM processes & formats
+[Wiki Compiler] ← LLM processes & formats + generates [[links]]
     ↓
 [Metadata Tracker] ← Source hash + timestamp
     ↓
 Structured Wiki (wiki/) with YAML frontmatter
+    ↓
+[Forward Linker] ← Writes "Referenced by" sections (NEW)
     ↓
 ┌─ Maintenance Layer ─────────────────────────┐
 │  • Duplicate Detector (find overlaps)       │
@@ -212,9 +292,19 @@ Structured Wiki (wiki/) with YAML frontmatter
 │  • Git tracking (version history)           │
 └─────────────────────────────────────────────┘
     ↓
-[BM25 Search] ← [Embeddings (optional)]
+[Search Engine] (NEW: Connection Strength)
+  ├─ Keyword scoring (word frequency)
+  ├─ Reference count weighting (backlink count)
+  └─ Semantic scoring (optional embeddings)
     ↓
-[Q&A System] → Answer + Sources
+[Backlinks Index] (NEW: powers connection strength)
+    ↓
+[Q&A System] (NEW: Smart Traversal)
+  ├─ Search relevant docs
+  ├─ Follow [[links]] 1 hop deep
+  └─ Enrich LLM context
+    ↓
+[LLM] → Answer + Sources
     ↓
 [Export Service] → 4 formats
     ├→ JSONL (training)
@@ -293,6 +383,7 @@ sources:
     added_at: 2026-04-04T10:30:00
 tags: []
 related_topics: []
+backlinked_by: []  # NEW: populated by apply_forward_links()
 ---
 ```
 
@@ -318,15 +409,19 @@ Compile all raw documents into wiki.
 Get wiki table of contents.
 
 #### GET `/wiki/backlinks`
-Get article backlinks for cross-reference mapping.
+Get article backlinks for cross-reference mapping. Returns `{ "backlinks": { "topic": ["article.md", ...] } }`.
+```bash
+curl http://localhost:8000/wiki/backlinks | jq '.backlinks["transformer"]'
+# → ["attention-is-all-you-need.md", "bert.md"]
+```
 
 #### POST `/wiki/refresh`
-Refresh wiki compilation.
+Refresh wiki compilation and update search indices.
 
 ### Search & Q&A
 
 #### POST `/search`
-Search the wiki with BM25 indexing.
+Search the wiki with **connection strength weighting** (keyword + reference count + optional semantic).
 ```json
 {
   "query": "machine learning",
@@ -334,15 +429,29 @@ Search the wiki with BM25 indexing.
 }
 ```
 
+**Response includes** (per result):
+- `path`: File path
+- `relevance`: Composite score (0.6×keyword + 0.2×ref_count + 0.2×semantic)
+- `keyword_score`: Word match score
+- `reference_count`: How many articles link to this one (NEW)
+- `semantic_score`: Cosine similarity (if embeddings available) (NEW)
+- `content_preview`: First 200 chars
+
 #### POST `/qa/query`
-Ask a question against the knowledge base.
+Ask a question against the knowledge base with **smart traversal** (follows `[[links]]` by default).
 ```json
 {
   "question": "What is the most important concept?",
   "max_sources": 5,
-  "output_format": "markdown"
+  "output_format": "markdown",
+  "follow_links": true,
+  "max_total_docs": 10
 }
 ```
+
+**Parameters** (NEW):
+- `follow_links` (bool, default: true) — Follow `[[links]]` from search results to enrich context
+- `max_total_docs` (int, default: 10) — Hard limit on total context docs (seed + followed links)
 
 #### POST `/qa/summarize`
 Generate a summary on a topic.
@@ -397,12 +506,16 @@ TEMPERATURE=0.7                    # Response creativity (0-1)
 
 ### Optional Dependencies
 
-**Semantic Search (Embeddings)** — Install for better search recall:
+**Semantic Search (Embeddings)** — Install for enhanced ranking with semantic similarity:
 ```bash
 pip install sentence-transformers torch transformers
 ```
 
-If not installed, the system gracefully falls back to BM25 search (still effective for most use cases).
+**Impact on Connection Strength Scoring:**
+- **Without embeddings**: Search uses `0.6×keyword + 0.4×reference_count` (reference count bonus is doubled)
+- **With embeddings**: Search uses `0.6×keyword + 0.2×reference_count + 0.2×semantic` (balanced approach)
+
+If not installed, the system gracefully falls back to keyword + reference count scoring (highly effective for most use cases).
 
 ## 🤔 FAQ
 
@@ -424,8 +537,20 @@ A: BM25 is keyword-based (fast, no setup). Embeddings provide semantic search (b
 **Q: How do I share my knowledge base?**
 A: Use `/export/all` to generate 4 formats (JSONL, SQLite, HTML, metadata). See [SHARING.md](SHARING.md) for sharing workflows.
 
+**Q: How do article connections work?**
+A: The system creates bidirectional links: (1) Forward linking writes "Referenced by" sections into linked articles, (2) Smart traversal follows links during Q&A to enrich context, (3) Connection strength weights results by how many articles link to them. Automatically applied; see "Article Connections" section above.
+
+**Q: How are articles linked together?**
+A: During compilation, the LLM generates `[[topic]]` wiki-links in article text. Forward linking scans these and writes back "Referenced by" sections. Smart traversal extracts links and follows them during Q&A. All automatic after `compile-all`.
+
+**Q: Can I disable link traversal in queries?**
+A: Yes. Use `--no-follow-links` with CLI (`python cli/main.py query "..." --no-follow-links`) or set `follow_links: false` in API requests.
+
+**Q: What is "connection strength"?**
+A: Articles that are referenced by many other articles rank higher in search results (reference count weighting). Optional semantic scoring adds similarity-based ranking. Helps surface well-connected, authoritative articles.
+
 **Q: Can I visualize connections between articles?**
-A: The backlinks feature maps article connections. Could build a graph visualization with this data.
+A: The `/wiki/backlinks` API endpoint returns all connections. You can build a graph visualization with this data. Obsidian (on your local machine) automatically displays wiki connections with the `[[link]]` notation.
 
 ## 📝 License
 
@@ -442,14 +567,25 @@ Contributions welcome! This is an open system - feel free to extend it with new 
 - [Karpathy's LLM Wiki Pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) — Conceptual foundation for this architecture
 - [DEVELOPMENT.md](DEVELOPMENT.md) — Technical setup and troubleshooting
 
-## 💡 Future Ideas
+## 💡 Features & Roadmap
 
-- ✅ **Multi-format exports** (JSONL, SQLite, HTML, metadata) — *Implemented*
-- ✅ **Optional semantic search** (embeddings) — *Implemented*  
-- ✅ **Duplicate detection & merging** — *Implemented*
-- ✅ **Update tracking** (file hashes, versions) — *Implemented*
+### ✅ Implemented
+
+- ✅ **Multi-format exports** (JSONL, SQLite, HTML, metadata)
+- ✅ **Optional semantic search** (embeddings with sentence-transformers)
+- ✅ **Duplicate detection & merging** (title similarity + optional embeddings)
+- ✅ **Update tracking** (file hashes, versions, compilation history)
+- ✅ **Forward linking** (automatic "Referenced by" sections in linked articles)
+- ✅ **Smart traversal** (follow `[[links]]` during Q&A for enriched context)
+- ✅ **Connection strength** (weight results by reference count + semantic similarity)
+
+### 🚀 Future Ideas
+
 - Git integration for version history (easy with `data/wiki/.git`)
 - Auto-merge on duplicate detection
 - LLM-powered conflict resolution
 - Multi-way merge support
-- Graph visualization of article connections
+- Graph visualization of article connections (endpoint ready; Obsidian handles it locally)
+- Multi-hop link traversal (currently 1-hop)
+- Link pruning/deweighting (avoid over-expansion)
+- Temporal link weighting (recent links matter more)

@@ -50,6 +50,7 @@ sources:
     added_at: {current_time}
 tags: []
 related_topics: []
+backlinked_by: []
 ---
 """
         return frontmatter

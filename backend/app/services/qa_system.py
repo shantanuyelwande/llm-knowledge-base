@@ -1,7 +1,8 @@
 import logging
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict
 import json
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -19,11 +20,13 @@ class QASystem:
         question: str,
         max_sources: int = 5,
         output_format: str = "markdown",
+        follow_links: bool = True,
+        max_total_docs: int = 10,
     ) -> str:
-        """Query the knowledge base"""
+        """Query the knowledge base with optional link traversal"""
         # Search for relevant documents
         search_results = self.search_engine.search(question, limit=max_sources)
-        
+
         # Retrieve full content of relevant documents
         context_docs = []
         for result in search_results:
@@ -36,11 +39,57 @@ class QASystem:
                 })
             except Exception as e:
                 logger.error(f"Error reading document {result['path']}: {e}")
-        
+
+        # Follow links to enrich context
+        if follow_links:
+            context_docs = self._collect_linked_docs(context_docs, max_total=max_total_docs)
+
         # Generate answer using LLM
         answer = self._generate_answer(question, context_docs, output_format)
         return answer
     
+    def _collect_linked_docs(
+        self,
+        seed_docs: List[dict],
+        max_total: int = 10,
+    ) -> List[dict]:
+        """Follow [[wikilinks]] from seed_docs 1 hop deep and return expanded list"""
+        seen_paths = {doc["path"] for doc in seed_docs}
+        expanded_docs = seed_docs.copy()
+
+        # Extract links from each seed document
+        for doc in seed_docs:
+            if len(expanded_docs) >= max_total:
+                break
+
+            # Extract [[topic]] links (before | to handle aliases)
+            links = re.findall(r'\[\[([^\]|]+)', doc["content"])
+
+            for link in links:
+                if len(expanded_docs) >= max_total:
+                    break
+
+                # Resolve link to a file path (using same slug logic as wiki_compiler)
+                link_slug = link.lower().replace(" ", "-").replace("_", "-")
+                link_slug = "".join(c if c.isalnum() or c in "-" else "" for c in link_slug)
+                linked_file = self.wiki_dir / f"{link_slug}.md"
+
+                # If file exists and not already in context, add it
+                if linked_file.exists() and str(linked_file) not in seen_paths:
+                    try:
+                        linked_content = linked_file.read_text(encoding="utf-8")
+                        expanded_docs.append({
+                            "title": linked_file.stem,
+                            "content": linked_content,
+                            "path": str(linked_file),
+                        })
+                        seen_paths.add(str(linked_file))
+                        logger.debug(f"Added linked doc: {link_slug}")
+                    except Exception as e:
+                        logger.error(f"Error reading linked document {linked_file}: {e}")
+
+        return expanded_docs
+
     def _generate_answer(
         self,
         question: str,

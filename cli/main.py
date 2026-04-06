@@ -17,6 +17,7 @@ from app.services.output_renderer import OutputRenderer
 from app.services.metadata_tracker import MetadataTracker
 from app.services.duplicate_detector import DuplicateDetector
 from app.services.wiki_merger import WikiMerger
+from app.services.embeddings import EmbeddingsService
 
 
 console = Console()
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 # Lazy initialization - services only created when needed
 _llm_client = None
+_embeddings_service = None
 _search_engine = None
 _wiki_compiler = None
 _qa_system = None
@@ -35,19 +37,20 @@ _output_renderer = None
 
 
 def _init_services():
-    global _llm_client, _search_engine, _wiki_compiler, _qa_system, _output_renderer
-    
+    global _llm_client, _embeddings_service, _search_engine, _wiki_compiler, _qa_system, _output_renderer
+
     if _llm_client is None:
         if not settings.anthropic_api_key:
             console.print("[red]✗ ANTHROPIC_API_KEY not set in .env![/red]")
             console.print("   Get one from: https://console.anthropic.com")
             raise typer.Exit(1)
-        
+
         _llm_client = LLMClient(
             api_key=settings.anthropic_api_key,
             model=settings.model,
         )
-        _search_engine = SimpleSearchEngine(settings.wiki_path)
+        _embeddings_service = EmbeddingsService()
+        _search_engine = SimpleSearchEngine(settings.wiki_path, embeddings_service=_embeddings_service)
         _wiki_compiler = WikiCompiler(settings.raw_data_path, settings.wiki_path, _llm_client)
         _qa_system = QASystem(settings.wiki_path, _llm_client, _search_engine)
         _output_renderer = OutputRenderer(settings.output_path)
@@ -55,7 +58,7 @@ def _init_services():
 
 def get_services():
     _init_services()
-    return _llm_client, _search_engine, _wiki_compiler, _qa_system, _output_renderer
+    return _llm_client, _embeddings_service, _search_engine, _wiki_compiler, _qa_system, _output_renderer
 
 
 @app.command()
@@ -64,11 +67,14 @@ def compile(
     title: str = typer.Option(None, help="Custom title for the article"),
 ):
     """Compile a raw document into wiki format"""
-    _, search_engine, wiki_compiler, _, _ = get_services()
+    _, _, search_engine, wiki_compiler, _, _ = get_services()
     try:
         console.print(f"[cyan]Compiling {source_path}...[/cyan]")
         wiki_path = wiki_compiler.compile_document(source_path, title)
         search_engine.refresh()
+        # Update backlinks for connection strength
+        backlinks = wiki_compiler.generate_backlinks_index()
+        search_engine.set_backlinks(backlinks)
         console.print(f"[green]✓ Successfully compiled to {wiki_path}[/green]")
     except Exception as e:
         console.print(f"[red]✗ Error: {e}[/red]")
@@ -78,12 +84,45 @@ def compile(
 @app.command()
 def compile_all():
     """Compile all raw documents into the wiki"""
-    _, search_engine, wiki_compiler, _, _ = get_services()
+    _, _, search_engine, wiki_compiler, _, _ = get_services()
     try:
         console.print("[cyan]Compiling all documents...[/cyan]")
         count = wiki_compiler.compile_all()
         search_engine.refresh()
+        # Update backlinks for connection strength
+        backlinks = wiki_compiler.generate_backlinks_index()
+        search_engine.set_backlinks(backlinks)
         console.print(f"[green]✓ Successfully compiled {count} documents[/green]")
+    except Exception as e:
+        console.print(f"[red]✗ Error: {e}[/red]")
+        raise typer.Exit(1)
+
+
+@app.command()
+def backlinks():
+    """Apply forward links (Referenced by) to all wiki articles"""
+    _, _, _, wiki_compiler, _, _ = get_services()
+    try:
+        console.print("[cyan]Applying forward links to wiki articles...[/cyan]")
+        result = wiki_compiler.apply_forward_links()
+
+        table = Table(title="Forward Links Applied")
+        table.add_column("Metric", style="cyan")
+        table.add_column("Count", style="magenta")
+
+        table.add_row("Updated Articles", str(result["total_updated"]))
+        table.add_row("Broken Links", str(result["total_broken"]))
+
+        console.print(table)
+
+        if result["broken_links"]:
+            console.print(f"\n[yellow]⚠ Broken links found:[/yellow]")
+            for link in result["broken_links"][:10]:
+                console.print(f"  - [[{link}]]")
+            if len(result["broken_links"]) > 10:
+                console.print(f"  ... and {len(result['broken_links']) - 10} more")
+
+        console.print(f"[green]✓ Forward links applied successfully[/green]")
     except Exception as e:
         console.print(f"[red]✗ Error: {e}[/red]")
         raise typer.Exit(1)
@@ -95,7 +134,7 @@ def search(
     limit: int = typer.Option(10, help="Maximum number of results"),
 ):
     """Search the wiki"""
-    _, search_engine, _, _, _ = get_services()
+    _, _, search_engine, _, _, _ = get_services()
     try:
         results = search_engine.search(query, limit=limit)
         
@@ -127,12 +166,18 @@ def query(
     question: str = typer.Argument(..., help="Question to ask"),
     format: str = typer.Option("markdown", help="Output format (markdown, json, html)"),
     save: bool = typer.Option(True, help="Save output to file"),
+    follow_links: bool = typer.Option(True, help="Follow [[links]] to enrich context"),
 ):
     """Query the knowledge base"""
-    _, _, _, qa_system, output_renderer = get_services()
+    _, _, _, _, qa_system, output_renderer = get_services()
     try:
         console.print(f"[cyan]Processing query: {question}[/cyan]")
-        answer = qa_system.query(question, max_sources=5, output_format=format)
+        answer = qa_system.query(
+            question=question,
+            max_sources=5,
+            output_format=format,
+            follow_links=follow_links,
+        )
         
         console.print("\n[bold]Answer:[/bold]")
         console.print(answer)
@@ -154,7 +199,7 @@ def summarize(
     save: bool = typer.Option(True, help="Save output to file"),
 ):
     """Search and summarize a topic"""
-    _, _, _, qa_system, output_renderer = get_services()
+    _, _, _, _, qa_system, output_renderer = get_services()
     try:
         console.print(f"[cyan]Summarizing '{topic}'...[/cyan]")
         summary = qa_system.search_and_summarize(topic)
@@ -176,7 +221,7 @@ def summarize(
 @app.command()
 def index():
     """Generate wiki index"""
-    _, _, wiki_compiler, _, _ = get_services()
+    _, _, _, wiki_compiler, _, _ = get_services()
     try:
         console.print("[cyan]Generating wiki index...[/cyan]")
         index_content = wiki_compiler.generate_index()

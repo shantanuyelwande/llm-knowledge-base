@@ -20,13 +20,14 @@ llm_client = LLMClient(
     model=settings.model,
 )
 
-search_engine = SimpleSearchEngine(settings.wiki_path)
+# Initialize embeddings and search services early
+embeddings_service = EmbeddingsService()
+search_engine = SimpleSearchEngine(settings.wiki_path, embeddings_service=embeddings_service)
 wiki_compiler = WikiCompiler(settings.raw_data_path, settings.wiki_path, llm_client)
 qa_system = QASystem(settings.wiki_path, llm_client, search_engine)
 output_renderer = OutputRenderer(settings.output_path)
 
-# Initialize embeddings and export services
-embeddings_service = EmbeddingsService()
+# Initialize export service
 export_service = ExportService(settings.wiki_path, settings.output_path, embeddings_service)
 
 
@@ -40,6 +41,8 @@ class QueryRequest(BaseModel):
     question: str
     max_sources: int = 5
     output_format: str = "markdown"
+    follow_links: bool = True
+    max_total_docs: int = 10
 
 
 class SearchRequest(BaseModel):
@@ -85,6 +88,9 @@ async def compile_document(request: CompileRequest):
     try:
         wiki_path = wiki_compiler.compile_document(request.source_path, request.title)
         search_engine.refresh()
+        # Update backlinks for connection strength
+        backlinks = wiki_compiler.generate_backlinks_index()
+        search_engine.set_backlinks(backlinks)
         return {
             "status": "success",
             "message": f"Document compiled successfully",
@@ -100,6 +106,9 @@ async def compile_all():
     try:
         count = wiki_compiler.compile_all()
         search_engine.refresh()
+        # Update backlinks for connection strength
+        backlinks = wiki_compiler.generate_backlinks_index()
+        search_engine.set_backlinks(backlinks)
         return {
             "status": "success",
             "message": f"Compiled {count} documents",
@@ -127,6 +136,9 @@ async def refresh_wiki():
     """Refresh the search index after adding new documents"""
     try:
         search_engine.refresh()
+        # Update backlinks for connection strength
+        backlinks = wiki_compiler.generate_backlinks_index()
+        search_engine.set_backlinks(backlinks)
         return {
             "status": "success",
             "message": "Search index refreshed",
@@ -171,6 +183,8 @@ async def query(request: QueryRequest):
             question=request.question,
             max_sources=request.max_sources,
             output_format=request.output_format,
+            follow_links=request.follow_links,
+            max_total_docs=request.max_total_docs,
         )
         
         # Optionally save output
