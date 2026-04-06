@@ -1,5 +1,5 @@
 ---
-title: I am sharing _n8n kit_ with you
+title: n8n kit
 source_file: I am sharing _n8n kit_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
 compiled_at: 2026-04-05T20:27:04.095883

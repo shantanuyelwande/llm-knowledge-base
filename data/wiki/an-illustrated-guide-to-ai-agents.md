@@ -1,5 +1,5 @@
 ---
-title: I am sharing _An illustrated guide to AI Agents
+title: An illustrated guide to AI Agents
 source_file: I am sharing _An illustrated guide to AI Agents.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
 compiled_at: 2026-04-05T21:14:24.757698

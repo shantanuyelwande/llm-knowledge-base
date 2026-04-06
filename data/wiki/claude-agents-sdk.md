@@ -1,5 +1,5 @@
 ---
-title: I am sharing _Claude Agents SDK_ with you
+title: Claude Agents SDK
 source_file: I am sharing _Claude Agents SDK_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
 compiled_at: 2026-04-05T20:29:37.295765

@@ -1,5 +1,5 @@
 ---
-title: I am sharing _Zero to Production AI Agent Guide-1_ with you
+title: Zero to Production AI Agent Guide-1
 source_file: I am sharing _Zero to Production AI Agent Guide-1_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
 compiled_at: 2026-04-05T20:28:41.768545

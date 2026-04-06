@@ -1,5 +1,5 @@
 ---
-title: I am sharing _15 AI Agents with n8n_ with you
+title: 15 AI Agents with n8n
 source_file: I am sharing _15 AI Agents with n8n_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
 compiled_at: 2026-04-05T20:17:01.261051

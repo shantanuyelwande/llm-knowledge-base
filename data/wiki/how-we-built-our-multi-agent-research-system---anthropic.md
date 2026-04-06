@@ -1,5 +1,5 @@
 ---
-title: I am sharing _How we built our multi-agent research system _ Anthropic_ with you
+title: How we built our multi-agent research system  Anthropic
 source_file: I am sharing _How we built our multi-agent research system _ Anthropic_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
 compiled_at: 2026-04-05T20:19:37.649601

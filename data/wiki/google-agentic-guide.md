@@ -1,5 +1,5 @@
 ---
-title: I am sharing _Google Agentic Guide_ with you
+title: Google Agentic Guide
 source_file: I am sharing _Google Agentic Guide_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
 compiled_at: 2026-04-05T20:30:02.279304

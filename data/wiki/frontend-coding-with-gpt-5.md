@@ -1,5 +1,5 @@
 ---
-title: I am sharing _FrontEnd Coding with GPT 5_ with you
+title: FrontEnd Coding with GPT 5
 source_file: I am sharing _FrontEnd Coding with GPT 5_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
 compiled_at: 2026-04-05T20:15:50.356358

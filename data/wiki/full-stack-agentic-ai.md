@@ -1,5 +1,5 @@
 ---
-title: I am sharing _Full Stack Agentic AI_ with you
+title: Full Stack Agentic AI
 source_file: I am sharing _Full Stack Agentic AI_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
 compiled_at: 2026-04-05T20:27:10.451494
