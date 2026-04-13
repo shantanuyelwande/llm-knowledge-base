@@ -41,6 +41,7 @@ ENV/
 # Data - Keep compiled wiki in git for version control, exclude raw inputs and outputs
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/*.md
 data/output/*
 !data/output/.gitkeep
 *.db
