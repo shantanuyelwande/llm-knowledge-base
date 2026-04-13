@@ -227,31 +227,3 @@ n8n represents data as [[JSON]] arrays of objects. Each top-level object is cons
 {{$node["Webhook"].json["data"]["order"]["id"]}}
 ```
 
----
-
-### Expressions in n8n
-
-[[Expressions]] allow dynamic data access and manipulation, functioning like mail merge operations.
-
-#### Key Expression Types
-
-1. **Current Node Data**
-   ```
-   {{$json["firstName"]}}
-   ```
-
-2. **Previous Node Data**
-   ```
-   {{$node["NodeName"].json["field"]}}
-   ```
-
-3. **Field Combination**
-   ```
-   Hello {{$json["firstName"]}}
-   ```
-
-#### Expression Notation
-
-**[[Dot Notation]]**: Used for simple property names without spaces or special characters
-```
-{{$json.customer.name
