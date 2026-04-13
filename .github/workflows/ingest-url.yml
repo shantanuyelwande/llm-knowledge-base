@@ -4,6 +4,10 @@ on:
   repository_dispatch:
     types: [ingest-url]
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   scrape-and-commit:
     runs-on: ubuntu-latest
