@@ -10,14 +10,21 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      
+      - name: Debug - Check payload
+        run: |
+          echo "📋 Received payload:"
+          echo "  URL: ${{ github.event.client_payload.url }}"
+          echo "  Description: ${{ github.event.client_payload.description }}"
+          echo "  Triggered at: ${{ github.event.client_payload.triggered_at }}"
       
       - name: Install dependencies
         run: |
@@ -92,14 +99,17 @@ jobs:
                   f.write(markdown_content)
               
               print(f"✓ Successfully scraped and saved to {filepath}")
-              print(f"::set-output name=filename::{filename}")
-              print(f"::set-output name=filepath::{filepath}")
+              
+              # Write to GITHUB_OUTPUT for subsequent steps
+              with open(os.environ.get('GITHUB_OUTPUT', '/tmp/github_output'), 'a') as out:
+                  out.write(f"filename={filename}\n")
+                  out.write(f"filepath={filepath}\n")
               
           except requests.RequestException as e:
-              print(f"Error fetching URL: {e}")
+              print(f"❌ Error fetching URL: {e}")
               exit(1)
           except Exception as e:
-              print(f"Error processing content: {e}")
+              print(f"❌ Error processing content: {e}")
               exit(1)
           EOF
       
@@ -109,18 +119,21 @@ jobs:
           git config --local user.name "GitHub Action"
       
       - name: Commit and push
-        if: always()
         run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git add data/raw/
-            git commit -m "chore: ingest URL content - ${{ github.event.client_payload.url }}"
-            git push
-            echo "✓ Committed to data/raw/"
+          git add data/raw/ || true
+          
+          if ! git diff --quiet --cached; then
+            git commit -m "chore: ingest URL content from ${{ github.event.client_payload.url }}"
+            git push origin HEAD:${{ github.ref }}
+            echo "✅ Successfully committed and pushed"
           else
-            echo "No changes to commit"
+            echo "ℹ️  No changes to commit"
           fi
       
-      - name: Notify if error
+      - name: Debug if failed
         if: failure()
         run: |
-          echo "::error::Failed to scrape URL: ${{ github.event.client_payload.url }}"
+          echo "Error details:"
+          ls -la data/raw/ || echo "data/raw/ directory not found"
+          git status
+          git log --oneline -5
