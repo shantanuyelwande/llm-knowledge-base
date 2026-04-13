@@ -1,0 +1,35 @@
+name: Pages Build and Deploy
+
+on:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - 'data/raw/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.11'
+
+    - name: Install Dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Build Static Content
+      run: |
+        # Add your build command here. e.g., python build.py
+
+    - name: Deploy to GitHub Pages
+      uses: actions/deploy-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
