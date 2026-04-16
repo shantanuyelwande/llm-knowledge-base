@@ -47,6 +47,15 @@ jobs:
         run: |
           python3 cli/main.py backlinks
 
+      - name: Clean up raw folder (compiled content)
+        run: |
+          echo "🧹 Cleaning up compiled raw files..."
+          if [ -d "data/raw" ]; then
+            # Keep .gitkeep but remove everything else
+            find data/raw -type f ! -name '.gitkeep' -delete
+            echo "✓ Cleaned up data/raw/ directory"
+          fi
+
       - name: Configure git
         run: |
           git config --local user.email "action@github.com"
@@ -54,10 +63,10 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add data/wiki/ || true
+          git add data/wiki/ data/raw/ || true
 
           if ! git diff --quiet --cached; then
-            git commit -m "chore: daily wiki sync - compile raw files and update cross-references"
+            git commit -m "chore: daily wiki sync - compile raw files, update cross-references, and clean up raw folder"
             git push origin HEAD:${{ github.ref }}
             echo "✅ Successfully committed and pushed wiki changes"
           else

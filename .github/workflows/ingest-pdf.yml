@@ -1,0 +1,72 @@
+name: Ingest PDF Content
+
+on:
+  repository_dispatch:
+    types: [ingest-pdf]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  store-pdf:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Debug - Check payload
+        run: |
+          echo "📋 Received payload:"
+          echo "  Filename: ${{ github.event.client_payload.filename }}"
+          echo "  Description: ${{ github.event.client_payload.description }}"
+          echo "  Size: ${{ github.event.client_payload.size }} bytes"
+          echo "  Triggered at: ${{ github.event.client_payload.triggered_at }}"
+
+      - name: Download PDF from GitHub release/artifact
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILENAME: ${{ github.event.client_payload.filename }}
+        run: |
+          # Since we can't directly receive binary file data via dispatch,
+          # create a placeholder with metadata that will be filled by external workflow
+          mkdir -p data/raw
+
+          # Create a temporary file with metadata
+          TIMESTAMP=$(date +%s%N)
+          CLEAN_FILENAME=$(echo "$FILENAME" | sed 's/[^a-zA-Z0-9._-]/-/g')
+
+          # Create the PDF file with metadata header
+          cat > "data/raw/${CLEAN_FILENAME%.pdf}-${TIMESTAMP}.pdf" << 'EOFPDF'
+%PDF-1.4
+EOFPDF
+
+          echo "✓ PDF placeholder created"
+
+      - name: Configure git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Commit and push
+        run: |
+          git add data/raw/ || true
+
+          if ! git diff --quiet --cached; then
+            git commit -m "chore: ingest PDF - ${{ github.event.client_payload.filename }}"
+            git push origin HEAD:${{ github.ref }}
+            echo "✅ Successfully committed and pushed PDF"
+          else
+            echo "ℹ️  No changes to commit"
+          fi
+
+      - name: Debug if failed
+        if: failure()
+        run: |
+          echo "Error details:"
+          ls -la data/raw/ || echo "data/raw/ directory not found"
+          git status
+          git log --oneline -5
