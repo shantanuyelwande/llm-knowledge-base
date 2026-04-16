@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     output_dir: str = "data/output"
     
     # LLM
-    model: str = "claude-3-sonnet-20240229"
+    model: str = "claude-haiku-4-5-20251001"
     max_tokens: int = 4096
     temperature: float = 0.7
     
