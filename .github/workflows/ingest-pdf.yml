@@ -26,25 +26,27 @@ jobs:
           echo "  Size: ${{ github.event.client_payload.size }} bytes"
           echo "  Triggered at: ${{ github.event.client_payload.triggered_at }}"
 
-      - name: Download PDF from GitHub release/artifact
+      - name: Decode and store PDF
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILENAME: ${{ github.event.client_payload.filename }}
+          FILE_CONTENT: ${{ github.event.client_payload.file_content }}
+          TIMESTAMP: ${{ github.event.client_payload.triggered_at }}
         run: |
-          # Since we can't directly receive binary file data via dispatch,
-          # create a placeholder with metadata that will be filled by external workflow
           mkdir -p data/raw
 
-          # Create a temporary file with metadata
-          TIMESTAMP=$(date +%s%N)
+          # Sanitize filename
           CLEAN_FILENAME=$(echo "$FILENAME" | sed 's/[^a-zA-Z0-9._-]/-/g')
 
-          # Create the PDF file with metadata header
-          cat > "data/raw/${CLEAN_FILENAME%.pdf}-${TIMESTAMP}.pdf" << 'EOFPDF'
-%PDF-1.4
-EOFPDF
+          # Generate timestamp if not provided
+          if [ -z "$TIMESTAMP" ]; then
+            TIMESTAMP=$(date +%s)
+          fi
 
-          echo "✓ PDF placeholder created"
+          # Decode base64 and write PDF
+          echo "$FILE_CONTENT" | base64 -d > "data/raw/${CLEAN_FILENAME}"
+
+          echo "✓ PDF stored: data/raw/${CLEAN_FILENAME}"
+          ls -lh "data/raw/${CLEAN_FILENAME}"
 
       - name: Configure git
         run: |
