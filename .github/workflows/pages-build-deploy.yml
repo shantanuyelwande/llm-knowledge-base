@@ -14,10 +14,10 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Set up Python 3.11
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
 
@@ -26,16 +26,16 @@ jobs:
         pip install -r requirements.txt
 
     - name: Build Static Content
+      env:
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       run: |
         python cli/main.py export --formats all
 
     - name: Upload artifact
-      uses: actions/upload-pages-artifact@v2
+      uses: actions/upload-pages-artifact@v3
       with:
         path: 'data/output'
 
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+      uses: actions/deploy-pages@v4

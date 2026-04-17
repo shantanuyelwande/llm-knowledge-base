@@ -5,20 +5,20 @@ from pathlib import Path
 from rich.console import Console
 from rich.table import Table
 
-# Add backend to path
-sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
+# Add src to path
+sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from app.core.config import settings
-from app.core.llm import LLMClient
-from app.core.search import SimpleSearchEngine
-from app.services.wiki_compiler import WikiCompiler
-from app.services.qa_system import QASystem
-from app.services.output_renderer import OutputRenderer
-from app.services.metadata_tracker import MetadataTracker
-from app.services.duplicate_detector import DuplicateDetector
-from app.services.wiki_merger import WikiMerger
-from app.services.embeddings import EmbeddingsService
-from app.services.export import ExportService
+from llm_knowledge_base.core.config import settings
+from llm_knowledge_base.core.llm import LLMClient
+from llm_knowledge_base.core.search import SimpleSearchEngine
+from llm_knowledge_base.services.wiki_compiler import WikiCompiler
+from llm_knowledge_base.services.qa_system import QASystem
+from llm_knowledge_base.services.output_renderer import OutputRenderer
+from llm_knowledge_base.services.metadata_tracker import MetadataTracker
+from llm_knowledge_base.services.duplicate_detector import DuplicateDetector
+from llm_knowledge_base.services.wiki_merger import WikiMerger
+from llm_knowledge_base.services.embeddings import EmbeddingsService
+from llm_knowledge_base.services.export import ExportService
 
 
 console = Console()
