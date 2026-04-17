@@ -165,19 +165,19 @@ python cli/main.py init
 ```
 llm-knowledge-base/
 ├── src/
-│   └── llm_knowledge_base/
-│       ├── core/
-│       │   ├── config.py         # Settings & environment
-│       │   ├── llm.py            # Claude API client
-│       │   └── search.py         # Search engine
-│       └── services/
-│           ├── wiki_compiler.py      # Raw → Wiki conversion
-│           ├── qa_system.py          # Q&A with LLM
-│           ├── export.py             # Multi-format export
-│           ├── embeddings.py         # Optional semantic search
-│           ├── duplicate_detector.py # Find duplicates
-│           ├── wiki_merger.py        # Merge articles
-│           └── ... (other services)
+│   ├── core/
+│   │   ├── config.py         # Settings & environment
+│   │   ├── llm.py            # Claude API client
+│   │   └── search.py         # Search engine
+│   └── services/
+│       ├── wiki_compiler.py      # Raw → Wiki conversion
+│       ├── qa_system.py          # Q&A with LLM
+│       ├── export.py             # Multi-format export
+│       ├── embeddings.py         # Optional semantic search
+│       ├── duplicate_detector.py # Find duplicates
+│       ├── wiki_merger.py        # Merge articles
+│       ├── tagger.py             # Auto-tag articles
+│       └── ... (other services)
 ├── cli/
 │   └── main.py                   # CLI entry point (Typer)
 ├── data/
@@ -185,14 +185,14 @@ llm-knowledge-base/
 │   ├── wiki/                     # Compiled wiki articles (auto-generated)
 │   └── output/                   # Exports & query results
 ├── tests/
-├── pyproject.toml                # Python packaging config (PEP 517/518)
+├── pyproject.toml                # Python packaging config
 ├── requirements.txt              # Dependencies
 └── README.md                     # This file
 ```
 
 **Key Points:**
-- `src/llm_knowledge_base/` — Main Python package (follows [Python packaging best practices](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/))
-- `cli/main.py` — Standalone entry point (run with `python cli/main.py`)
+- `src/core/` & `src/services/` — Core modules and processing logic
+- `cli/main.py` — CLI entry point (run with `python cli/main.py`)
 - `data/` — Persistent knowledge (version controlled, portable)
 - No backend server, no web UI, no API
 
@@ -236,16 +236,16 @@ Structured Wiki (data/wiki/) + YAML Frontmatter
 
 | Component | Purpose | Key Files |
 |-----------|---------|-----------|
-| **LLM Client** | Interface with Claude API | `src/llm_knowledge_base/core/llm.py` |
-| **Wiki Compiler** | Raw → Wiki conversion + link generation | `src/llm_knowledge_base/services/wiki_compiler.py` |
-| **Wiki Tagger** | Auto-generate tags for articles using Claude | `src/llm_knowledge_base/services/tagger.py` |
-| **Search Engine** | Keyword + connection strength + semantic ranking | `src/llm_knowledge_base/core/search.py` |
-| **Q&A System** | Context retrieval + link traversal + LLM response | `src/llm_knowledge_base/services/qa_system.py` |
-| **Export Service** | Multi-format output (JSONL, SQLite, HTML, JSON-LD) | `src/llm_knowledge_base/services/export.py` |
-| **Embeddings** | Optional semantic search (sentence-transformers) | `src/llm_knowledge_base/services/embeddings.py` |
-| **Duplicate Detector** | Find overlapping articles | `src/llm_knowledge_base/services/duplicate_detector.py` |
-| **Wiki Merger** | Merge articles with strategy selection | `src/llm_knowledge_base/services/wiki_merger.py` |
-| **Metadata Tracker** | Track versions, hashes, compilation history | `src/llm_knowledge_base/services/metadata_tracker.py` |
+| **LLM Client** | Interface with Claude API | `src/core/llm.py` |
+| **Wiki Compiler** | Raw → Wiki conversion + link generation | `src/services/wiki_compiler.py` |
+| **Wiki Tagger** | Auto-generate tags for articles using Claude | `src/services/tagger.py` |
+| **Search Engine** | Keyword + connection strength + semantic ranking | `src/core/search.py` |
+| **Q&A System** | Context retrieval + link traversal + LLM response | `src/services/qa_system.py` |
+| **Export Service** | Multi-format output (JSONL, SQLite, HTML, JSON-LD) | `src/services/export.py` |
+| **Embeddings** | Optional semantic search (sentence-transformers) | `src/services/embeddings.py` |
+| **Duplicate Detector** | Find overlapping articles | `src/services/duplicate_detector.py` |
+| **Wiki Merger** | Merge articles with strategy selection | `src/services/wiki_merger.py` |
+| **Metadata Tracker** | Track versions, hashes, compilation history | `src/services/metadata_tracker.py` |
 
 ## 🔗 Article Connections
 

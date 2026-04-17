@@ -8,18 +8,18 @@ from rich.table import Table
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from llm_knowledge_base.core.config import settings
-from llm_knowledge_base.core.llm import LLMClient
-from llm_knowledge_base.core.search import SimpleSearchEngine
-from llm_knowledge_base.services.wiki_compiler import WikiCompiler
-from llm_knowledge_base.services.qa_system import QASystem
-from llm_knowledge_base.services.output_renderer import OutputRenderer
-from llm_knowledge_base.services.metadata_tracker import MetadataTracker
-from llm_knowledge_base.services.duplicate_detector import DuplicateDetector
-from llm_knowledge_base.services.wiki_merger import WikiMerger
-from llm_knowledge_base.services.embeddings import EmbeddingsService
-from llm_knowledge_base.services.export import ExportService
-from llm_knowledge_base.services.tagger import WikiTagger
+from core.config import settings
+from core.llm import LLMClient
+from core.search import SimpleSearchEngine
+from services.wiki_compiler import WikiCompiler
+from services.qa_system import QASystem
+from services.output_renderer import OutputRenderer
+from services.metadata_tracker import MetadataTracker
+from services.duplicate_detector import DuplicateDetector
+from services.wiki_merger import WikiMerger
+from services.embeddings import EmbeddingsService
+from services.export import ExportService
+from services.tagger import WikiTagger
 
 
 console = Console()
