@@ -167,43 +167,112 @@ Use proper markdown formatting. Include backlinks using [[topic]] notation for r
         # Apply forward links after all compilation
         self.apply_forward_links()
 
+        # Generate index after compilation
+        index_content = self.generate_index()
+        index_file = self.wiki_dir / "index.md"
+        index_file.write_text(index_content, encoding="utf-8")
+        logger.info(f"✓ Generated wiki index: {index_file}")
+
         return count
     
     def generate_index(self) -> str:
-        """Generate an index/table of contents for the wiki"""
+        """Generate categorized index/table of contents for the wiki"""
         wiki_files = sorted(self.wiki_dir.rglob("*.md"))
 
         if not wiki_files:
             return "# Wiki Index\n\nNo articles yet."
 
-        # Generate index structure
-        index_content = "# Wiki Index\n\n"
-        index_content += f"Last updated: {datetime.now().isoformat()}\n\n"
+        # Collect articles with metadata
+        articles_by_tag = {}
+        uncategorized = []
 
-        # Organize by directory
-        by_dir = {}
         for file_path in wiki_files:
-            rel_path = file_path.relative_to(self.wiki_dir)
-            dir_name = str(rel_path.parent) if rel_path.parent != Path(".") else "Root"
+            metadata = self._extract_metadata_for_index(file_path)
 
-            if dir_name not in by_dir:
-                by_dir[dir_name] = []
-            by_dir[dir_name].append(file_path)
-
-        for dir_name in sorted(by_dir.keys()):
-            if dir_name != "Root":
-                index_content += f"\n## {dir_name}\n\n"
+            if metadata['tags']:
+                # Add to each tag's category
+                for tag in metadata['tags']:
+                    if tag not in articles_by_tag:
+                        articles_by_tag[tag] = []
+                    articles_by_tag[tag].append((file_path, metadata))
             else:
-                index_content += "\n## Articles\n\n"
+                uncategorized.append((file_path, metadata))
 
-            for file_path in sorted(by_dir[dir_name]):
-                # Extract title from frontmatter or first heading
-                title = self._extract_title_for_index(file_path)
+        # Generate index
+        index_content = "# Wiki Index\n\n"
+        index_content += f"**Last updated:** {datetime.now().isoformat()}\n"
+        index_content += f"**Total articles:** {len(wiki_files)}\n\n"
+        index_content += "---\n\n"
 
+        # Add categorized sections
+        if articles_by_tag:
+            for tag in sorted(articles_by_tag.keys()):
+                index_content += f"## {tag.title()}\n\n"
+
+                for file_path, metadata in sorted(articles_by_tag[tag], key=lambda x: x[1]['title']):
+                    rel_link = file_path.relative_to(self.wiki_dir)
+                    title = metadata['title']
+                    summary = metadata['summary']
+
+                    index_content += f"- **[{title}]({rel_link})**"
+                    if summary:
+                        index_content += f" — {summary}"
+                    index_content += "\n"
+
+                index_content += "\n"
+
+        # Add uncategorized articles
+        if uncategorized:
+            index_content += "## Uncategorized\n\n"
+            for file_path, metadata in sorted(uncategorized, key=lambda x: x[1]['title']):
                 rel_link = file_path.relative_to(self.wiki_dir)
-                index_content += f"- [{title}]({rel_link})\n"
+                title = metadata['title']
+                summary = metadata['summary']
+
+                index_content += f"- **[{title}]({rel_link})**"
+                if summary:
+                    index_content += f" — {summary}"
+                index_content += "\n"
 
         return index_content
+
+    def _extract_metadata_for_index(self, file_path: Path) -> dict:
+        """Extract title, tags, and summary from article for index"""
+        try:
+            content = file_path.read_text(encoding="utf-8")
+            title = "Untitled"
+            tags = []
+            summary = ""
+
+            # Parse frontmatter
+            if content.startswith("---"):
+                end = content.find("\n---\n", 4)
+                if end > 0:
+                    frontmatter = content[4:end]
+                    for line in frontmatter.split("\n"):
+                        if line.startswith("title:"):
+                            title = line.replace("title:", "").strip().strip("'\"")
+                        elif line.startswith("tags:"):
+                            tags_str = line.replace("tags:", "").strip().strip("[]")
+                            tags = [t.strip().strip("'\"") for t in tags_str.split(",")]
+
+                    # Extract summary section (first paragraph after frontmatter)
+                    body = content[end + 5:].strip()
+                    lines = body.split("\n")
+                    for line in lines:
+                        line = line.strip()
+                        if line and not line.startswith("#") and not line.startswith("["):
+                            summary = line[:100] + ("..." if len(line) > 100 else "")
+                            break
+
+            return {
+                'title': title,
+                'tags': tags,
+                'summary': summary
+            }
+        except Exception as e:
+            logger.error(f"Error extracting metadata from {file_path}: {e}")
+            return {'title': file_path.stem, 'tags': [], 'summary': ''}
 
     def _extract_title_for_index(self, file_path: Path) -> str:
         """Extract title from article for index (from frontmatter or first heading)"""

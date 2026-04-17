@@ -94,11 +94,21 @@ jobs:
               os.makedirs('data/raw', exist_ok=True)
               filepath = f"data/raw/{filename}"
               
-              # Write content with metadata
+              # Write content with YAML frontmatter (Claude will use this during compilation)
               with open(filepath, 'w', encoding='utf-8') as f:
+                  # YAML frontmatter for compilation metadata
+                  f.write("---\n")
+                  f.write(f"source_url: {url}\n")
+                  f.write(f"ingested_from: url\n")
+                  f.write(f"ingested_at: {datetime.now().isoformat()}\n")
+                  f.write("---\n\n")
+
+                  # Human-readable header
                   f.write(f"# {title_text}\n\n")
-                  f.write(f"**Source:** [{url}]({url})\n")
-                  f.write(f"**Scraped:** {datetime.now().isoformat()}\n\n")
+                  f.write(f"**Source URL:** [{url}]({url})\n")
+                  f.write(f"**Ingested:** {datetime.now().isoformat()}\n\n")
+
+                  # Scraped content
                   f.write("---\n\n")
                   f.write(markdown_content)
               

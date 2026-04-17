@@ -19,6 +19,7 @@ from llm_knowledge_base.services.duplicate_detector import DuplicateDetector
 from llm_knowledge_base.services.wiki_merger import WikiMerger
 from llm_knowledge_base.services.embeddings import EmbeddingsService
 from llm_knowledge_base.services.export import ExportService
+from llm_knowledge_base.services.tagger import WikiTagger
 
 
 console = Console()
@@ -401,6 +402,36 @@ def export(
                     console.print(f"[green]✓ Metadata: {path}[/green]")
                 else:
                     console.print(f"[yellow]⚠ Unknown format: {fmt}[/yellow]")
+    except Exception as e:
+        console.print(f"[red]✗ Error: {e}[/red]")
+        raise typer.Exit(1)
+
+
+@app.command()
+def tag():
+    """Auto-generate tags for articles in the wiki"""
+    llm_client, _, _, _, _, _ = get_services()
+    try:
+        console.print("[cyan]Analyzing articles and generating tags...[/cyan]")
+        tagger = WikiTagger(settings.wiki_path, llm_client)
+        results = tagger.tag_all_articles()
+
+        console.print(f"\n[bold]Tagging Results:[/bold]")
+        console.print(f"  Total articles: {results['total']}")
+        console.print(f"  [green]Tagged: {results['tagged']}[/green]")
+        console.print(f"  [yellow]Skipped (already tagged): {results['skipped']}[/yellow]")
+        console.print(f"  [red]Failed: {results['failed']}[/red]")
+
+        if results['errors']:
+            console.print(f"\n[yellow]Errors:[/yellow]")
+            for error in results['errors'][:5]:
+                console.print(f"  - {error}")
+            if len(results['errors']) > 5:
+                console.print(f"  ... and {len(results['errors']) - 5} more")
+
+        if results['tagged'] > 0:
+            console.print(f"\n[green]✓ {results['tagged']} articles tagged successfully[/green]")
+            console.print("[cyan]Run 'python cli/main.py index' to regenerate the wiki index[/cyan]")
     except Exception as e:
         console.print(f"[red]✗ Error: {e}[/red]")
         raise typer.Exit(1)

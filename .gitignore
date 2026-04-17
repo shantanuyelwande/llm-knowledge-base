@@ -58,3 +58,4 @@ logs/
 node_modules/
 dist/
 .next/
+.claude/

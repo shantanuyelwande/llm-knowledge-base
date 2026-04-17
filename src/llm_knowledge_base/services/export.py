@@ -182,11 +182,143 @@ class ExportService:
             logger.error(f"Error exporting metadata: {e}")
             raise
     
+    def _extract_tags_from_content(self, content: str) -> list:
+        """Extract tags from article frontmatter"""
+        try:
+            if content.startswith("---"):
+                end = content.find("\n---\n", 4)
+                if end > 0:
+                    frontmatter = content[4:end]
+                    for line in frontmatter.split("\n"):
+                        if line.startswith("tags:"):
+                            tags_str = line.replace("tags:", "").strip().strip("[]")
+                            tags = [t.strip().strip("'\"") for t in tags_str.split(",")]
+                            return [t for t in tags if t]
+        except:
+            pass
+        return []
+
     def export_html(self, articles: List[Dict[str, Any]] = None) -> Path:
+        """Export as interactive accordion HTML with categories"""
+        if articles is None:
+            articles = self.collect_wiki_articles()
+
+        output_file = self.output_dir / "knowledge.html"
+        try:
+            # Group articles by tags
+            articles_by_tag = {}
+            uncategorized = []
+
+            for article in articles:
+                tags = self._extract_tags_from_content(article['content'])
+                if tags:
+                    for tag in tags:
+                        if tag not in articles_by_tag:
+                            articles_by_tag[tag] = []
+                        articles_by_tag[tag].append(article)
+                else:
+                    uncategorized.append(article)
+
+            # Build accordion HTML sections
+            accordion_html = ""
+            for tag in sorted(articles_by_tag.keys()):
+                accordion_html += f'<div class="accordion-item">\n'
+                accordion_html += f'  <button class="accordion-header" onclick="toggleAccordion(this)"><span>📚 {tag.title()}</span><span class="toggle-icon">▼</span></button>\n'
+                accordion_html += f'  <div class="accordion-content">\n'
+
+                for article in sorted(articles_by_tag[tag], key=lambda x: x['title']):
+                    accordion_html += f'    <div class="article-preview"><h4>{article["title"]}</h4>'
+                    accordion_html += f'<p class="word-count">📄 {article["word_count"]} words</p>'
+                    accordion_html += f'<details><summary>Read more...</summary><div class="article-preview-content">{article["content"][:300]}...</div></details></div>\n'
+
+                accordion_html += f'  </div>\n</div>\n'
+
+            # Add uncategorized
+            if uncategorized:
+                accordion_html += f'<div class="accordion-item"><button class="accordion-header" onclick="toggleAccordion(this)"><span>📋 Uncategorized</span><span class="toggle-icon">▼</span></button>'
+                accordion_html += f'<div class="accordion-content">\n'
+                for article in sorted(uncategorized, key=lambda x: x['title']):
+                    accordion_html += f'<div class="article-preview"><h4>{article["title"]}</h4><p class="word-count">📄 {article["word_count"]} words</p></div>\n'
+                accordion_html += f'</div></div>\n'
+
+            html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Base</title>
+    <style>
+        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }}
+        .container {{ max-width: 900px; margin: 0 auto; }}
+        .header {{ background: white; border-radius: 10px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }}
+        .header h1 {{ font-size: 2.5em; margin-bottom: 10px; color: #667eea; }}
+        .header p {{ color: #666; font-size: 1.1em; }}
+        .stats {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }}
+        .stat {{ background: #f5f5f5; padding: 15px; border-radius: 5px; text-align: center; }}
+        .stat-number {{ font-size: 1.8em; font-weight: bold; color: #667eea; }}
+        .stat-label {{ font-size: 0.9em; color: #666; margin-top: 5px; }}
+        .accordion-item {{ background: white; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; }}
+        .accordion-header {{ width: 100%; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; cursor: pointer; font-size: 1.1em; font-weight: 600; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; }}
+        .accordion-header:hover {{ transform: translateX(5px); }}
+        .toggle-icon {{ transition: transform 0.3s ease; }}
+        .accordion-item.active .toggle-icon {{ transform: rotate(180deg); }}
+        .accordion-content {{ max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }}
+        .accordion-item.active .accordion-content {{ max-height: 5000px; padding: 20px; }}
+        .article-preview {{ background: #f9f9f9; padding: 15px; margin-bottom: 15px; border-left: 4px solid #667eea; border-radius: 4px; }}
+        .article-preview h4 {{ color: #667eea; margin-bottom: 8px; }}
+        .word-count {{ font-size: 0.9em; color: #999; }}
+        details summary {{ cursor: pointer; color: #667eea; font-weight: 500; }}
+        .article-preview-content {{ background: white; padding: 10px; margin-top: 10px; border-radius: 4px; font-size: 0.9em; }}
+        .footer {{ text-align: center; color: white; margin-top: 40px; padding: 20px; font-size: 0.9em; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Knowledge Base</h1>
+            <p>Organized, categorized knowledge</p>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">{len(articles)}</div>
+                    <div class="stat-label">Articles</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">{sum(a['word_count'] for a in articles)}</div>
+                    <div class="stat-label">Words</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">{len(articles_by_tag)}</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+            </div>
+        </div>
+        {accordion_html}
+        <div class="footer">
+            <p>Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+        </div>
+    </div>
+    <script>
+        function toggleAccordion(button) {{ button.parentElement.classList.toggle('active'); }}
+        document.querySelector('.accordion-item')?.classList.add('active');
+    </script>
+</body>
+</html>"""
+
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write(html_content)
+
+            logger.info(f"✓ Exported to accordion HTML: {output_file}")
+            return output_file
+        except Exception as e:
+            logger.error(f"Error exporting HTML: {e}")
+            raise
+
+    def export_html_old(self, articles: List[Dict[str, Any]] = None) -> Path:
         """Export as single shareable HTML page"""
         if articles is None:
             articles = self.collect_wiki_articles()
-        
+
         output_file = self.output_dir / "knowledge.html"
         try:
             try:
