@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _FrontEnd Coding with GPT 5_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:15:50.356358
-tags: []
+tags: ["GPT-5", "frontend-development", "web-development", "AI-assisted-coding", "full-stack-applications"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Frontend Coding with GPT-5
 

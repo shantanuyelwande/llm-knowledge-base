@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _Google Startup Guide for AI Agents_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:18:12.349880
-tags: []
+tags: ["AI Agents", "Google Cloud", "Startup Guide", "Machine Learning", "DevOps"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Google Startup Guide for AI Agents
 

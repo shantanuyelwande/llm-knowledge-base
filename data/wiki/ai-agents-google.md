@@ -9,9 +9,10 @@ sources:
   - file: AI agents google.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:23:20.757235
-tags: []
+tags: ["AI Agents", "Architecture", "System Design", "Autonomous Systems", "Machine Learning"]
 related_topics: []
 backlinked_by: []
+
 ---
 # AI Agents: Architecture and Design
 

@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _n8n kit_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:27:04.095883
-tags: []
+tags: ["workflow-automation", "n8n", "AI-integration", "tutorial", "beginner-guide"]
 related_topics: []
 backlinked_by: []
+
 ---
 # The Ultimate n8n Starter Kit (2025)
 

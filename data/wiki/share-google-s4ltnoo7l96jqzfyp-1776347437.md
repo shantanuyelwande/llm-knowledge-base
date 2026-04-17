@@ -9,9 +9,10 @@ sources:
   - file: share-google-S4lTnOo7l96jQZFyP-1776347437.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-16T16:56:48.160009
-tags: []
+tags: ["OpenAI Agents SDK", "Modal", "AI Agents", "Scalable Computing", "GPU Optimization"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Building with Modal and the OpenAI Agents SDK
 

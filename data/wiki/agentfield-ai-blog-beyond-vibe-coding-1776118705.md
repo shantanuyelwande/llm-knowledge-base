@@ -9,9 +9,10 @@ sources:
   - file: agentfield-ai-blog-beyond-vibe-coding-1776118705.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-16T16:57:14.566616
-tags: []
+tags: ["multi-agent systems", "code generation", "LLM orchestration", "AI engineering", "autonomous agents"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Multi-Agent Code Generation and Orchestration
 

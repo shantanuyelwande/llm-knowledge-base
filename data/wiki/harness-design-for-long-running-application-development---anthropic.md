@@ -9,9 +9,10 @@ sources:
   - file: Harness design for long-running application development _ Anthropic.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:21:23.402029
-tags: []
+tags: ["AI Engineering", "Agent Design", "Claude", "Application Development", "Prompt Engineering"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Harness Design for Long-Running Application Development
 

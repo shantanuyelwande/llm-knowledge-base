@@ -9,9 +9,10 @@ sources:
   - file: https_docs.go.txt
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:26:42.904093
-tags: []
+tags: ["HTTPS", "SSL/TLS", "Web Security", "Encryption", "Network Protocols"]
 related_topics: []
 backlinked_by: []
+
 ---
 # HTTPS Documentation
 

@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _An illustrated guide to AI Agents.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T21:14:24.757698
-tags: []
+tags: ["AI Agents", "Autonomous Systems", "Large Language Models", "AI Architecture", "Agentic AI"]
 related_topics: []
 backlinked_by: []
+
 ---
 # AI Agents: The Illustrated Guide
 

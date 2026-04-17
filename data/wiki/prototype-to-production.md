@@ -9,9 +9,10 @@ sources:
   - file: Prototype to Production.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:22:11.702302
-tags: []
+tags: ["AI Agents", "Production Deployment", "DevOps", "CI/CD Pipeline", "Observability"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Prototype to Production: Operationalizing AI Agents
 

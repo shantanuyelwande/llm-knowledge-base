@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _Context Engineering  for AI Agents_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:16:14.053910
-tags: []
+tags: ["AI Agents", "Context Management", "Prompt Engineering", "LLM Optimization", "Token Efficiency"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Context Engineering for AI Agents
 

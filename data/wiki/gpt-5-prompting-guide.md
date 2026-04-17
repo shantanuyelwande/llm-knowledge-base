@@ -9,9 +9,10 @@ sources:
   - file: GPT 5 PROMPTING GUIDE.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:31:02.699194
-tags: []
+tags: ["prompt-engineering", "gpt-5", "best-practices", "agentic-ai", "coding"]
 related_topics: []
 backlinked_by: []
+
 ---
 # GPT-5 Prompting Guide
 

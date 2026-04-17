@@ -9,9 +9,10 @@ sources:
   - file: create-a-financial-ai-copilot.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:22:25.296257
-tags: []
+tags: ["AI", "Financial Services", "MongoDB", "Python", "LLM", "Database", "Tutorial"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Creating a Financial AI Copilot
 

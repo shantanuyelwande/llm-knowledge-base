@@ -9,9 +9,10 @@ sources:
   - file: Agent Tools & Interoperability with Model Context Protocol (MCP).pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:18:39.725702
-tags: []
+tags: ["AI Agents", "Model Context Protocol", "Tool Integration", "Enterprise Security", "Foundation Models"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Agent Tools & Interoperability with Model Context Protocol (MCP)
 

@@ -9,9 +9,10 @@ sources:
   - file: Harness - Open SWE_ An Open-Source Framework for Internal Coding Agents.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:17:25.527424
-tags: []
+tags: ["AI Agents", "Software Development", "Open Source", "LangGraph", "GitHub Integration"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Open SWE Framework
 

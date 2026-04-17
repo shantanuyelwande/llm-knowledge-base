@@ -9,9 +9,10 @@ sources:
   - file: Anthropic - Claude Skills Guide.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T21:12:48.165816
-tags: []
+tags: ["skills", "claude-ai", "customization", "workflows", "api", "instructions"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Claude Skills Guide
 

@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _Claude Agents SDK_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:29:37.295765
-tags: []
+tags: ["AI Development", "Agent Framework", "Claude API", "Autonomous Systems", "Developer Tools"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Claude Agent SDK
 

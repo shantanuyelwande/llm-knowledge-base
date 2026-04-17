@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _7 Practical Techniques to Reduce LLM Hallucinations_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:29:10.365349
-tags: []
+tags: ["LLM Hallucinations", "Prompt Engineering", "Retrieval Augmented Generation", "Model Reliability", "AI Safety"]
 related_topics: []
 backlinked_by: []
+
 ---
 # LLM Hallucinations: Practical Reduction Techniques
 

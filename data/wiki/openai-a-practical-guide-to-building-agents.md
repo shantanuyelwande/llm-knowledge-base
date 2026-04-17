@@ -9,9 +9,10 @@ sources:
   - file: OpenAI a-practical-guide-to-building-agents.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:20:07.695245
-tags: []
+tags: ["AI Agents", "Large Language Models", "Workflow Automation", "System Design", "Safety and Guardrails"]
 related_topics: []
 backlinked_by: []
+
 ---
 # AI Agents: A Practical Guide to Building Agent Systems
 

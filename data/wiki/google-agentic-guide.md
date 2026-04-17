@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _Google Agentic Guide_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:30:02.279304
-tags: []
+tags: ["AI Agents", "Startup Development", "Google Cloud", "Production Engineering", "Agent Development Kit"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Google Agentic Guide for Startups
 

@@ -9,9 +9,10 @@ sources:
   - file: rag AI Engineer System Design 8nterviee.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T21:12:24.621153
-tags: []
+tags: ["RAG", "AI Engineering", "System Design", "LLM", "Interview Preparation"]
 related_topics: []
 backlinked_by: []
+
 ---
 # RAG AI Engineer System Design Interview Guide
 

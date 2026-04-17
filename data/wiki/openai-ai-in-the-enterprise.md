@@ -9,9 +9,10 @@ sources:
   - file: OpenAI ai-in-the-enterprise.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:27:38.613889
-tags: []
+tags: ["artificial intelligence", "enterprise adoption", "business strategy", "process automation", "organizational change management"]
 related_topics: []
 backlinked_by: []
+
 ---
 # AI in the Enterprise
 

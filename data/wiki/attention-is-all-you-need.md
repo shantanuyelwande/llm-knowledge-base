@@ -9,9 +9,10 @@ sources:
   - file: attention-is-all-you-need.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:25:44.691086
-tags: []
+tags: ["deep-learning", "neural-networks", "natural-language-processing", "attention-mechanism", "machine-learning"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Transformer Architecture
 

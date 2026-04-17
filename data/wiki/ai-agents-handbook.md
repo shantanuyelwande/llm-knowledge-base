@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _ai_agents_handbook_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:28:03.598471
-tags: []
+tags: ["AI Agents", "Enterprise Automation", "Business Workflows", "Google Cloud", "AI Implementation"]
 related_topics: []
 backlinked_by: []
+
 ---
 # AI Agents Handbook
 

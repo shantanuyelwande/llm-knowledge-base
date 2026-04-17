@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _60+ AI Agents_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:26:07.780278
-tags: []
+tags: ["AI Agents", "Business Automation", "Workflow Automation", "Enterprise Tools", "Sales Automation"]
 related_topics: []
 backlinked_by: []
+
 ---
 # AI Agents for Business Automation
 

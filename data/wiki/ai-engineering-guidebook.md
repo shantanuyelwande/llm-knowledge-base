@@ -9,9 +9,10 @@ sources:
   - file: AI Engineering Guidebook.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:30:36.583990
-tags: []
+tags: ["AI Engineering", "Large Language Models", "Production Deployment", "System Design", "AI Operations"]
 related_topics: []
 backlinked_by: []
+
 ---
 # AI Engineering Guidebook
 

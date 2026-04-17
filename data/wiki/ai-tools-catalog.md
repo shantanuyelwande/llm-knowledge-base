@@ -9,9 +9,10 @@ sources:
   - file: ai-tools-catalog.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-16T16:56:24.075556
-tags: []
+tags: ["AI Tools", "Machine Learning", "Developer Resources", "Catalog", "Framework Reference"]
 related_topics: []
 backlinked_by: []
+
 ---
 # AI Tools Catalog
 

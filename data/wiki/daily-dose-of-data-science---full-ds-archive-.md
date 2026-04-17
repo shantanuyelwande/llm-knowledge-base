@@ -9,9 +9,10 @@ sources:
   - file: Daily Dose of Data Science - Full DS Archive .pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:24:20.611522
-tags: []
+tags: ["machine-learning", "data-science", "educational-resource", "best-practices", "technical-reference"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Daily Dose of Data Science - Full Archive
 

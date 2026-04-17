@@ -9,9 +9,10 @@ sources:
   - file: Real-world gen AI use cases from the world_s leading organizations _ Google Cloud Blog.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T21:12:04.870532
-tags: []
+tags: ["Generative AI", "Enterprise AI", "AI Use Cases", "Industry Applications", "AI Adoption"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Real-World Generative AI Use Cases from Industry Leaders
 

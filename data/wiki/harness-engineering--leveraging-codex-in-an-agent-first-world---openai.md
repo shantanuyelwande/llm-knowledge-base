@@ -9,9 +9,10 @@ sources:
   - file: Harness engineering_ leveraging Codex in an agent-first world _ OpenAI.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T21:13:15.329916
-tags: []
+tags: ["AI-Assisted Development", "Code Generation", "Software Engineering", "AI Agents", "Development Methodology"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Harness Engineering: Leveraging Codex in an Agent-First World
 

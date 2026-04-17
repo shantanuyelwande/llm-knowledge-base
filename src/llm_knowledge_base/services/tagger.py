@@ -131,25 +131,35 @@ Do not include explanations, just the JSON array."""
 
     def _add_tags_to_frontmatter(self, file_path: Path, content: str, tags: List[str]):
         """Add tags to article's frontmatter"""
+        tags_str = ', '.join(f'"{t}"' for t in tags)
+        tags_line = f"tags: [{tags_str}]"
+
         if content.startswith("---"):
-            # Has frontmatter, insert tags before closing ---
             end = content.find("\n---\n", 4)
             if end > 0:
                 frontmatter = content[4:end]
                 body = content[end + 5:]
 
-                # Add tags to frontmatter
-                tags_str = ', '.join(f'"{t}"' for t in tags)
-                tags_line = f"tags: [{tags_str}]\n"
+                # Replace existing tags line or add new one
+                lines = frontmatter.split("\n")
+                new_lines = []
+                tags_found = False
 
-                new_frontmatter = frontmatter + "\n" + tags_line
+                for line in lines:
+                    if line.startswith("tags:"):
+                        new_lines.append(tags_line)
+                        tags_found = True
+                    else:
+                        new_lines.append(line)
+
+                if not tags_found:
+                    new_lines.append(tags_line)
+
+                new_frontmatter = "\n".join(new_lines)
                 new_content = f"---\n{new_frontmatter}\n---\n{body}"
-
                 file_path.write_text(new_content, encoding="utf-8")
                 return
 
         # No frontmatter, create one
-        tags_str = ', '.join(f'"{t}"' for t in tags)
-        tags_line = f"tags: [{tags_str}]\n"
-        new_content = f"---\n{tags_line}---\n\n{content}"
+        new_content = f"---\n{tags_line}\n---\n\n{content}"
         file_path.write_text(new_content, encoding="utf-8")

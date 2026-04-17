@@ -9,9 +9,10 @@ sources:
   - file: AI AGENTS FOR EVERYONE.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:28:49.987458
-tags: []
+tags: ["AI", "Autonomous Systems", "Automation", "Machine Learning", "Intelligent Agents"]
 related_topics: []
 backlinked_by: []
+
 ---
 # AI Agents
 

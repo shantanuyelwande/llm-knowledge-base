@@ -9,9 +9,10 @@ sources:
   - file: gemini-for-google-workspace-prompting-guide-101.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T21:13:59.569577
-tags: []
+tags: ["Gemini", "Google Workspace", "Prompt Engineering", "AI Assistant", "User Guide"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Gemini for Google Workspace Prompting Guide
 

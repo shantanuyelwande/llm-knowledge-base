@@ -9,9 +9,10 @@ sources:
   - file: Goolge-whitepaper_Prompt Engineering_v4.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:23:44.311588
-tags: []
+tags: ["Large Language Models", "Generative AI", "Natural Language Processing", "AI Techniques", "Model Optimization"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Prompt Engineering
 

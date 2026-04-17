@@ -9,9 +9,10 @@ sources:
   - file: ml-fundamentals.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:18:48.026589
-tags: []
+tags: ["machine-learning", "artificial-intelligence", "supervised-learning", "unsupervised-learning", "reinforcement-learning"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Machine Learning Fundamentals
 

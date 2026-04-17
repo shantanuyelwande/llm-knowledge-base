@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _200+ Ready To Deploy n8n AI Agents_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:20:55.306819
-tags: []
+tags: ["n8n", "AI agents", "workflow automation", "pre-built templates", "business automation"]
 related_topics: []
 backlinked_by: []
+
 ---
 # n8n AI Agents: 200+ Ready-to-Deploy Workflows
 

@@ -9,9 +9,10 @@ sources:
   - file: The-Complete-Guide-to-Building-Skill-for-Claude_copy.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:21:46.442023
-tags: []
+tags: ["Claude API", "Customization", "Workflows", "Agent Skills", "Best Practices"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Agent Skills for Claude
 

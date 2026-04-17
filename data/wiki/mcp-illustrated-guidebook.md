@@ -9,9 +9,10 @@ sources:
   - file: MCP illustrated guidebook.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:19:11.789278
-tags: []
+tags: ["AI Integration", "Protocol Standards", "Developer Guide", "Implementation Tutorial", "API Framework"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Model Context Protocol (MCP) Illustrated Guidebook
 

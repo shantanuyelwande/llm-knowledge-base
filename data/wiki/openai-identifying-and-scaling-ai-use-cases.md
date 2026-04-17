@@ -9,9 +9,10 @@ sources:
   - file: OpenAI identifying-and-scaling-ai-use-cases.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:22:56.893587
-tags: []
+tags: ["AI Adoption", "Use Case Identification", "Enterprise Implementation", "AI Strategy", "Digital Transformation"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Identifying and Scaling AI Use Cases
 

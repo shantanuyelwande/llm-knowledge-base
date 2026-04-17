@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _15 AI Agents with n8n_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:17:01.261051
-tags: []
+tags: ["AI Agents", "n8n", "Large Language Models", "Automation", "Workflow"]
 related_topics: []
 backlinked_by: []
+
 ---
 # AI Agents with n8n: A Comprehensive Guide
 

@@ -9,9 +9,10 @@ sources:
   - file: Agentic_Ai_Problem_Set_Release_12.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T21:13:34.010141
-tags: []
+tags: ["Agentic AI", "Education", "Problem-Based Learning", "AI Concepts", "Curriculum"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Agentic AI Problem Set Release 12
 

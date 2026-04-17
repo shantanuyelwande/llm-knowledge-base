@@ -9,9 +9,10 @@ sources:
   - file: I am sharing _How we built our multi-agent research system _ Anthropic_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
     added_at: 2026-04-05T20:19:37.649601
-tags: []
+tags: ["multi-agent systems", "AI architecture", "Claude", "research automation", "orchestrator-worker pattern"]
 related_topics: []
 backlinked_by: []
+
 ---
 # Multi-Agent Research System at Anthropic
 
