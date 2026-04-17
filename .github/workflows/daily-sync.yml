@@ -63,10 +63,10 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git add data/wiki/ data/raw/ || true
+          git add data/wiki/ || true
 
           if ! git diff --quiet --cached; then
-            git commit -m "chore: daily wiki sync - compile raw files, update cross-references, and clean up raw folder"
+            git commit -m "chore: daily wiki sync - compile raw files and update cross-references"
             git push origin HEAD:${{ github.ref }}
             echo "✅ Successfully committed and pushed wiki changes"
           else
