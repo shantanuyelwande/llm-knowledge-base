@@ -1,0 +1,74 @@
+name: Ingest PDF Content
+
+on:
+  repository_dispatch:
+    types: [ingest-pdf]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  store-pdf:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Debug - Check payload
+        run: |
+          echo "📋 Received payload:"
+          echo "  Filename: ${{ github.event.client_payload.filename }}"
+          echo "  Description: ${{ github.event.client_payload.description }}"
+          echo "  Size: ${{ github.event.client_payload.size }} bytes"
+          echo "  Triggered at: ${{ github.event.client_payload.triggered_at }}"
+
+      - name: Decode and store PDF
+        env:
+          FILENAME: ${{ github.event.client_payload.filename }}
+          FILE_CONTENT: ${{ github.event.client_payload.file_content }}
+          TIMESTAMP: ${{ github.event.client_payload.triggered_at }}
+        run: |
+          mkdir -p data/raw
+
+          # Sanitize filename
+          CLEAN_FILENAME=$(echo "$FILENAME" | sed 's/[^a-zA-Z0-9._-]/-/g')
+
+          # Generate timestamp if not provided
+          if [ -z "$TIMESTAMP" ]; then
+            TIMESTAMP=$(date +%s)
+          fi
+
+          # Decode base64 and write PDF
+          echo "$FILE_CONTENT" | base64 -d > "data/raw/${CLEAN_FILENAME}"
+
+          echo "✓ PDF stored: data/raw/${CLEAN_FILENAME}"
+          ls -lh "data/raw/${CLEAN_FILENAME}"
+
+      - name: Configure git
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+
+      - name: Commit and push
+        run: |
+          git add data/raw/ || true
+
+          if ! git diff --quiet --cached; then
+            git commit -m "chore: ingest PDF - ${{ github.event.client_payload.filename }}"
+            git push origin HEAD:${{ github.ref }}
+            echo "✅ Successfully committed and pushed PDF"
+          else
+            echo "ℹ️  No changes to commit"
+          fi
+
+      - name: Debug if failed
+        if: failure()
+        run: |
+          echo "Error details:"
+          ls -la data/raw/ || echo "data/raw/ directory not found"
+          git status
+          git log --oneline -5

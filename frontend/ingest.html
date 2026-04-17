@@ -34,16 +34,85 @@
             text-align: center;
             margin-bottom: 40px;
         }
-        
+
         .header h1 {
             color: #333;
             font-size: 28px;
             margin-bottom: 8px;
         }
-        
+
         .header p {
             color: #666;
             font-size: 14px;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+        }
+
+        #pdfInput {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 6px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #pdfInput:hover ~ .file-input-label {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        #pdfInput:focus ~ .file-input-label {
+            border-color: #667eea;
         }
         
         .form-group {
@@ -203,15 +272,21 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📥 Ingest URL</h1>
-            <p>Add web content to your knowledge base</p>
+            <h1>📥 Ingest Content</h1>
+            <p>Add web content or PDFs to your knowledge base</p>
         </div>
-        
-        <div class="info-box">
-            <strong>How it works:</strong> Paste a URL below and we'll scrape the content, convert it to Markdown, and commit it to your repository.
+
+        <div class="tab-buttons">
+            <button type="button" class="tab-btn active" data-tab="url-tab">🌐 URL</button>
+            <button type="button" class="tab-btn" data-tab="pdf-tab">📄 PDF</button>
         </div>
-        
-        <form id="ingestForm">
+
+        <div id="url-tab" class="tab-content active">
+            <div class="info-box">
+                <strong>How it works:</strong> Paste a URL below and we'll scrape the content, convert it to Markdown, and commit it to your repository.
+            </div>
+
+            <form id="ingestForm">
             <div class="form-group">
                 <label for="urlInput">URL to Scrape *</label>
                 <input 
@@ -229,61 +304,151 @@
                     placeholder="Add notes about this content..."
                 ></textarea>
             </div>
-            
+
             <div class="button-group">
                 <button type="submit" class="button-submit">
                     <span id="buttonText">Ingest URL</span>
                 </button>
                 <button type="reset" class="button-secondary">Clear</button>
             </div>
-            
+
             <div id="status" class="status">
                 <span id="statusMessage"></span>
             </div>
-        </form>
+            </form>
+        </div>
+
+        <div id="pdf-tab" class="tab-content">
+            <div class="info-box">
+                <strong>How it works:</strong> Upload a PDF and we'll store it in your raw folder, ready for compilation.
+            </div>
+
+            <form id="pdfForm">
+                <div class="form-group">
+                    <label for="pdfInput">PDF File *</label>
+                    <div class="file-input-wrapper">
+                        <input
+                            type="file"
+                            id="pdfInput"
+                            accept=".pdf"
+                            required
+                        >
+                        <div class="file-input-label">
+                            <span id="fileName">Choose a PDF file</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="descriptionInputPdf">Description (optional)</label>
+                    <textarea
+                        id="descriptionInputPdf"
+                        placeholder="Add notes about this PDF..."
+                    ></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="button-submit">
+                        <span id="pdfButtonText">Upload PDF</span>
+                    </button>
+                    <button type="reset" class="button-secondary">Clear</button>
+                </div>
+
+                <div id="pdfStatus" class="status">
+                    <span id="pdfStatusMessage"></span>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
         const GITHUB_OWNER = 'shantanuyelwande'; // CHANGE THIS to your GitHub username
         const GITHUB_REPO = 'llm-knowledge-base'; // CHANGE THIS to your repo name
         const GITHUB_TOKEN = localStorage.getItem('github_token');
-        
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // URL Ingest Form
         const form = document.getElementById('ingestForm');
         const urlInput = document.getElementById('urlInput');
         const statusDiv = document.getElementById('status');
         const statusMessage = document.getElementById('statusMessage');
         const buttonText = document.getElementById('buttonText');
-        
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const url = urlInput.value.trim();
             const description = document.getElementById('descriptionInput').value.trim();
-            
+
             if (!url) {
                 showStatus('Please enter a valid URL', 'error');
                 return;
             }
-            
+
             if (!GITHUB_TOKEN) {
                 showStatus('❌ GitHub token not set. Update the form to set your token first.', 'error');
                 return;
             }
-            
-            // Validate URL
+
             try {
                 new URL(url);
             } catch {
                 showStatus('❌ Invalid URL format', 'error');
                 return;
             }
-            
-            await triggerWorkflow(url, description);
+
+            await triggerUrlWorkflow(url, description);
         });
-        
-        async function triggerWorkflow(url, description) {
+
+        // PDF Ingest Form
+        const pdfForm = document.getElementById('pdfForm');
+        const pdfInput = document.getElementById('pdfInput');
+        const pdfStatusDiv = document.getElementById('pdfStatus');
+        const pdfStatusMessage = document.getElementById('pdfStatusMessage');
+        const fileNameSpan = document.getElementById('fileName');
+
+        pdfInput.addEventListener('change', () => {
+            if (pdfInput.files.length > 0) {
+                fileNameSpan.textContent = pdfInput.files[0].name;
+            }
+        });
+
+        pdfForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!pdfInput.files.length) {
+                showPdfStatus('Please select a PDF file', 'error');
+                return;
+            }
+
+            if (!GITHUB_TOKEN) {
+                showPdfStatus('❌ GitHub token not set. Update the form to set your token first.', 'error');
+                return;
+            }
+
+            const file = pdfInput.files[0];
+            if (file.type !== 'application/pdf') {
+                showPdfStatus('❌ File must be a PDF', 'error');
+                return;
+            }
+
+            const description = document.getElementById('descriptionInputPdf').value.trim();
+            await uploadPdf(file, description);
+        });
+
+        async function triggerUrlWorkflow(url, description) {
             showStatus('⏳ Triggering workflow...', 'loading');
-            
+
             try {
                 const response = await fetch(
                     `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`,
@@ -304,7 +469,7 @@
                         })
                     }
                 );
-                
+
                 if (response.ok) {
                     showStatus(
                         '✅ Workflow triggered! Check your <a href="https://github.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/actions" target="_blank">GitHub Actions</a> for progress.',
@@ -326,13 +491,82 @@
                 showStatus('❌ Error: ' + error.message, 'error');
             }
         }
-        
+
+        async function uploadPdf(file, description) {
+            showPdfStatus('⏳ Reading PDF file...', 'loading');
+
+            try {
+                const fileContent = await readFileAsBase64(file);
+
+                showPdfStatus('⏳ Uploading to GitHub...', 'loading');
+
+                const response = await fetch(
+                    `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Accept': 'application/vnd.github.v3+json',
+                            'Authorization': `token ${GITHUB_TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            event_type: 'ingest-pdf',
+                            client_payload: {
+                                filename: file.name,
+                                description: description,
+                                size: file.size,
+                                file_content: fileContent,
+                                triggered_at: new Date().toISOString()
+                            }
+                        })
+                    }
+                );
+
+                if (response.ok) {
+                    showPdfStatus(
+                        '✅ PDF uploaded! It will be compiled during the next daily sync. Check your <a href="https://github.com/' + GITHUB_OWNER + '/' + GITHUB_REPO + '/actions" target="_blank">GitHub Actions</a> for progress.',
+                        'success'
+                    );
+                    pdfForm.reset();
+                    fileNameSpan.textContent = 'Choose a PDF file';
+                } else if (response.status === 401) {
+                    showPdfStatus('❌ Invalid or expired token. Please update it.', 'error');
+                    localStorage.removeItem('github_token');
+                } else if (response.status === 403) {
+                    showPdfStatus('❌ Permission denied. Check your token permissions.', 'error');
+                } else if (response.status === 404) {
+                    showPdfStatus('❌ Repository not found. Verify owner and repo name.', 'error');
+                } else {
+                    const error = await response.text();
+                    showPdfStatus('❌ Error: ' + error, 'error');
+                }
+            } catch (error) {
+                showPdfStatus('❌ Error: ' + error.message, 'error');
+            }
+        }
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
         function showStatus(message, type) {
             statusMessage.innerHTML = message;
             statusDiv.className = `status show ${type}`;
         }
-        
-        // Initialize: Check if token is set, if not show prompt
+
+        function showPdfStatus(message, type) {
+            pdfStatusMessage.innerHTML = message;
+            pdfStatusDiv.className = `status show ${type}`;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             if (!GITHUB_TOKEN) {
                 const token = prompt(
@@ -340,7 +574,7 @@
                     'Paste your token (see instructions in README).\n\n' +
                     'Token will be stored locally in your browser only.'
                 );
-                
+
                 if (token) {
                     localStorage.setItem('github_token', token.trim());
                     location.reload();

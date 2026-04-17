@@ -47,6 +47,15 @@ jobs:
         run: |
           python3 cli/main.py backlinks
 
+      - name: Clean up raw folder (compiled content)
+        run: |
+          echo "🧹 Cleaning up compiled raw files..."
+          if [ -d "data/raw" ]; then
+            # Keep .gitkeep but remove everything else
+            find data/raw -type f ! -name '.gitkeep' -delete
+            echo "✓ Cleaned up data/raw/ directory"
+          fi
+
       - name: Configure git
         run: |
           git config --local user.email "action@github.com"
