@@ -198,6 +198,27 @@ class ExportService:
             pass
         return []
 
+    def _extract_article_summary(self, content: str) -> str:
+        """Extract clean article summary (first non-heading paragraph)"""
+        try:
+            if content.startswith("---"):
+                end = content.find("\n---\n", 4)
+                if end > 0:
+                    body = content[end + 5:]
+                else:
+                    body = content
+            else:
+                body = content
+
+            for line in body.split("\n"):
+                line = line.strip()
+                if line and not line.startswith("#") and not line.startswith("["):
+                    clean = line.replace("**", "").replace("*", "").replace("[[", "").replace("]]", "")
+                    return clean[:150] + ("..." if len(clean) > 150 else "")
+        except:
+            pass
+        return "Knowledge base article"
+
     def export_html(self, articles: List[Dict[str, Any]] = None) -> Path:
         """Export as interactive accordion HTML with categories"""
         if articles is None:
@@ -205,40 +226,45 @@ class ExportService:
 
         output_file = self.output_dir / "knowledge.html"
         try:
-            # Group articles by tags
+            # Extract clean article summaries
+            for article in articles:
+                article['summary'] = self._extract_article_summary(article['content'])
+
+            # Group articles by primary tag only (to condense categories)
             articles_by_tag = {}
             uncategorized = []
 
             for article in articles:
                 tags = self._extract_tags_from_content(article['content'])
                 if tags:
-                    for tag in tags:
-                        if tag not in articles_by_tag:
-                            articles_by_tag[tag] = []
-                        articles_by_tag[tag].append(article)
+                    primary_tag = tags[0]
+                    if primary_tag not in articles_by_tag:
+                        articles_by_tag[primary_tag] = []
+                    articles_by_tag[primary_tag].append(article)
                 else:
                     uncategorized.append(article)
 
             # Build accordion HTML sections
             accordion_html = ""
             for tag in sorted(articles_by_tag.keys()):
+                article_count = len(articles_by_tag[tag])
                 accordion_html += f'<div class="accordion-item">\n'
-                accordion_html += f'  <button class="accordion-header" onclick="toggleAccordion(this)"><span>📚 {tag.title()}</span><span class="toggle-icon">▼</span></button>\n'
+                accordion_html += f'  <button class="accordion-header" onclick="toggleAccordion(this)"><span>📚 {tag}</span><span class="category-count">{article_count}</span><span class="toggle-icon">▼</span></button>\n'
                 accordion_html += f'  <div class="accordion-content">\n'
 
                 for article in sorted(articles_by_tag[tag], key=lambda x: x['title']):
-                    accordion_html += f'    <div class="article-preview"><h4>{article["title"]}</h4>'
-                    accordion_html += f'<p class="word-count">📄 {article["word_count"]} words</p>'
-                    accordion_html += f'<details><summary>Read more...</summary><div class="article-preview-content">{article["content"][:300]}...</div></details></div>\n'
+                    accordion_html += f'    <div class="article-card"><h4>{article["title"]}</h4>'
+                    accordion_html += f'<p class="summary">{article["summary"]}</p>'
+                    accordion_html += f'<p class="meta">📄 {article["word_count"]} words</p></div>\n'
 
                 accordion_html += f'  </div>\n</div>\n'
 
-            # Add uncategorized
+            # Add uncategorized if any
             if uncategorized:
-                accordion_html += f'<div class="accordion-item"><button class="accordion-header" onclick="toggleAccordion(this)"><span>📋 Uncategorized</span><span class="toggle-icon">▼</span></button>'
+                accordion_html += f'<div class="accordion-item"><button class="accordion-header" onclick="toggleAccordion(this)"><span>📋 Uncategorized</span><span class="category-count">{len(uncategorized)}</span><span class="toggle-icon">▼</span></button>'
                 accordion_html += f'<div class="accordion-content">\n'
                 for article in sorted(uncategorized, key=lambda x: x['title']):
-                    accordion_html += f'<div class="article-preview"><h4>{article["title"]}</h4><p class="word-count">📄 {article["word_count"]} words</p></div>\n'
+                    accordion_html += f'<div class="article-card"><h4>{article["title"]}</h4><p class="meta">📄 {article["word_count"]} words</p></div>\n'
                 accordion_html += f'</div></div>\n'
 
             html_content = f"""<!DOCTYPE html>
@@ -249,28 +275,30 @@ class ExportService:
     <title>Knowledge Base</title>
     <style>
         * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }}
-        .container {{ max-width: 900px; margin: 0 auto; }}
-        .header {{ background: white; border-radius: 10px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }}
-        .header h1 {{ font-size: 2.5em; margin-bottom: 10px; color: #667eea; }}
-        .header p {{ color: #666; font-size: 1.1em; }}
-        .stats {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }}
-        .stat {{ background: #f5f5f5; padding: 15px; border-radius: 5px; text-align: center; }}
-        .stat-number {{ font-size: 1.8em; font-weight: bold; color: #667eea; }}
-        .stat-label {{ font-size: 0.9em; color: #666; margin-top: 5px; }}
-        .accordion-item {{ background: white; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow: hidden; }}
-        .accordion-header {{ width: 100%; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; cursor: pointer; font-size: 1.1em; font-weight: 600; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s ease; }}
-        .accordion-header:hover {{ transform: translateX(5px); }}
-        .toggle-icon {{ transition: transform 0.3s ease; }}
+        body {{ font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif; line-height: 1.6; color: #2c3e50; background: #f5f7fa; min-height: 100vh; padding: 20px; }}
+        .container {{ max-width: 1000px; margin: 0 auto; }}
+        .header {{ background: white; border-radius: 12px; padding: 40px; margin-bottom: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; }}
+        .header h1 {{ font-size: 2.8em; margin-bottom: 12px; color: #667eea; font-weight: 700; }}
+        .header p {{ color: #7f8c8d; font-size: 1.1em; margin-bottom: 30px; }}
+        .stats {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; }}
+        .stat {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 24px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2); }}
+        .stat-number {{ font-size: 2.2em; font-weight: 700; margin-bottom: 8px; }}
+        .stat-label {{ font-size: 0.95em; opacity: 0.9; }}
+        .accordion-item {{ background: white; border-radius: 10px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); overflow: hidden; transition: box-shadow 0.3s ease; }}
+        .accordion-item:hover {{ box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
+        .accordion-header {{ width: 100%; padding: 18px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; cursor: pointer; font-size: 1.05em; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: all 0.3s ease; }}
+        .accordion-header:hover {{ padding-left: 28px; }}
+        .category-count {{ background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 12px; font-size: 0.85em; font-weight: 500; }}
+        .toggle-icon {{ font-size: 0.8em; transition: transform 0.3s ease; }}
         .accordion-item.active .toggle-icon {{ transform: rotate(180deg); }}
         .accordion-content {{ max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }}
-        .accordion-item.active .accordion-content {{ max-height: 5000px; padding: 20px; }}
-        .article-preview {{ background: #f9f9f9; padding: 15px; margin-bottom: 15px; border-left: 4px solid #667eea; border-radius: 4px; }}
-        .article-preview h4 {{ color: #667eea; margin-bottom: 8px; }}
-        .word-count {{ font-size: 0.9em; color: #999; }}
-        details summary {{ cursor: pointer; color: #667eea; font-weight: 500; }}
-        .article-preview-content {{ background: white; padding: 10px; margin-top: 10px; border-radius: 4px; font-size: 0.9em; }}
-        .footer {{ text-align: center; color: white; margin-top: 40px; padding: 20px; font-size: 0.9em; }}
+        .accordion-item.active .accordion-content {{ max-height: 8000px; padding: 24px; }}
+        .article-card {{ background: #f8fafb; padding: 18px; margin-bottom: 14px; border-radius: 8px; border-left: 3px solid #667eea; transition: all 0.2s ease; }}
+        .article-card:hover {{ background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transform: translateX(4px); }}
+        .article-card h4 {{ color: #2c3e50; margin-bottom: 8px; font-size: 1.02em; font-weight: 600; }}
+        .summary {{ color: #555; font-size: 0.95em; line-height: 1.5; margin-bottom: 8px; }}
+        .meta {{ color: #999; font-size: 0.85em; }}
+        .footer {{ text-align: center; color: #7f8c8d; margin-top: 50px; padding: 20px; font-size: 0.9em; }}
     </style>
 </head>
 <body>
