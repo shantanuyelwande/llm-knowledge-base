@@ -27,9 +27,15 @@ jobs:
 
     - name: Build Static Content
       run: |
-        # Add your build command here. e.g., python build.py
+        python cli/main.py export --formats all
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: 'data/output'
 
     - name: Deploy to GitHub Pages
+      id: deployment
       uses: actions/deploy-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}

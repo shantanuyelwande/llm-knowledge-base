@@ -18,6 +18,7 @@ from app.services.metadata_tracker import MetadataTracker
 from app.services.duplicate_detector import DuplicateDetector
 from app.services.wiki_merger import WikiMerger
 from app.services.embeddings import EmbeddingsService
+from app.services.export import ExportService
 
 
 console = Console()
@@ -365,6 +366,41 @@ def merge(
         else:
             console.print("[red]✗ Merge failed[/red]")
             raise typer.Exit(1)
+    except Exception as e:
+        console.print(f"[red]✗ Error: {e}[/red]")
+        raise typer.Exit(1)
+
+
+@app.command()
+def export(
+    formats: str = typer.Option("html", help="Export formats: html, jsonl, sqlite, metadata, or 'all'"),
+):
+    """Export knowledge base to static files"""
+    try:
+        export_service = ExportService(settings.wiki_path, settings.output_path)
+
+        if formats.lower() == "all":
+            console.print("[cyan]Exporting all formats...[/cyan]")
+            results = export_service.export_all()
+            for fmt, path in results.items():
+                console.print(f"[green]✓ {fmt.upper()}: {path}[/green]")
+        else:
+            format_list = [f.strip() for f in formats.lower().split(",")]
+            for fmt in format_list:
+                if fmt == "html":
+                    path = export_service.export_html()
+                    console.print(f"[green]✓ HTML: {path}[/green]")
+                elif fmt == "jsonl":
+                    path = export_service.export_jsonl()
+                    console.print(f"[green]✓ JSONL: {path}[/green]")
+                elif fmt == "sqlite":
+                    path = export_service.export_sqlite()
+                    console.print(f"[green]✓ SQLite: {path}[/green]")
+                elif fmt == "metadata":
+                    path = export_service.export_metadata()
+                    console.print(f"[green]✓ Metadata: {path}[/green]")
+                else:
+                    console.print(f"[yellow]⚠ Unknown format: {fmt}[/yellow]")
     except Exception as e:
         console.print(f"[red]✗ Error: {e}[/red]")
         raise typer.Exit(1)
