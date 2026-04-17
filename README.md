@@ -8,6 +8,7 @@ A **CLI-first** project that implements [Karpathy's LLM Wiki Pattern](https://gi
 
 - **Data Ingestion**: Add raw documents (articles, PDFs, papers, etc.) to `data/raw/`
 - **LLM-Powered Compilation**: Automatically convert raw documents into structured wiki articles using Claude AI
+- **Auto-Tagging**: Claude analyzes each article to suggest 3-5 relevant tags for organization
 - **Wiki Linking**: Automatic `[[topic]]` backlinks and bidirectional article connections
 - **Forward Links**: Automatically write "Referenced by" sections into linked articles
 - **Smart Traversal**: During Q&A, follow `[[links]]` to enrich context with related articles
@@ -17,6 +18,7 @@ A **CLI-first** project that implements [Karpathy's LLM Wiki Pattern](https://gi
 - **Duplicate Detection**: Find and merge duplicate articles
 - **Update Tracking**: Detect when source files change; track versions and compilation history
 - **Multi-Format Exports**: Export knowledge base as JSONL, SQLite, HTML, JSON-LD
+- **Interactive HTML Export**: Generate modern accordion-style HTML with tags, summaries, and responsive design
 - **Static HTML Output**: Generate shareable, standalone HTML for GitHub Pages or static hosting
 - **CLI-Only**: Command-line tools (no web UI or backend API)
 
@@ -104,6 +106,16 @@ python cli/main.py query "Explain backpropagation" --follow-links false
 
 # Summarize a topic
 python cli/main.py summarize "neural networks"
+```
+
+#### **Tagging & Organization**
+
+```bash
+# Auto-generate tags for all articles using Claude analysis
+python cli/main.py tag
+
+# Result: Each article gets 3-5 relevant tags in its frontmatter
+# Suggests running 'python cli/main.py index' after tagging
 ```
 
 #### **Maintenance & Linting**
@@ -226,6 +238,7 @@ Structured Wiki (data/wiki/) + YAML Frontmatter
 |-----------|---------|-----------|
 | **LLM Client** | Interface with Claude API | `src/llm_knowledge_base/core/llm.py` |
 | **Wiki Compiler** | Raw → Wiki conversion + link generation | `src/llm_knowledge_base/services/wiki_compiler.py` |
+| **Wiki Tagger** | Auto-generate tags for articles using Claude | `src/llm_knowledge_base/services/tagger.py` |
 | **Search Engine** | Keyword + connection strength + semantic ranking | `src/llm_knowledge_base/core/search.py` |
 | **Q&A System** | Context retrieval + link traversal + LLM response | `src/llm_knowledge_base/services/qa_system.py` |
 | **Export Service** | Multi-format output (JSONL, SQLite, HTML, JSON-LD) | `src/llm_knowledge_base/services/export.py` |
@@ -276,7 +289,7 @@ python cli/main.py export --formats html
 # → Generate knowledge.html for GitHub Pages
 ```
 
-## 📚 Article Frontmatter
+## 📚 Article Frontmatter & Tagging
 
 Each compiled article includes YAML metadata:
 
@@ -287,13 +300,28 @@ source_file: data/raw/attention-is-all-you-need.pdf
 source_hash: abc123def456...
 compiled_at: 2026-04-16T21:30:00
 version: 3
-tags: [neural-networks, architecture]
+tags: ["Neural Networks", "Architecture", "Deep Learning", "Attention Mechanism", "Transformer"]
 related_topics: [Attention, Self-Attention, Multi-Head Attention]
 backlinked_by: [bert.md, gpt.md, transformer-xl.md]
 ---
 ```
 
+### Auto-Tagging
+
+After compiling articles, run the auto-tagging command:
+
+```bash
+python cli/main.py tag
+```
+
+Claude analyzes each article and suggests 3-5 relevant tags. Tags are:
+- Automatically extracted from article content
+- Used to organize the HTML export into collapsible accordion sections
+- Displayed with article counts in the knowledge base interface
+- Condensed to primary tags only (no duplicate categories)
+
 **Fields:**
+- `tags` — Auto-generated tags for article organization and discovery
 - `source_hash` — SHA256 of original raw file (detect updates)
 - `version` — Compilation counter (increment on each recompile)
 - `backlinked_by` — Articles that link to this one
@@ -336,10 +364,19 @@ cp ~/Documents/notes.md data/raw/
 # 2. Compile everything
 python cli/main.py compile-all
 
-# 3. Ask synthesis questions
+# 3. Auto-tag articles for organization
+python cli/main.py tag
+
+# 4. Regenerate index with categories
+python cli/main.py index
+
+# 5. Ask synthesis questions
 python cli/main.py query "What are the key findings across all papers?"
 
-# 4. Output saved to data/output/query-*.md (review & share)
+# 6. Export for sharing
+python cli/main.py export --formats html
+
+# 7. Output saved to data/output/ (review & share)
 cat data/output/query-0.md
 ```
 
@@ -428,7 +465,15 @@ python cli/main.py compile-all
 python cli/main.py export --formats html
 
 # Output: data/output/knowledge.html
-# Features: Table of contents, search-friendly, standalone (no JS required)
+# Features:
+#   - Modern accordion interface with collapsible categories
+#   - Organized by auto-generated tags
+#   - Article summaries (first meaningful paragraph)
+#   - Word count for each article
+#   - Responsive design with gradient headers
+#   - Statistics: Total articles, word count, category count
+#   - Smooth hover animations and interactions
+#   - Standalone HTML (no external dependencies)
 ```
 
 ### Deploy to GitHub Pages
@@ -580,7 +625,10 @@ Contributions welcome! This is an open system designed to be extended.
 ## 🚀 Roadmap
 
 ### Currently Implemented ✅
+- Auto-tagging with Claude analysis (3-5 tags per article)
 - Multi-format exports (JSONL, SQLite, HTML, JSON-LD)
+- Modern accordion-style HTML interface with tag organization
+- Article summaries in HTML export
 - Optional semantic search with embeddings
 - Duplicate detection & merging
 - Update tracking & version management
