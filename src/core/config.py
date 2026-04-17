@@ -33,19 +33,19 @@ class Settings(BaseSettings):
     @property
     def raw_data_path(self) -> Path:
         # Resolve relative to project root, not current working directory
-        project_root = Path(__file__).parent.parent.parent.parent
+        project_root = Path(__file__).parent.parent.parent
         return project_root / self.raw_data_dir
-    
+
     @property
     def wiki_path(self) -> Path:
         # Resolve relative to project root, not current working directory
-        project_root = Path(__file__).parent.parent.parent.parent
+        project_root = Path(__file__).parent.parent.parent
         return project_root / self.wiki_dir
-    
+
     @property
     def output_path(self) -> Path:
         # Resolve relative to project root, not current working directory
-        project_root = Path(__file__).parent.parent.parent.parent
+        project_root = Path(__file__).parent.parent.parent
         return project_root / self.output_dir
 
 
