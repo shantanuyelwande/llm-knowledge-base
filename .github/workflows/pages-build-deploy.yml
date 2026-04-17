@@ -36,6 +36,10 @@ jobs:
       run: |
         python cli/main.py export --formats all
 
+    - name: Create index.html
+      run: |
+        cp data/output/knowledge.html data/output/index.html
+
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
