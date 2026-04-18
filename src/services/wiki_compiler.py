@@ -206,6 +206,41 @@ Use proper markdown formatting. Include backlinks using [[topic]] notation for r
         logger.info(f"✓ Generated wiki index: {index_file}")
 
         return count
+
+    def compile_recent(self, hours: int = 24) -> int:
+        """Compile only documents modified in the last N hours"""
+        if not self.raw_dir.exists():
+            logger.warning(f"Raw data directory not found: {self.raw_dir}")
+            return 0
+
+        from time import time
+        cutoff_time = time() - (hours * 3600)
+
+        # Support markdown, text, HTML, and PDF files
+        supported_extensions = [".md", ".txt", ".html"]
+        if PDF_SUPPORT:
+            supported_extensions.append(".pdf")
+
+        count = 0
+        for file_path in self.raw_dir.rglob("*"):
+            if file_path.is_file() and file_path.suffix.lower() in supported_extensions:
+                if file_path.stat().st_mtime >= cutoff_time:
+                    try:
+                        self.compile_document(str(file_path.relative_to(self.raw_dir)))
+                        count += 1
+                    except Exception as e:
+                        logger.error(f"Error compiling {file_path}: {e}")
+
+        # Apply forward links after all compilation
+        self.apply_forward_links()
+
+        # Generate index after compilation
+        index_content = self.generate_index()
+        index_file = self.wiki_dir / "index.md"
+        index_file.write_text(index_content, encoding="utf-8")
+        logger.info(f"✓ Generated wiki index: {index_file}")
+
+        return count
     
     def generate_index(self) -> str:
         """Generate categorized index/table of contents for the wiki"""

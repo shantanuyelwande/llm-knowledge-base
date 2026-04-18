@@ -101,6 +101,23 @@ def compile_all():
 
 
 @app.command()
+def compile_recent(hours: int = typer.Option(24, help="Compile files modified in last N hours")):
+    """Compile only recently modified raw documents"""
+    _, _, search_engine, wiki_compiler, _, _ = get_services()
+    try:
+        console.print(f"[cyan]Compiling documents modified in last {hours} hours...[/cyan]")
+        count = wiki_compiler.compile_recent(hours=hours)
+        search_engine.refresh()
+        # Update backlinks for connection strength
+        backlinks = wiki_compiler.generate_backlinks_index()
+        search_engine.set_backlinks(backlinks)
+        console.print(f"[green]✓ Successfully compiled {count} documents[/green]")
+    except Exception as e:
+        console.print(f"[red]✗ Error: {e}[/red]")
+        raise typer.Exit(1)
+
+
+@app.command()
 def backlinks():
     """Apply forward links (Referenced by) to all wiki articles"""
     _, _, _, wiki_compiler, _, _ = get_services()

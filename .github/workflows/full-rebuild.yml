@@ -1,18 +1,19 @@
-name: Daily Wiki Sync
+name: Full Wiki Rebuild
 
 on:
-  schedule:
-    # Run daily at 2 AM UTC (adjust as needed)
-    - cron: '0 2 * * *'
-  # Allow manual trigger
   workflow_dispatch:
+    inputs:
+      commit_message:
+        description: Custom commit message (optional)
+        required: false
+        default: "chore: full wiki rebuild - recompile all sources and regenerate indexes"
 
 permissions:
   contents: write
   actions: read
 
 jobs:
-  sync-wiki:
+  rebuild:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt 2>/dev/null || pip install typer pydantic pydantic-settings anthropic rich
+          pip install -r requirements.txt 2>/dev/null || pip install typer pydantic pydantic-settings anthropic==0.42.0 rich
 
       - name: Create .env file
         run: |
@@ -39,13 +40,14 @@ jobs:
         run: |
           git pull origin HEAD:${{ github.ref }}
 
-      - name: Compile recently modified documents
+      - name: Compile ALL raw documents (full rebuild)
         run: |
-          python3 cli/main.py compile-recent --hours 24
+          python3 cli/main.py compile-all
 
-      - name: Apply forward links (cross-references)
+      - name: Regenerate indexes and cross-references
         run: |
           python3 cli/main.py backlinks
+          python3 cli/main.py index
 
       - name: Configure git
         run: |
@@ -54,13 +56,11 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          # Commit wiki updates
           git add data/wiki/ || true
-          # Commit any new raw files (but don't delete old ones)
           git add data/raw/ || true
 
           if ! git diff --quiet --cached; then
-            git commit -m "chore: daily wiki sync - compile raw files and update cross-references"
+            git commit -m "${{ github.event.inputs.commit_message }}"
             git push origin HEAD:${{ github.ref }}
             echo "✅ Successfully committed and pushed changes"
           else
@@ -70,8 +70,8 @@ jobs:
       - name: Summary
         if: always()
         run: |
-          echo "📊 Sync Summary"
-          echo "=============="
+          echo "🔨 Full Rebuild Summary"
+          echo "======================"
           echo "Wiki files: $(find data/wiki -name '*.md' -type f | wc -l)"
           echo "Raw files: $(find data/raw -type f ! -name '.gitkeep' | wc -l)"
-          echo "Last updated: $(date)"
+          echo "Completed at: $(date)"
