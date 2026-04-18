@@ -2,202 +2,225 @@
 title: OpenAI ai-in-the-enterprise
 source_file: OpenAI ai-in-the-enterprise.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-05T20:27:38.613889
-raw_file_updated: 2026-04-05T20:27:38.613889
+compiled_at: 2026-04-17T20:22:22.135914
+raw_file_updated: 2026-04-17T20:22:22.135914
 version: 1
 sources:
   - file: OpenAI ai-in-the-enterprise.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-05T20:27:38.613889
-tags: ["artificial intelligence", "enterprise adoption", "business strategy", "process automation", "organizational change management"]
+    added_at: 2026-04-17T20:22:22.135914
+tags: []
 related_topics: []
 backlinked_by: []
-
 ---
 # AI in the Enterprise
 
 ## Overview
 
-**AI in the Enterprise** is a strategic framework developed by [[OpenAI]] for implementing [[artificial intelligence]] solutions within organizational settings. The approach emphasizes iterative deployment, rigorous evaluation, and practical application across business functions. Rather than treating AI as a plug-and-play technology, the framework positions it as a new paradigm requiring experimental mindsets and continuous refinement to maximize business value.
+**AI in the Enterprise** is a comprehensive guide published by [[OpenAI]] that synthesizes lessons from seven frontier companies implementing [[artificial intelligence]] solutions in business contexts. The guide emphasizes that successful AI adoption requires treating AI as a new paradigm rather than traditional software deployment, utilizing an [[iterative development]] approach that prioritizes experimentation, rigorous evaluation, and continuous learning from real-world use cases.
 
 ## Executive Summary
 
-The enterprise AI adoption framework is built on seven core lessons derived from real-world implementations across leading global companies. These lessons address the complete lifecycle of AI integration, from initial evaluation through scaling and automation. The framework demonstrates that successful AI deployment combines technical rigor with organizational change management, focusing on measurable improvements in [[workforce performance]], [[process automation]], and [[customer experience]].
+The document presents seven key lessons for enterprise AI adoption:
 
-**Key Outcomes Across Implementations:**
-- 98% adoption rates among target user groups
-- 20-60% improvements in task accuracy and efficiency
-- $40+ million in projected cost savings per major deployment
-- Significant reductions in process completion times
+1. **Start with evals** - Use systematic evaluation processes to measure model performance
+2. **Embed AI into your products** - Create new customer experiences through AI integration
+3. **Start now and invest early** - Begin immediately to benefit from compounding improvements
+4. **Customize and fine-tune your models** - Tailor AI to specific organizational needs
+5. **Get AI in the hands of experts** - Empower domain specialists to drive implementation
+6. **Unblock your developers** - Automate development workflows to accelerate innovation
+7. **Set bold automation goals** - Aim high when automating routine processes
 
-## The Three Pillars of AI Value Creation
+---
 
-### 1. Workforce Performance Enhancement
-AI helps employees deliver higher-quality outputs in shorter timeframes by automating routine tasks and providing faster access to critical information. This frees skilled workers to focus on complex problem-solving and client relationships.
+## Core Concepts
 
-### 2. Automating Routine Operations
-By eliminating repetitive manual work, organizations can redirect human capital toward high-value activities. This includes data entry, information retrieval, document processing, and basic customer service interactions.
+### The New Paradigm of AI Deployment
 
-### 3. Powering Products
-AI enables organizations to create more relevant and responsive [[customer experiences]] through personalization, intelligent recommendations, and adaptive interfaces.
+AI implementation differs fundamentally from traditional software or [[cloud computing]] deployment. Successful enterprises adopt an experimental mindset and iterative approach that accelerates value realization while building stakeholder buy-in.
+
+#### Three Dimensions of AI Value
+
+Organizations implementing AI effectively see measurable improvements across three fronts:
+
+- **[[Workforce Performance]]** - Enabling employees to deliver higher-quality outputs in shorter timeframes
+- **[[Automation]]** - Freeing people from repetitive tasks to focus on value-added work
+- **[[Product Enhancement]]** - Delivering more relevant and responsive [[customer experience|customer experiences]]
+
+### OpenAI's Organizational Approach
+
+OpenAI structures its work around three specialized teams:
+
+| Team | Function |
+|------|----------|
+| **Research Team** | Advances AI foundations through new models and capabilities |
+| **Applied Team** | Transforms models into products like [[ChatGPT Enterprise]] and the [[OpenAI API]] |
+| **Deployment Team** | Implements products within enterprises to address specific use cases |
+
+This structure enables **iterative deployment** - a process of shipping regular updates, gathering feedback, and continuously improving performance and safety.
+
+---
 
 ## Seven Lessons for Enterprise AI Adoption
 
 ### Lesson 1: Start with Evals
 
-**Definition and Purpose:**
-[[Evaluation]] (evals) is a rigorous, structured process for measuring how [[AI models]] perform against benchmarks in specific use cases. Rather than deploying AI broadly, successful organizations conduct intensive evaluations for every proposed application.
+#### Definition and Purpose
 
-**Case Study: Morgan Stanley**
+An **[[evaluation|eval]]** is a rigorous, structured process for measuring how AI models perform against benchmarks in specific use cases. Evaluations serve dual purposes: validating model quality and providing a continuous feedback mechanism for improvement.
 
-[[Morgan Stanley]], a global financial services leader, implemented a comprehensive eval framework to ensure quality and safety in AI deployment. Their approach included:
+#### Case Study: Morgan Stanley
 
-- **Language Translation Evals**: Measuring accuracy and quality of model-generated translations
-- **Summarization Evals**: Evaluating information condensation using agreed-upon metrics for accuracy, relevance, and coherence
-- **Human Trainer Comparisons**: Benchmarking AI outputs against expert advisor responses
+**Context:** As a global financial services leader, Morgan Stanley needed to ensure AI integration aligned with the personal, sensitive nature of client relationships.
+
+**Implementation:**
+- Conducted intensive evals for every proposed AI application
+- Three initial model evaluations:
+  - **Language Translation** - Measuring accuracy and translation quality
+  - **Summarization** - Evaluating information condensing against agreed metrics
+  - **Human Trainer Comparison** - Benchmarking AI results against expert advisor responses
 
 **Results:**
-- 98% of advisors now use AI daily
+- 98% of advisors now use OpenAI daily
 - Document access increased from 20% to 80%
-- Dramatically reduced search times
-- Advisors spend more time on client relationships
+- Search time dramatically reduced
 - Follow-ups that previously took days now occur within hours
+- Overwhelmingly positive advisor feedback reporting increased client engagement
 
-**Key Insight:** Rigorous evals build confidence in AI systems and create stable, reliable applications resilient to change.
+**Key Insight:** Rigorous evals build organizational confidence in AI systems, enabling production rollout with stakeholder support.
+
+---
 
 ### Lesson 2: Embed AI into Your Products
 
-**Principle:**
-When AI automates tedious work, employees can focus on uniquely human capabilities. Simultaneously, AI's ability to process vast data from multiple sources enables more personalized and relevant [[customer experiences]].
+#### Strategic Approach
 
-**Case Study: Indeed**
+When AI automates tedious work, employees focus on uniquely human capabilities. Because AI processes vast data amounts from multiple sources, it can create experiences that feel more human through greater relevance and personalization.
 
-[[Indeed]], the world's leading job search platform, integrated [[GPT-4o mini]] to enhance job matching through contextual explanations.
+#### Case Study: Indeed
+
+**Context:** The world's #1 job site sought to improve job matching and candidate experience.
 
 **Implementation:**
-- Used AI to generate "why" statements explaining job recommendations
-- Created customized context for the "Invite to Apply" feature
-- Explained how candidates' backgrounds make jobs good fits
+- Used [[GPT-4o mini]] to match job seekers with opportunities in new ways
+- Leveraged [[natural language processing|natural language]] and data analysis to explain *why* specific jobs were recommended
+- Customized context for "Invite to Apply" feature explaining candidate fit
 
-**Performance Metrics:**
+**Results:**
 - 20% increase in job applications started
 - 13% uplift in downstream hiring success
-- 20 million messages sent monthly to job seekers
+- 20+ million messages monthly to job seekers
 - 350 million monthly site visitors
 
-**Efficiency Optimization:**
-OpenAI and Indeed collaborated to fine-tune a smaller model achieving similar results with 60% fewer tokens, improving cost-efficiency without sacrificing quality.
+**Optimization:**
+- Partnered to fine-tune a smaller GPT model
+- Achieved similar results with 60% fewer [[tokens|tokens]]
+
+**Key Insight:** Embedding AI with contextual explanations creates more human-centered experiences at scale.
+
+---
 
 ### Lesson 3: Start Now and Invest Early
 
-**Core Principle:**
-AI is rarely a plug-and-play solution. Use cases grow in sophistication and impact through iteration. The earlier an organization starts, the more it benefits from compounding improvements in knowledge and capability.
+#### The Compounding Effect
 
-**Case Study: Klarna**
+AI rarely provides plug-and-play solutions. Use cases grow in sophistication and impact through iteration. Earlier implementation enables organizations to benefit from compounding improvements across the business.
 
-[[Klarna]], a global payments network and shopping platform, deployed an AI assistant to streamline customer service operations.
+#### Case Study: Klarna
 
-**Rapid Results:**
-- Within months, the assistant handled two-thirds of all service chats
-- Replaced work equivalent to hundreds of agents
-- Reduced average resolution times from 11 minutes to 2 minutes
-- Projected $40 million in profit improvement
-- Maintained customer satisfaction parity with human support
+**Context:** A global payments network and shopping platform sought to streamline customer service.
 
-**Organization-Wide Adoption:**
-- 90% of Klarna employees now use AI in daily work
-- Broad familiarity accelerated internal initiative launches
-- Continuous refinement of customer experience
-- Compounding returns across the business
+**Implementation:**
+- Introduced an AI assistant to handle customer service interactions
+- Continuous testing and refinement over months
+- Organization-wide adoption: 90% of employees use AI in daily work
 
-**Strategic Insight:** Early investment and broad adoption enable organizations to move faster, launch initiatives more efficiently, and continuously refine experiences.
+**Results:**
+- Assistant handles two-thirds of all service chats
+- Equivalent to work of hundreds of agents
+- Average resolution time: 11 minutes → 2 minutes
+- Projected $40 million profit improvement
+- Satisfaction scores maintained at parity with human support
 
-### Lesson 4: Customize and Fine-Tune Your Models
+**Key Insight:** Early investment combined with broad organizational adoption enables benefits to compound across the entire business.
 
-**Definition:**
-[[Fine-tuning]] is the process of customizing [[AI models]] to an organization's specific data and needs. If a base GPT model is a store-bought suit, fine-tuning is the tailored option that fits your organization perfectly.
+---
 
-**Benefits of Fine-Tuning:**
-- **Improved Accuracy**: Training on unique organizational data (product catalogs, FAQs, domain-specific content) delivers more relevant, on-brand results
-- **Domain Expertise**: Fine-tuned models better understand industry terminology, style, and context
-- **Consistent Tone and Style**: Ensures outputs maintain brand voice and formatting standards
-- **Faster Outcomes**: Reduces manual editing and re-checking, allowing teams to focus on high-value work
+### Lesson 4: Customize and Fine-tune Your Models
 
-**Case Study: Lowe's**
+#### What is Fine-tuning?
 
-[[Lowe's]], a Fortune 50 home improvement company, worked with OpenAI to improve e-commerce search accuracy despite incomplete and inconsistent product data from thousands of suppliers.
+If a base GPT model is a "store-bought suit," [[fine-tuning]] is the tailored option. It customizes models to an organization's specific data and needs, improving performance for particular use cases.
 
-**Challenge:**
-- Thousands of suppliers with variable data quality
-- Need to understand how shoppers search across different product categories
-- Dynamic search behavior varying by category
+#### Why Fine-tuning Matters
 
-**Solution:**
-Fine-tuning OpenAI models on Lowe's product data and search patterns
+| Benefit | Description |
+|---------|-------------|
+| **Improved Accuracy** | Training on unique data (product catalogs, FAQs) delivers more relevant, on-brand results |
+| **Domain Expertise** | Models better understand industry terminology, style, and context |
+| **Consistent Tone & Style** | Maintains brand voice in all outputs; ensures proper formatting |
+| **Faster Outcomes** | Reduces manual editing and re-checking, freeing teams for high-value work |
+
+#### Case Study: Lowe's
+
+**Context:** The Fortune 50 home improvement company needed to improve ecommerce search accuracy despite thousands of suppliers with incomplete or inconsistent product data.
+
+**Challenge:** Requires accurate product descriptions, intelligent tagging, and understanding of how shoppers search across different product categories.
+
+**Implementation:**
+- Fine-tuned OpenAI models on Lowe's product data
+- Focused on improving product tagging and error detection
 
 **Results:**
 - 20% improvement in product tagging accuracy
 - 60% improvement in error detection
-- Enhanced search relevance for customers
+- Significant team excitement upon seeing results
 
-**New Capability:**
-OpenAI launched [[Vision Fine-Tuning]] to further improve e-commerce search and address challenges in [[medical imaging]] and [[autonomous driving]].
+**Product Note:** [[Vision Fine-Tuning]] further improves ecommerce search and addresses challenges in medical imaging and autonomous driving.
+
+---
 
 ### Lesson 5: Get AI in the Hands of Experts
 
-**Core Principle:**
-Employees closest to organizational processes and problems are best-positioned to identify AI-driven solutions. Democratizing AI access to domain experts can be more powerful than building generic horizontal solutions.
+#### Core Principle
 
-**Case Study: BBVA**
+Employees closest to processes and problems are best-positioned to identify AI-driven solutions. Empowering domain experts with AI tools is more powerful than building generic horizontal solutions.
 
-[[BBVA]], a global banking leader with 125,000+ employees, distributed [[ChatGPT Enterprise]] globally and empowered teams to discover their own use cases.
+#### Case Study: BBVA
 
-**Implementation Approach:**
-- Worked with Legal, Compliance, and IT Security teams to ensure responsible use
-- Enabled employees to create custom GPTs without requiring technical resources
-- Supported self-service prototyping and application development
+**Context:** A global banking leader with 125,000 employees, each facing unique challenges and opportunities.
 
-**Results: 2,900+ Custom GPTs Created in Five Months**
+**Implementation:**
+- Rolled out [[ChatGPT Enterprise]] globally
+- Worked closely with Legal, Compliance, and IT Security teams
+- Enabled employees to discover their own use cases
+- Introduced [[custom GPTs]] for domain-specific applications
 
-**Credit Risk Team:**
-- Determine creditworthiness faster and more accurately
-- Reduced decision timelines
+**Results:**
+- 2,900+ custom GPTs created in five months
+- Many reduce project and process timelines from weeks to hours
 
-**Legal Team:**
-- Answer 40,000+ questions annually on policies and compliance
-- Improved response consistency
+**Department-Specific Applications:**
 
-**Customer Service Team:**
-- Automate sentiment analysis of NPS surveys
-- Enhanced feedback processing
+| Department | Application |
+|------------|-------------|
+| **Credit Risk** | Faster, more accurate creditworthiness determination |
+| **Legal** | Answers 40,000 annual questions on policies and compliance |
+| **Customer Service** | Automates sentiment analysis of NPS surveys |
+| **Marketing, Risk Management, Operations** | Continuous expansion of use cases |
 
-**Additional Applications:**
-- Marketing: Content generation and campaign optimization
-- Risk Management: Risk assessment and monitoring
-- Operations: Process optimization and workflow automation
+**Product Feature: Deep Research**
 
-**Advanced Capability:**
-[[Deep Research]] enables ChatGPT to work independently, synthesizing hundreds of online sources to create comprehensive, PhD-level reports in minutes—saving an average of 4 hours per complex task.
+ChatGPT can work independently through deep research, synthesizing hundreds of online sources to create comprehensive, PhD-level reports. Internal evaluation showed deep research saves an average of 4 hours per complex task.
+
+**Key Insight:** Democratizing AI access to domain experts accelerates innovation across organizational silos.
+
+---
 
 ### Lesson 6: Unblock Your Developers
 
-**Challenge:**
-Developer resources are the primary bottleneck and growth inhibitor in many organizations. Overwhelmed engineering teams slow innovation and create insurmountable backlogs.
+#### The Developer Bottleneck
 
-**Solution Architecture:**
-Building development platform layers powered by AI to unify and accelerate application development.
+Developer resources represent the primary constraint and growth inhibitor in many organizations. Overwhelmed engineering teams slow innovation and create insurmountable application backlogs.
 
-**Case Study: Mercado Libre**
-
-[[Mercado Libre]], Latin America's largest e-commerce and fintech company, created [[Verdi]], an AI-powered development platform built on [[GPT-4o]] and [[GPT-4o mini]].
-
-**Platform Features:**
-- Integrates language models, Python nodes, and APIs
-- Creates scalable, consistent development platform
-- Uses natural language as central interface
-- Developers build high-quality apps faster without source code access
-- Built-in security, guardrails, and routing logic
-
-**Impact on 17,000 Developers:**
-- Consistent, high-quality application development
-- Accelerated AI app development
+#### Case Study: Mercado

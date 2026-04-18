@@ -2,164 +2,196 @@
 title: OpenAI identifying-and-scaling-ai-use-cases
 source_file: OpenAI identifying-and-scaling-ai-use-cases.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-05T20:22:56.893587
-raw_file_updated: 2026-04-05T20:22:56.893587
+compiled_at: 2026-04-17T20:17:53.827418
+raw_file_updated: 2026-04-17T20:17:53.827418
 version: 1
 sources:
   - file: OpenAI identifying-and-scaling-ai-use-cases.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-05T20:22:56.893587
-tags: ["AI Adoption", "Use Case Identification", "Enterprise Implementation", "AI Strategy", "Digital Transformation"]
+    added_at: 2026-04-17T20:17:53.827418
+tags: []
 related_topics: []
 backlinked_by: []
-
 ---
 # Identifying and Scaling AI Use Cases
 
 ## Summary
 
-A comprehensive guide for organizations seeking to discover and implement high-impact [[artificial intelligence]] applications. Based on analysis of over 600 customer implementations and 4,000 adoption surveys, this framework helps enterprises move beyond experimentation to systematic AI deployment through three core steps: identifying opportunities, teaching teams fundamental use case primitives, and prioritizing implementations using impact/effort analysis.
+This article outlines a practical framework for organizations to discover, prioritize, and implement high-impact [[AI]] use cases. Based on OpenAI's analysis of over 300 successful implementations and 4,000+ adoption surveys, the guide presents a three-step process: identifying opportunities where AI adds value, teaching employees six fundamental use case primitives, and prioritizing implementations using an impact/effort framework.
 
-## Introduction
+## Overview
 
-[[AI adoption]] is accelerating rapidly—39% of U.S. adults have used AI within just two years, compared to only 20% internet adoption in the same timeframe. Organizations that have embraced AI as leaders demonstrate measurable competitive advantages: 1.5x faster revenue growth, 1.6x higher shareholder returns, and 1.4x better return on invested capital compared to less advanced peers.
+In just two years, 39% of U.S. adults have already used [[artificial intelligence]], a faster adoption rate than the [[internet]] achieved in its first two years. According to BCG research, [[AI]] leaders have experienced 1.5x faster revenue growth, 1.6x higher shareholder returns, and 1.4x better return on invested capital compared to less advanced competitors.
 
-However, most organizations struggle with realization of tangible value. According to McKinsey research, while 92% of companies plan to increase AI investment, only 1% believe their investments have reached full maturity. This guide addresses that gap by providing a structured methodology for discovering and scaling AI use cases that deliver clear business value.
+Despite this potential, only 1% of companies believe their AI investments have reached full maturity, indicating a significant gap between investment and realized value. This guide addresses that gap by providing organizations with a structured approach to finding and scaling AI use cases that deliver clear business value.
 
-## Key Principles for Finding AI Use Cases
+## Key Principles
 
-Three foundational principles guide the use case discovery process:
+Three foundational principles guide the identification and scaling of AI use cases:
 
-### 1. Leadership-Led Initiative
-[[AI adoption]] should be championed and encouraged by organizational leadership. Top-down support is a critical hallmark of successful AI deployments.
+### 1. Leadership-Driven Adoption
+
+[[AI]] adoption must be led and encouraged by organizational leadership. Top-down support is essential for successful implementations and widespread adoption.
 
 ### 2. Simplicity Over Complexity
-While complex use cases may seem impressive, they often slow implementation. Empowering employees to find use cases that work best for their specific roles and workflows creates a faster path to success than pursuing elaborate solutions.
 
-### 3. Community-Driven Learning
-[[Hackathons]], use case workshops, and peer-led learning sessions serve as catalysts for adoption across many organizations. Encouraging grassroots exploration accelerates discovery and builds organizational capability.
+Complex use cases, while impressive, often slow down progress. Empowering employees to find use cases that work best for their roles and the organization typically leads to faster success.
+
+### 3. Community-Based Learning
+
+Encouraging adoption through [[hackathons]], use case workshops, and peer-led learning sessions serves as a catalyst for discovery and implementation across the organization.
 
 ## Step 1: Identifying Opportunities for AI Impact
 
-The first step involves finding parts of the business that can be immediately improved with AI. A useful mental model frames AI as creating "super-assistants" for the workforce—tools that never tire, maintain constant focus, and remain available whenever needed.
+Organizations should identify parts of their business that can be immediately improved with [[AI]] by thinking of AI as creating "super-assistants" for their workforce. These digital assistants never get tired, are always available, and can augment employee skills across almost any task.
 
-Organizations should focus on three key areas where AI creates immediate value:
+Focus on three key workplace challenges:
 
 ### Repetitive, Low-Value Tasks
 
-Every job includes tedious, manual tasks that divert attention from strategic work. These tasks reduce productivity, increase frustration, and diminish job fulfillment. Common examples include:
+Every job involves tedious, manual tasks that distract from strategic work. These mindless tasks reduce productivity and job satisfaction. Examples include:
 
 - Summarizing meeting notes
-- Analyzing spreadsheet data for trends
+- Searching for trends in spreadsheet data
 - Generating product requirements documents
-- Answering recurring questions
+- Answering repetitive questions
 
-AI can assume these responsibilities, freeing employees for higher-value work. Launch Darkly's Chief Product Officer created an "Anti To-Do List" of tasks she no longer performs, including KPI monitoring, competitor tracking, and sharing customer stories via [[Slack]].
+[[Launch Darkly]]'s Chief Product Officer created an "Anti To-Do List" of tasks she no longer needs to focus on, including monitoring KPIs, tracking competitors, and sharing customer stories over [[Slack]].
 
 ### Skill Bottlenecks
 
-Work frequently stalls when employees reach the limits of their expertise and require input from other departments or specialists. This creates delays and reduces productivity.
+Work often slows when employees reach the limits of their expertise and need input from other departments or specialists. [[AI]] can help bridge these gaps by:
 
-AI can bridge these gaps by helping employees expand their skill sets—from [[data analysis]] and trend visualization to [[coding]]—without waiting for specialized support. Expert teams reclaim time previously spent on lower-value cross-functional work, while other employees learn to communicate in domain-specific languages.
+- Enabling employees to expand their skillsets (data analysis, visualization, coding)
+- Reducing wait times for expert input
+- Allowing cross-functional teams to communicate in shared language
+
+Product managers, for example, can create interactive prototypes without waiting for engineering support.
 
 ### Navigating Ambiguity
 
-Knowledge work often involves ambiguous, open-ended challenges where employees struggle to begin or become blocked. AI serves as a catalyst in these situations, helping to:
+Knowledge work frequently involves ambiguity and open-ended challenges. [[AI]] can act as a catalyst by:
 
-- Generate ideas
-- Analyze data
-- Propose next steps when the path forward is unclear
+- Generating ideas and brainstorming options
+- Analyzing data to surface insights
+- Proposing next steps when the path is unclear
 
-Teams across industries use AI to brainstorm campaign ideas, identify quick insights in raw data, analyze trends, and determine next steps when uncertain about direction.
+Marketing teams use [[ChatGPT]] voice mode to brainstorm campaign ideas and unblock creativity.
 
-## Step 2: Teaching Teams the Six Use Case Primitives
+## Step 2: The Six AI Use Case Primitives
 
-Once organizations provide teams with a framework for identifying AI opportunities, the next step involves training employees on fundamental use case categories. Analysis of over 600 customer implementations revealed that most use cases fall into six core "primitives"—fundamental use case types applicable across all departments and disciplines.
-
-These primitives provide a fast track to scalable value, as each represents hundreds of real-world implementations across industries, roles, and workflows.
+Analysis of over 600 customer use cases revealed that most fall into one of six fundamental types, or "primitives." These represent hundreds of real-world implementations across industries and roles.
 
 ### 1. Content Creation
 
-[[AI]] supports content creation across all teams, from summarizing sales calls to generating first drafts of strategy documents, blog posts, web pages, images, and visualizations.
+[[AI]] supports content creation across all teams by:
 
-**Key capabilities:**
-- Edit and polish work, serving as a final proofreader
-- Write in company style with consistent tone of voice
-- Follow preferred document structures
-- Provide writing feedback
-- Translate work into different languages
-- Repurpose content for different audiences and channels
+- Summarizing information (meeting notes, calls)
+- Generating first drafts (strategy documents, blog posts, web pages, images)
+- Editing and polishing work
+- Applying company style guides and tone of voice
+- Translating content into different languages
+- Repurposing content for different audiences and channels
 
-**Departmental applications:**
+**Department-specific applications:**
+- **Marketing:** Campaign strategies, headlines, email campaigns, content outlines
+- **Finance:** Draft policy documents and technical accounting memos
+- **Product:** Product requirements documents, descriptions, release notes, user guides
+- **Sales:** Account plans, call scripts, follow-up emails
 
-| Department | Use Cases |
-|---|---|
-| **Marketing** | Campaign strategies, headlines, email campaigns, content outlines, repurposing for different audiences |
-| **Finance** | Draft policy documents, technical accounting memos |
-| **Product** | Product requirements documents, product descriptions, release notes, launch communications, user guides |
-| **Sales** | Account plans, call scripts, follow-up emails |
-
-**Case Study:** Promega saved 135 hours in six months using [[ChatGPT]] Enterprise for first-draft email campaigns, campaign briefs, and multi-language ad copy generation.
+**Example:** [[Pregma]], a life sciences company, saved 135 hours in six months using ChatGPT Enterprise for first-draft email campaigns, campaign briefs, and channel-specific ad copy.
 
 ### 2. Research
 
-AI is widely used for research across industries, from quick learning about new concepts to comprehensive, multi-step research projects that scan the web for articles, data points, and insights. Teams also upload long internal documents for rapid insight extraction.
+[[AI]] is widely used for research across industries:
 
-A key advantage is the ability to specify format and structure—tables, bullet points, organized sections, or cross-referenced formats—for how analysis is presented.
+- Learning about new concepts
+- Searching the web for relevant articles and competitive data
+- Conducting comprehensive, multi-step research projects
+- Analyzing internal documents for insights
 
-**Departmental applications:**
+Key advantages include the ability to specify output format (tables, bullet points, organized sections) and cross-reference information.
 
-| Department | Use Cases |
-|---|---|
-| **Sales & Marketing** | Investigate new industries, understand competitors, research new audiences |
-| **Finance** | Search for benchmarks from public companies, identify M&A targets, research accounting standards |
-| **Product** | Size new markets, research competitors, identify trends, analyze user feedback |
-| **IT** | Search for new vendors, rate product strengths and weaknesses |
-| **Software Engineering** | Review API endpoints and external documentation |
+**Department-specific applications:**
+- **Sales and Marketing:** Industry investigation, competitive analysis, audience research
+- **Finance:** Benchmark searches, M&A target identification, accounting standards guidance
+- **Product:** Market sizing, competitor research, trend identification, user feedback analysis
+- **IT:** Vendor research and product evaluation
+- **Software Engineering:** API endpoint review and external documentation analysis
 
-**Advanced Capability:** Deep research is a new agentic capability in [[ChatGPT]] that conducts multi-step internet research independently. Users provide a prompt, and the system finds, analyzes, and synthesizes hundreds of online sources into a comprehensive report at the level of a research analyst.
+**Innovation:** [[Deep Research]] is a new agentic capability that conducts multi-step research independently, synthesizing hundreds of online sources into comprehensive reports at the level of a research analyst.
 
 ### 3. Coding
 
-Many [[software engineers]] are power users of AI, utilizing it for:
+Software engineers and non-coders alike use [[AI]] for coding tasks:
 
 - Debugging code
 - Generating first-draft code in unfamiliar languages
 - Porting code between languages
-- Rubber-ducking code (explaining logic to identify issues)
+- Rubber-ducking (explaining code to understand it)
+- Real-time code previews
 
-AI's capabilities in mathematics, science, and coding across many languages have significantly improved, with many tools now offering real-time code previews.
+[[AI]] capabilities in math, science, and coding across many languages have significantly improved, enabling both specialists and non-technical staff to write code.
 
-Non-coders are also adopting AI-assisted coding. Using natural language, marketers and finance teams build [[Python]] scripts to automate processes, write [[SQL]] queries to retrieve data, or create visualizations with front-end code.
+**Department-specific applications:**
+- **Software Engineers:** Debugging, code porting, API research
+- **Marketing:** Interactive charts, data visualizations, SQL queries
+- **Finance:** Python scripts for process automation
+- **Product:** Interactive prototypes for rapid idea development
 
-**Departmental applications:**
-
-| Department | Use Cases |
-|---|---|
-| **Software Engineers** | Debug code, port to other languages, research API endpoints |
-| **Marketing** | Build interactive charts and data visualizations, write SQL for analysis |
-| **Finance** | Create Python scripts to automate monthly close processes |
-| **Product** | Build interactive prototypes to flesh out new ideas |
-
-**Case Study:** Tinder's engineering team uses [[ChatGPT]] to generate first-draft syntax for non-intuitive languages like Bash scripts, improving efficiency and making it easy to reference external API documentation and troubleshoot architectural decisions.
+**Example:** [[Tinder]]'s engineering team uses ChatGPT to generate first-draft syntax for non-intuitive languages like Bash scripts, improving efficiency and reducing deprioritized tasks.
 
 ### 4. Data Analysis
 
-AI helps anyone harmonize data from different sources, identify insights and trends, and work with complex spreadsheet data without advanced [[Excel]], [[SQL]], or [[Python]] skills.
+[[AI]] helps anyone:
 
-Users can provide AI with multiple spreadsheets or dashboard screenshots to support analysis. The system can interpret spreadsheet data, understand visual charts, and help format output for reporting. Users can guide how results are structured, specifying preferred chart types, summary formats, or comparison logic.
+- Harmonize data from different sources
+- Identify insights and trends
+- Work with complex spreadsheet data without advanced Excel, SQL, or Python skills
+- Interpret visual charts and dashboards
+- Format output for reporting
 
-**Departmental applications:**
+**Department-specific applications:**
+- **Marketing:** Webinar attendance visualization, dashboard trend summaries
+- **Product:** Trend analysis, social media feedback analysis, CRM data on feature requests
+- **Sales:** Account strength identification, lead-to-account mapping, intent scoring
+- **Finance:** Expense data analysis, data harmonization across spreadsheets and databases
 
-| Department | Use Cases |
-|---|---|
-| **Marketing** | Upload webinar attendance data and visualize, summarize key trends from dashboards |
-| **Product** | Analyze trends, analyze social media feedback, upload CRM data on feature requests |
-| **Sales** | Review account lists to find strongest accounts, map leads to accounts, score for intent signals |
-| **Finance** | Analyze expense data and trends, harmonize data from multiple spreadsheets and databases |
-
-**Case Study:** Poshmark used [[ChatGPT]] to generate Python code that reconciles millions of spreadsheet rows for business performance analysis, then generates weekly performance reports and accounting memos for executives, saving hours of manual work weekly.
+**Example:** [[Poshmark]], the fashion marketplace, uses ChatGPT to generate Python code that reconciles millions of spreadsheet rows, then automatically generates weekly performance reports and accounting memos, saving hours of manual work weekly.
 
 ### 5. Ideation and Strategy
 
-Ideation and strategy use cases are popular across all teams, from brainstorming blog posts to structuring documents, troubleshooting strategies, or providing feedback based on key goals and stakeholder preferences.
+[[AI]] supports ideation and strategy across all teams:
+
+- Brainstorming new ideas
+- Structuring documents
+- Troubleshooting strategies
+- Providing feedback based on goals and stakeholder preferences
+- Building strategic plans incorporating data, goals, context, constraints, and dependencies
+
+As [[AI]] models become more multimodal, teams interact via voice and vision, similar to colleague conversations.
+
+**Department-specific applications:**
+- **Marketing:** Campaign brainstorming, marketing brief gap analysis, go-to-market planning
+- **Finance:** Market expansion planning incorporating local competitors, risks, and opportunities
+- **Product:** Launch plan development reflecting dependencies and risks, PRD weakness identification
+- **Sales:** Pitch practice and discovery skill development using voice mode
+
+**Example:** [[MatchGroup]], the global leader in online dating, uses GPT-4's multimodal capabilities to run focus group simulations by uploading wireframes and asking ChatGPT to mimic user personas, generating product innovation ideas without traditional focus group costs.
+
+### 6. Automations
+
+[[AI]] can automate repetitive, routine tasks:
+
+- Simple automations: generating weekly competitive updates
+- Complex automations: creating finance reports for executive briefings ready for review
+- Using memory and custom instructions to standardize processes
+- Creating custom GPTs to share automated workflows
+
+**Department-specific applications:**
+- **Marketing:** Standard report generation, webinar readouts, Slack update summaries
+- **Product:** Launch update summarization, weekly customer insights, meeting note-to-Slack conversion
+- **Finance:** Weekly financial data to executive overview conversion with alerts
+- **IT:** Software architecture analysis for key dependencies, risks, and optimization opportunities
+
+**Example:** [[BBVA]]'s Credit Analysis Pro GPT helps credit risk analysts accelerate assessments by pulling unstructured data from annual reports, ESG assess

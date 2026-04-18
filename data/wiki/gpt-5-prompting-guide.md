@@ -2,226 +2,194 @@
 title: GPT 5 PROMPTING GUIDE
 source_file: GPT 5 PROMPTING GUIDE.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-05T20:31:02.699194
-raw_file_updated: 2026-04-05T20:31:02.699194
+compiled_at: 2026-04-17T20:25:43.480743
+raw_file_updated: 2026-04-17T20:25:43.480743
 version: 1
 sources:
   - file: GPT 5 PROMPTING GUIDE.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-05T20:31:02.699194
-tags: ["prompt-engineering", "gpt-5", "best-practices", "agentic-ai", "coding"]
+    added_at: 2026-04-17T20:25:43.480743
+tags: []
 related_topics: []
 backlinked_by: []
-
 ---
 # GPT-5 Prompting Guide
 
 ## Summary
 
-The GPT-5 Prompting Guide is an official resource from [[OpenAI]] that provides best practices for maximizing output quality from GPT-5, OpenAI's newest flagship model. The guide covers key areas including [[agentic task performance]], [[instruction following]], [[coding optimization]], and practical techniques for controlling model behavior through prompt engineering. It emphasizes that GPT-5 represents significant improvements in reasoning, tool calling, and steerability compared to previous models.
-
-## Overview
-
-GPT-5 represents a substantial leap forward in agentic task performance, coding capabilities, raw intelligence, and steerability. While the model performs well "out of the box," this guide provides evidence-based prompting techniques derived from real-world applications and training experience. The guide is particularly designed for developers building [[agentic applications]] and [[tool-calling workflows]].
-
-### Key Improvements in GPT-5
-
-- Enhanced [[tool calling]] and instruction following
-- Long-context understanding capabilities
-- Improved [[agentic workflow]] predictability
-- Superior coding performance across multiple domains
-- Greater responsiveness to prompt-based steering
+The **GPT-5 Prompting Guide** is an official resource from [[OpenAI]] documenting best practices for maximizing the performance of [[GPT-5]], their flagship large language model. Published August 7, 2025, the guide covers optimization techniques across [[agentic workflows]], [[coding tasks]], [[instruction following]], and [[tool calling]]. It emphasizes that effective prompting requires iterative experimentation and provides concrete examples from production deployments, including insights from [[Cursor]], an AI code editor.
 
 ---
 
-## Table of Contents
+## Overview
 
-1. [Agentic Workflow Optimization](#agentic-workflow-optimization)
-2. [Coding Performance](#coding-performance)
-3. [Instruction Following](#instruction-following)
-4. [API Features and Parameters](#api-features-and-parameters)
-5. [Minimal Reasoning](#minimal-reasoning)
-6. [Appendix: Tool Definitions](#appendix-tool-definitions)
+[[GPT-5]] represents a substantial advancement in [[agentic task performance]], [[coding capabilities]], raw intelligence, and steerability. While the model performs well without optimization, this guide provides evidence-based prompting techniques derived from training and real-world application experience. The guide is designed for developers building [[agentic applications]] and [[software engineering]] tools.
+
+### Key Principles
+
+- Prompting is not one-size-fits-all; experimentation and iteration are essential
+- Different use cases require different calibrations of model behavior
+- The [[Responses API]] is recommended for agentic workflows over Chat Completions
+- Contradictory or vague instructions are particularly damaging to GPT-5's performance
 
 ---
 
 ## Agentic Workflow Optimization
 
-### Agentic Eagerness and Control
+### Controlling Agentic Eagerness
 
-GPT-5 is trained to operate across a spectrum of control—from highly autonomous decision-making to tightly constrained, well-defined tasks. The key challenge is calibrating the model's "agentic eagerness": balancing proactivity with awaiting explicit guidance.
+GPT-5 is trained to operate across a spectrum of [[agentic scaffolds]], from highly autonomous decision-making to tightly constrained, task-focused behavior. The model's default behavior is thorough and comprehensive in gathering context.
 
-#### Controlling Agentic Eagerness
+#### Prompting for Less Eagerness
 
-By default, GPT-5 is thorough and comprehensive when gathering context. To reduce agentic behavior and minimize latency:
+To reduce scope and minimize latency in agentic tasks:
 
-**Techniques for Less Eagerness:**
+- **Lower reasoning_effort**: Reduces exploration depth while improving efficiency and latency. Many workflows perform consistently at `medium` or even `low` reasoning_effort settings.
+- **Define clear criteria**: Explicit exploration boundaries in prompts reduce unnecessary tool-calling and tangential research.
+- **Set tool call budgets**: Fixed limits on tool invocations constrain search depth naturally based on desired exploration scope.
+- **Provide escape hatches**: Include clauses allowing the model to proceed under uncertainty, such as "even if it might not be fully correct."
 
-- **Lower reasoning_effort**: Reduces exploration depth while improving efficiency and latency. Many workflows achieve consistent results with `medium` or even `low` reasoning_effort settings.
-
-- **Define clear exploration criteria**: Specify in your prompt exactly how you want the model to explore the problem space, reducing unnecessary reasoning about tangential ideas.
-
-- **Set tool call budgets**: Establish fixed limits on tool calls, naturally varying based on desired search depth.
-
-- **Provide escape hatches**: Include explicit clauses allowing the model to proceed under uncertainty (e.g., "even if it might not be fully correct").
-
-**Context Gathering Strategy (Low Eagerness):**
-
+**Context Gathering Example:**
 ```
-Goal: Get enough context fast. Parallelize discovery and stop as soon as possible.
+Goal: Get enough context fast. Parallelize discovery and stop as soon as you can.
 
 Method:
 - Start broad, then fan out to focused subqueries
 - In parallel, launch varied queries; read top hits per query
-- Avoid over searching for context
+- Avoid over-searching for context
 
 Early stop criteria:
 - You can name exact content to change
 - Top hits converge (~70%) on one area/path
-- Escalate once if signals conflict; run one refined parallel batch, then proceed
-- Search depth: very low
-- Absolute maximum of 2 tool calls
-- Bias strongly towards providing a correct answer quickly, even if not fully certain
+- Escalate once: if signals conflict, run one refined parallel batch, then proceed
 ```
 
-#### Encouraging Agentic Autonomy
+#### Prompting for More Eagerness
 
-To encourage model autonomy, persistence, and reduce clarifying questions:
+To encourage [[model autonomy]], increase tool-calling persistence, and reduce clarifying questions:
 
-**Techniques for More Eagerness:**
-
-- **Increase reasoning_effort**: Use `high` for complex, multi-step tasks to ensure optimal outputs.
-
-- **Use persistence prompts**: Explicitly instruct the model to continue until task completion.
-
-- **Reduce hand-offs to users**: Discourage the model from asking for clarification or confirming assumptions.
-
-**Persistence Instruction Example:**
-
-```
-- You are an agent - please keep going until the user's query is completely resolved
-- Only terminate your turn when you are sure that the problem is solved
-- Never stop or hand back to the user when you encounter uncertainty — research and solve
-- Do not ask the human to confirm or clarify assumptions, as you can always adjust later
-```
+- **Increase reasoning_effort**: Allocates more computational resources to thorough task completion
+- **Remove uncertainty barriers**: Explicitly instruct the model to research and resolve ambiguities without deferring to users
+- **Emphasize persistence**: Use language like "keep going until the user's query is completely resolved"
+- **Prevent premature termination**: Clarify that the model should never hand back to the user when encountering uncertainty
 
 ### Tool Preambles
 
-GPT-5 is trained to provide clear upfront plans and consistent progress updates via "tool preamble" messages. This significantly improves user experience during long agentic rollouts.
+[[GPT-5]] is trained to provide clear upfront plans and consistent progress updates via "tool preamble" messages. These messages improve user experience during long-running agentic tasks by explaining what the model is doing and why.
 
-**Best Practices for Tool Preambles:**
+**High-Quality Preamble Prompt:**
+```
+- Always begin by rephrasing the user's goal in a friendly, clear, and concise way
+- Then, immediately outline a structured plan detailing each logical step you'll take
+- Finish by summarizing completed work distinctly from your upfront plan
+```
 
-- Always begin by rephrasing the user's goal in a friendly, clear, and concise manner
-- Immediately outline a structured plan detailing each logical step
-- Finish by summarizing completed work distinctly from the upfront plan
-- Adjust frequency and style based on user needs (from detailed explanations to brief summaries)
+You can control the frequency, style, and content of preambles through explicit prompting—from detailed explanations of each tool call to brief upfront plans.
 
-### Responses API for Agentic Workflows
+### Reasoning Effort Parameter
 
-OpenAI strongly recommends using the [[Responses API]] when deploying GPT-5 for agentic applications. Key benefits include:
+The `reasoning_effort` parameter controls how deeply the model thinks and its willingness to call tools:
 
-- **Persistent reasoning context**: Reasoning persists between tool calls, improving efficiency
-- **Performance gains**: Tau-Bench Retail scores increased from 73.9% to 78.2% when switching from Chat Completions
-- **Token efficiency**: Previous reasoning traces are reused via `previous_response_id`, conserving CoT tokens
-- **Latency improvements**: Eliminates need to reconstruct plans from scratch after each tool call
-- **Cost reduction**: More efficient token usage across agentic workflows
+- **Default**: `medium`
+- **Recommendation**: Scale up or down based on task difficulty
+- **Complex tasks**: Use higher reasoning for multi-step problems
+- **Performance peak**: Achieved by breaking separable tasks across multiple agent turns
+
+### Responses API and Reasoning Context Reuse
+
+The [[Responses API]] is strongly recommended for GPT-5 agentic applications because:
+
+- **Persistent reasoning**: Reasoning is maintained between tool calls, improving efficiency
+- **Token conservation**: Previous reasoning traces can be referenced via `previous_response_id`, eliminating reconstruction of plans after each tool call
+- **Performance gains**: Statistically significant improvements observed (e.g., Tau-Bench Retail score increase from 73.9% to 78.2%)
+- **Lower costs**: More efficient token usage compared to [[Chat Completions]]
 
 ---
 
-## Coding Performance
-
-GPT-5 leads all frontier models in coding capabilities. It can work in large codebases to fix bugs, handle large diffs, implement multi-file refactors, and build complete applications from scratch.
+## Coding Performance Optimization
 
 ### Frontend App Development
 
-#### Recommended Technology Stack
+GPT-5 excels at implementing complete applications from scratch with excellent aesthetic sensibility. For optimal results, use:
 
-**Frameworks:**
-- [[Next.js]] (TypeScript)
-- [[React]]
-- HTML
-
-**Styling & UI:**
-- [[Tailwind CSS]]
-- [[shadcn/ui]]
-- [[Radix Themes]]
-
-**Icons:**
-- Material Symbols
-- Heroicons
-- Lucide
-
-**Animation:**
-- Motion
-
-**Fonts:**
-- San Serif, Inter, Geist, Mona Sans, IBM Plex Sans, Manrope
+**Recommended Framework Stack:**
+- **Frameworks**: Next.js (TypeScript), React, HTML
+- **Styling/UI**: Tailwind CSS, shadcn/ui, Radix Themes
+- **Icons**: Material Symbols, Heroicons, Lucide
+- **Animation**: Motion
+- **Fonts**: San Serif, Inter, Geist, Mona Sans, IBM Plex Sans, Manrope
 
 #### Zero-to-One App Generation
 
-GPT-5 excels at building complete applications in one shot. To maximize output quality:
-
-**Self-Reflection Approach:**
+For building applications from scratch, GPT-5 benefits from prompts requesting iterative execution against self-constructed excellence rubrics:
 
 ```
+<self_reflection>
 - First, spend time thinking of a rubric until you are confident
 - Then, think deeply about every aspect of what makes for a world-class solution
-- Finally, use the rubric to internally think and iterate on the best possible implementation
+- Finally, use the rubric to internally think and iterate on the best possible output
+</self_reflection>
 ```
 
-This leverages GPT-5's thorough planning and self-reflection capabilities to improve output quality.
+This approach leverages GPT-5's thorough planning and [[self-reflection]] capabilities.
 
 #### Matching Codebase Design Standards
 
-When implementing incremental changes and refactors, code should adhere to existing style and design standards. Enhance this with explicit prompt directions summarizing:
+When implementing incremental changes in existing codebases, GPT-5 should adhere to existing style and design standards. Enhance this behavior with prompt directions summarizing:
 
-- Engineering principles
-- Directory structure
-- Best practices (explicit and implicit)
+- **Guiding principles**: Clarity, reuse, consistency, simplicity, demo-orientation, visual quality
+- **Frontend stack defaults**: Framework, styling, UI component choices, state management
+- **Directory structure**: Organized `/src` layout with `/app`, `/api`, `/components`, `/hooks`, `/lib`, `/stores`, `/types`, `/styles`
+- **UI/UX best practices**: Visual hierarchy, color usage, spacing, state handling, accessibility
 
-**Code Editing Rules Template:**
-
+**Code Editing Rules Example:**
 ```
-Guiding Principles:
-- Clarity and Reuse: Every component and page should be modular and reusable
-- Consistency: The UI must adhere to a consistent design system
-- Simplicity: Favor small, focused components and avoid unnecessary complexity
-- Demo-Oriented: Structure should allow for quick prototyping and feature showcasing
+<code_editing_rules>
+<guiding_principles>
+- Clarity and Reuse: Every component should be modular and reusable
+- Consistency: Adhere to a consistent design system
+- Simplicity: Favor small, focused components
+- Demo-Oriented: Allow quick prototyping and feature showcasing
 - Visual Quality: Follow high visual quality standards
-
-Frontend Stack Defaults:
-- Framework: Next.js (TypeScript)
-- Styling: TailwindCSS
-- UI Components: shadcn/ui
-- Icons: Lucide
-- State Management: Zustand
-
-Directory Structure:
-/src
-  /app                    # Application routes
-  /api/<route>/route.ts   # API endpoints
-  /(pages)                # Page routes
-  /components/            # UI building blocks
-  /hooks/                 # Reusable React hooks
-  /lib/                   # Utilities (fetchers, helpers)
-  /stores/                # Zustand stores
-  /types/                 # Shared TypeScript types
-  /styles/                # Tailwind config
-
-UI/UX Best Practices:
-- Visual Hierarchy: Limit typography to 4–5 font sizes and weights
-- Color Usage: Use 1 neutral base and up to 2 accent colors
-- Spacing and Layout: Always use multiples of 4 for padding and margins
-- State Handling: Use skeleton placeholders or animate-pulse for loading states
-- Accessibility: Use semantic HTML and ARIA roles where appropriate
+</guiding_principles>
+</code_editing_rules>
 ```
 
-### Collaborative Coding: Cursor's GPT-5 Integration
+### Cursor's Production Integration
 
-[[Cursor]], an AI code editor, served as a trusted alpha tester for GPT-5. Their prompt tuning work provides valuable insights for production use.
+[[Cursor]], an AI code editor, served as a trusted alpha tester for GPT-5. Their prompt tuning work provides insights into production-grade optimization:
 
 #### System Prompt and Parameter Tuning
 
-**Balancing Verbosity:**
+**Verbosity Balance**: Cursor initially found GPT-5 produced verbose status updates that disrupted user flow, while code outputs were terse with poor variable naming. They resolved this by:
 
-Cursor
+- Setting `verbosity` API parameter to `low` for brief text outputs
+- Modifying prompts to strongly encourage verbose outputs in coding tools only
+- Result: Efficient status updates combined with readable code diffs
+
+**Autonomy and Clarification**: Cursor found GPT-5 occasionally deferred to users for clarification prematurely. They addressed this by:
+
+- Including detailed product behavior information
+- Specifying Cursor-specific features (Undo/Reject code, user preferences)
+- Result: Longer horizon tasks completed with minimal interruption
+
+**Context Gathering Refinement**: Cursor discovered that prompts effective with earlier models needed adjustment for GPT-5:
+
+**Ineffective (with GPT-5):**
+```
+<maximize_context_understanding>
+Be THOROUGH when gathering information. Make sure you have the FULL picture before proceeding.
+</maximize_context_understanding>
+```
+
+This caused GPT-5 to overuse tools and call search repetitively when internal knowledge was sufficient.
+
+**Effective (refined):**
+```
+<context_understanding>
+If you've performed an edit that may partially fulfill the USER's query, you can proceed.
+Bias towards not asking the user for help if you can find the answer yourself.
+</context_understanding>
+```
+
+**Structured XML
