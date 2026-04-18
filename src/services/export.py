@@ -198,6 +198,24 @@ class ExportService:
             pass
         return []
 
+    def _extract_source_info(self, content: str) -> dict:
+        """Extract source_file and source_url from article frontmatter"""
+        source_info = {}
+        try:
+            if content.startswith("---"):
+                end = content.find("\n---\n", 4)
+                if end > 0:
+                    frontmatter = content[4:end]
+                    for line in frontmatter.split("\n"):
+                        if line.startswith("source_file:"):
+                            source_info["file"] = line.split(":", 1)[1].strip()
+                        elif line.startswith("source_url:"):
+                            url = line.split(":", 1)[1].strip()
+                            source_info["url"] = url
+        except:
+            pass
+        return source_info
+
     def _extract_article_summary(self, content: str) -> str:
         """Extract clean article summary (first non-heading paragraph)"""
         try:
@@ -219,6 +237,26 @@ class ExportService:
             pass
         return "Knowledge base article"
 
+    def _build_search_index(self, articles: List[Dict[str, Any]]) -> str:
+        """Build searchable JSON index for client-side search"""
+        index = []
+        for article in articles:
+            tags = self._extract_tags_from_content(article['content'])
+            source_info = article.get('source_info', {})
+
+            index.append({
+                "id": article["id"],
+                "title": article["title"],
+                "summary": article.get('summary', ''),
+                "content": article["content"][:500],
+                "tags": tags,
+                "source_url": source_info.get('url', ''),
+                "source_file": source_info.get('file', ''),
+                "word_count": article["word_count"]
+            })
+
+        return json.dumps(index)
+
     def export_html(self, articles: List[Dict[str, Any]] = None) -> Path:
         """Export as interactive accordion HTML with categories"""
         if articles is None:
@@ -226,9 +264,10 @@ class ExportService:
 
         output_file = self.output_dir / "knowledge.html"
         try:
-            # Extract clean article summaries
+            # Extract clean article summaries and source info
             for article in articles:
                 article['summary'] = self._extract_article_summary(article['content'])
+                article['source_info'] = self._extract_source_info(article['content'])
 
             # Group articles by primary tag only (to condense categories)
             articles_by_tag = {}
@@ -255,7 +294,20 @@ class ExportService:
                 for article in sorted(articles_by_tag[tag], key=lambda x: x['title']):
                     accordion_html += f'    <div class="article-card"><h4>{article["title"]}</h4>'
                     accordion_html += f'<p class="summary">{article["summary"]}</p>'
-                    accordion_html += f'<p class="meta">📄 {article["word_count"]} words</p></div>\n'
+
+                    # Add source info if available
+                    source_info = article.get('source_info', {})
+                    source_text = ""
+                    if source_info.get('url'):
+                        source_text = f'🔗 <a href="{source_info["url"]}" target="_blank" rel="noopener">Source</a>'
+                    elif source_info.get('file'):
+                        source_text = f'📑 {source_info["file"]}'
+
+                    meta_text = f'📄 {article["word_count"]} words'
+                    if source_text:
+                        meta_text = f'{source_text} • {meta_text}'
+
+                    accordion_html += f'<p class="meta">{meta_text}</p></div>\n'
 
                 accordion_html += f'  </div>\n</div>\n'
 
@@ -264,8 +316,18 @@ class ExportService:
                 accordion_html += f'<div class="accordion-item"><button class="accordion-header" onclick="toggleAccordion(this)"><span>📋 Uncategorized</span><span class="category-count">{len(uncategorized)}</span><span class="toggle-icon">▼</span></button>'
                 accordion_html += f'<div class="accordion-content">\n'
                 for article in sorted(uncategorized, key=lambda x: x['title']):
-                    accordion_html += f'<div class="article-card"><h4>{article["title"]}</h4><p class="meta">📄 {article["word_count"]} words</p></div>\n'
+                    source_info = article.get('source_info', {})
+                    source_text = ""
+                    if source_info.get('url'):
+                        source_text = f'🔗 <a href="{source_info["url"]}" target="_blank" rel="noopener">Source</a> • '
+                    elif source_info.get('file'):
+                        source_text = f'📑 {source_info["file"]} • '
+
+                    accordion_html += f'<div class="article-card"><h4>{article["title"]}</h4><p class="meta">{source_text}📄 {article["word_count"]} words</p></div>\n'
                 accordion_html += f'</div></div>\n'
+
+            # Build search index
+            search_index = self._build_search_index(articles)
 
             html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -299,6 +361,20 @@ class ExportService:
         .summary {{ color: #555; font-size: 0.95em; line-height: 1.5; margin-bottom: 8px; }}
         .meta {{ color: #999; font-size: 0.85em; }}
         .footer {{ text-align: center; color: #7f8c8d; margin-top: 50px; padding: 20px; font-size: 0.9em; }}
+        .search-box {{ background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }}
+        .search-input {{ width: 100%; padding: 12px 16px; font-size: 1em; border: 2px solid #e0e0e0; border-radius: 8px; transition: border-color 0.3s ease; }}
+        .search-input:focus {{ outline: none; border-color: #667eea; }}
+        .search-results {{ display: none; margin-bottom: 30px; }}
+        .search-results.active {{ display: block; }}
+        .search-results-header {{ color: #667eea; font-weight: 600; margin-bottom: 15px; }}
+        .search-result-item {{ background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid #667eea; }}
+        .search-result-item h4 {{ color: #2c3e50; margin-bottom: 5px; }}
+        .search-result-snippet {{ color: #666; font-size: 0.9em; margin-bottom: 8px; }}
+        .search-result-meta {{ color: #999; font-size: 0.85em; }}
+        .search-result-tags {{ margin-top: 5px; }}
+        .tag {{ display: inline-block; background: #f0f0f0; padding: 2px 8px; border-radius: 4px; margin-right: 5px; font-size: 0.8em; color: #666; }}
+        .categories-section {{ display: none; }}
+        .categories-section.active {{ display: block; }}
     </style>
 </head>
 <body>
@@ -321,13 +397,83 @@ class ExportService:
                 </div>
             </div>
         </div>
-        {accordion_html}
+
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search articles... (type to search)">
+        </div>
+
+        <div class="search-results" id="searchResults">
+            <div class="search-results-header" id="resultsHeader"></div>
+            <div id="resultsList"></div>
+        </div>
+
+        <div class="categories-section" id="categoriesSection">
+            {accordion_html}
+        </div>
         <div class="footer">
             <p>Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
         </div>
     </div>
     <script>
+        // Search index embedded in page
+        const searchIndex = {search_index};
+
+        // Toggle accordion
         function toggleAccordion(button) {{ button.parentElement.classList.toggle('active'); }}
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        const resultsHeader = document.getElementById('resultsHeader');
+        const resultsList = document.getElementById('resultsList');
+        const categoriesSection = document.getElementById('categoriesSection');
+
+        function performSearch(query) {{
+            if (!query.trim()) {{
+                searchResults.classList.remove('active');
+                categoriesSection.classList.add('active');
+                return;
+            }}
+
+            query = query.toLowerCase();
+            const results = searchIndex.filter(article => {{
+                const title = article.title.toLowerCase();
+                const summary = article.summary.toLowerCase();
+                const tags = article.tags.map(t => t.toLowerCase()).join(' ');
+                const content = article.content.toLowerCase();
+
+                return title.includes(query) || summary.includes(query) || tags.includes(query) || content.includes(query);
+            }});
+
+            // Display results
+            searchResults.classList.add('active');
+            categoriesSection.classList.remove('active');
+
+            resultsHeader.textContent = results.length + ' result' + (results.length !== 1 ? 's' : '') + ' found';
+            resultsList.innerHTML = results.map(article => {{
+                const sourceHtml = article.source_url
+                    ? `🔗 <a href="${{article.source_url}}" target="_blank" rel="noopener">Source URL</a>`
+                    : article.source_file ? `📑 ${{article.source_file}}` : '';
+
+                return `
+                    <div class="search-result-item">
+                        <h4>${{article.title}}</h4>
+                        <p class="search-result-snippet">${{article.summary}}</p>
+                        <div class="search-result-meta">
+                            📄 ${{article.word_count}} words
+                            ${{sourceHtml ? ' • ' + sourceHtml : ''}}
+                        </div>
+                        ${{article.tags.length > 0 ? `<div class="search-result-tags">${{article.tags.map(t => `<span class="tag">${{t}}</span>`).join('')}}</div>` : ''}}
+                    </div>
+                `;
+            }}).join('');
+        }}
+
+        searchInput.addEventListener('input', (e) => {{
+            performSearch(e.target.value);
+        }});
+
+        // Initialize with categories showing
         document.querySelector('.accordion-item')?.classList.add('active');
     </script>
 </body>
