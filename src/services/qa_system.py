@@ -96,25 +96,46 @@ class QASystem:
 
         return expanded_docs
 
+    def _extract_source_metadata(self, file_path: str) -> dict:
+        """Extract source metadata from wiki file frontmatter"""
+        try:
+            content = Path(file_path).read_text(encoding="utf-8")
+            if content.startswith("---"):
+                end = content.find("\n---\n", 4)
+                if end > 0:
+                    frontmatter = content[4:end]
+                    metadata = {}
+                    for line in frontmatter.split("\n"):
+                        if line.startswith("source_url:"):
+                            metadata["source_url"] = line.split(":", 1)[1].strip()
+                        elif line.startswith("source_file:"):
+                            metadata["source_file"] = line.split(":", 1)[1].strip()
+                        elif line.startswith("title:"):
+                            metadata["title"] = line.split(":", 1)[1].strip()
+                    return metadata
+        except Exception as e:
+            logger.debug(f"Error extracting source metadata: {e}")
+        return {}
+
     def _generate_answer(
         self,
         question: str,
         context_docs: List[dict],
         output_format: str = "markdown",
     ) -> str:
-        """Generate an answer using LLM with context"""
-        
+        """Generate an answer using LLM with context, including source links"""
+
         # Build context string
         context_str = ""
         for doc in context_docs:
             context_str += f"\n### Document: {doc['title']}\n{doc['content']}\n---\n"
-        
+
         format_instruction = {
             "markdown": "Respond in well-formatted markdown with clear headings, bullet points, and links.",
             "json": "Respond as a JSON object with fields for 'answer', 'sources', and 'confidence'.",
             "html": "Respond as valid HTML suitable for rendering in a browser.",
         }
-        
+
         prompt = f"""Based on the following wiki documents, answer this question:
 
 Question: {question}
@@ -125,17 +146,36 @@ Context from wiki:
 {format_instruction.get(output_format, format_instruction['markdown'])}
 
 Include citations to the source documents where relevant."""
-        
+
         system_prompt = """You are an expert research assistant with access to a knowledge base.
 Answer questions thoroughly based on the provided context.
 Always cite your sources and indicate if information is not found in the knowledge base."""
-        
+
         answer = self.llm_client.generate(
             prompt=prompt,
             system=system_prompt,
             max_tokens=2048,
         )
-        
+
+        # Append source information
+        if output_format == "markdown":
+            sources_section = "\n\n---\n\n## Sources\n\n"
+            source_list = []
+
+            for doc in context_docs:
+                metadata = self._extract_source_metadata(doc["path"])
+                source_display = metadata.get("title", Path(doc["path"]).stem)
+
+                if metadata.get("source_url"):
+                    source_list.append(f"- [{source_display}]({metadata['source_url']}) — Web")
+                elif metadata.get("source_file"):
+                    source_list.append(f"- {source_display} ({metadata['source_file']}) — Document")
+                else:
+                    source_list.append(f"- {source_display} — Wiki")
+
+            if source_list:
+                answer += sources_section + "\n".join(source_list)
+
         return answer
     
     def search_and_summarize(self, topic: str) -> str:
