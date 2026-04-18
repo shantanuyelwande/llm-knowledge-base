@@ -39,10 +39,10 @@ class WikiCompiler:
     ) -> str:
         """Compile a single document into wiki format"""
         source_file = self.raw_dir / source_path
-        
+
         if not source_file.exists():
             raise FileNotFoundError(f"Source file not found: {source_file}")
-        
+
         # Extract content based on file type
         if source_file.suffix.lower() == ".pdf":
             if not PDF_SUPPORT:
@@ -58,22 +58,27 @@ class WikiCompiler:
             except Exception as e:
                 logger.error(f"Error reading source file {source_file}: {e}")
                 raise
-        
+
         # Use LLM to process and summarize
         title = title or source_file.stem
         wiki_content = self._generate_wiki_entry(content, title, source_path)
-        
+
         # Save to wiki directory
         wiki_file = self._get_wiki_path(title)
         wiki_file.parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Check if file exists and needs update
         is_update = wiki_file.exists()
-        
+
+        # Extract source metadata (source_url if present)
+        source_metadata = self._extract_source_metadata(content, source_path)
+
         # Add metadata frontmatter
-        frontmatter = self.metadata_tracker.generate_frontmatter(title, source_path, content)
+        frontmatter = self.metadata_tracker.generate_frontmatter(
+            title, source_path, content, source_metadata
+        )
         full_content = frontmatter + wiki_content
-        
+
         wiki_file.write_text(full_content, encoding="utf-8")
 
         action = "Updated" if is_update else "Compiled"
@@ -88,6 +93,23 @@ class WikiCompiler:
 
         return str(wiki_file)
     
+    def _extract_source_metadata(self, content: str, source_path: str) -> dict:
+        """Extract source metadata (source_url, ingested_from) from raw file"""
+        metadata = {}
+
+        # Try to extract YAML frontmatter
+        if content.startswith("---"):
+            end = content.find("\n---\n", 4)
+            if end > 0:
+                frontmatter = content[4:end]
+                for line in frontmatter.split("\n"):
+                    if line.startswith("source_url:"):
+                        metadata["source_url"] = line.split(":", 1)[1].strip()
+                    elif line.startswith("ingested_from:"):
+                        metadata["ingested_from"] = line.split(":", 1)[1].strip()
+
+        return metadata
+
     def _generate_wiki_entry(self, content: str, title: str, source: str) -> str:
         """Generate a wiki entry using LLM"""
         prompt = f"""Convert this source material into a well-structured wiki article.

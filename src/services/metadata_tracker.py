@@ -32,15 +32,26 @@ class MetadataTracker:
         title: str,
         source_file: str,
         source_content: str,
+        source_metadata: Optional[Dict] = None,
     ) -> str:
         """Generate YAML frontmatter for wiki article"""
         source_hash = self.compute_file_hash(Path(source_file))
         current_time = datetime.now().isoformat()
-        
+
+        source_metadata = source_metadata or {}
+        source_url = source_metadata.get("source_url", "")
+        ingested_from = source_metadata.get("ingested_from", "")
+
         frontmatter = f"""---
 title: {title}
 source_file: {source_file}
-source_hash: {source_hash}
+"""
+        if source_url:
+            frontmatter += f"source_url: {source_url}\n"
+        if ingested_from:
+            frontmatter += f"ingested_from: {ingested_from}\n"
+
+        frontmatter += f"""source_hash: {source_hash}
 compiled_at: {current_time}
 raw_file_updated: {current_time}
 version: 1
