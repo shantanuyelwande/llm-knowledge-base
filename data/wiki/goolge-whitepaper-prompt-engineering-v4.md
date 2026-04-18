@@ -2,13 +2,13 @@
 title: Goolge-whitepaper_Prompt Engineering_v4
 source_file: Goolge-whitepaper_Prompt Engineering_v4.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T20:19:08.871316
-raw_file_updated: 2026-04-17T20:19:08.871316
+compiled_at: 2026-04-17T20:57:58.560548
+raw_file_updated: 2026-04-17T20:57:58.560548
 version: 1
 sources:
   - file: Goolge-whitepaper_Prompt Engineering_v4.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T20:19:08.871316
+    added_at: 2026-04-17T20:57:58.560548
 tags: []
 related_topics: []
 backlinked_by: []
@@ -17,216 +17,186 @@ backlinked_by: []
 
 ## Summary
 
-Prompt engineering is the process of designing and optimizing text inputs (prompts) to guide [[Large Language Models]] (LLMs) to produce accurate, relevant, and high-quality outputs. It involves iterative refinement of prompts, configuration of model parameters, and application of specialized techniques to achieve desired results across various natural language processing tasks.
+Prompt engineering is the process of designing and optimizing text inputs to guide [[Large Language Models]] (LLMs) to produce accurate, relevant, and high-quality outputs. It is an iterative discipline that involves crafting effective prompts, configuring model parameters, and applying specialized techniques to achieve desired results across various natural language processing tasks.
 
 ---
 
-## Table of Contents
+## Overview
 
-1. [Introduction](#introduction)
-2. [Fundamentals](#fundamentals)
-3. [LLM Output Configuration](#llm-output-configuration)
-4. [Prompting Techniques](#prompting-techniques)
-5. [Code Prompting](#code-prompting)
-6. [Best Practices](#best-practices)
-7. [Related Topics](#related-topics)
+Prompt engineering is the art and science of designing high-quality prompts that guide [[LLMs]] to produce accurate outputs. This process involves tinkering to find the best prompt, optimizing prompt length, and evaluating a prompt's writing style and structure in relation to the specific task. Unlike traditional software engineering, prompt engineering does not require specialized technical expertise—anyone can write a prompt, though crafting effective ones requires understanding how language models work and applying proven techniques.
 
----
+### Core Concept
 
-## Introduction
+An [[LLM]] is fundamentally a prediction engine that processes sequential text as input and predicts what the following token should be, based on patterns learned during training. When you write a prompt, you are attempting to set up the LLM to predict the right sequence of tokens. The effectiveness of a prompt depends on multiple factors:
 
-Prompt engineering is the art and science of crafting effective inputs for [[Large Language Models]]. Unlike traditional programming, which requires explicit instructions, prompt engineering works with the probabilistic nature of LLMs to guide them toward desired outputs.
-
-### Why Prompt Engineering Matters
-
-Everyone can write a prompt, but crafting the most effective prompt requires understanding multiple factors:
-
-- The specific [[Language Model]] being used
-- The model's training data and capabilities
-- Model configuration settings ([[Temperature]], [[Top-K]], [[Top-P]])
+- The model selected and its training data
+- Model configuration settings (temperature, sampling parameters)
 - Word choice, style, and tone
-- Prompt structure and context
-- The iterative nature of prompt development
-
-Inadequate prompts can lead to ambiguous, inaccurate responses and hinder the model's ability to provide meaningful output. Prompt engineering is fundamentally an **iterative process** requiring experimentation and refinement.
-
-### Applicable Tasks
-
-Prompt engineering can be applied to numerous natural language processing and generation tasks:
-
-- [[Text Summarization]]
-- [[Information Extraction]]
-- [[Question Answering]]
-- [[Text Classification]]
-- Language and code translation
-- Code generation and documentation
-- Reasoning and problem-solving
-
----
-
-## Fundamentals
-
-### How LLMs Work
-
-To understand prompt engineering, it's essential to grasp how [[Large Language Models]] operate:
-
-1. LLMs are **prediction engines** that take sequential text as input
-2. They predict the next token (word or subword) based on training data
-3. The prediction is based on relationships between previous tokens and patterns learned during training
-4. This process repeats iteratively, with each predicted token added to the sequence
-
-When writing a prompt, you are essentially **setting up the LLM to predict the right sequence of tokens**. Effective prompt engineering optimizes this token prediction process by:
-
-- Structuring prompts for clarity
-- Providing relevant context
-- Including examples when appropriate
-- Adjusting model configurations
-
-### Model Selection
-
-Prompt engineering begins with choosing an appropriate model. Different models may require different prompting approaches:
-
-- [[Gemini]] (Google's models)
-- GPT (OpenAI)
-- Claude (Anthropic)
-- Open source models (Gemma, LLaMA)
-
-Prompts may need optimization for specific models regardless of which platform or service you use.
+- Prompt structure and organization
+- Contextual information provided
+- Task-specific requirements
 
 ---
 
 ## LLM Output Configuration
 
-Beyond the prompt itself, LLMs come with various configuration options that control output quality and characteristics. Effective prompt engineering requires setting these configurations optimally for your task.
+Before crafting prompts, it is essential to understand and configure the model's output parameters. These settings control how the model generates responses and significantly impact both quality and cost.
 
 ### Output Length
 
-**Token limit** is an important configuration setting that determines how many tokens the model generates in a response.
+Output length refers to the maximum number of [[tokens]] the model will generate in a response. This is a critical configuration because:
 
-**Considerations:**
+- **Resource Impact**: Generating more tokens requires greater computational resources, leading to higher energy consumption, slower response times, and increased costs
+- **Truncation Behavior**: Reducing output length does not make the model more concise; it simply causes the model to stop generating tokens once the limit is reached
+- **Prompt Engineering Necessity**: When short outputs are required, the prompt itself must be engineered to accommodate this constraint
 
-- More tokens require more computation, leading to:
-  - Higher energy consumption
-  - Slower response times
-  - Higher costs
-- Reducing output length doesn't make the model more concise—it simply stops generation at the limit
-- For tasks requiring short outputs, you may need to engineer your prompt accordingly
-- Particularly important for techniques like [[ReAct]], where the model may emit useless tokens after the desired response
+Output length restrictions are particularly important for certain prompting techniques like [[ReAct]], where the model may continue generating unnecessary tokens after the desired response.
 
 ### Sampling Controls
 
-LLMs don't formally predict a single token; instead, they predict **probabilities** for each token in their vocabulary. Sampling controls determine how these probabilities are processed to select the output token.
+LLMs do not select a single token deterministically. Instead, they generate probability distributions across their vocabulary, with each token assigned a probability. These probabilities are then sampled to determine the actual output token. Three primary configuration settings control this sampling process:
 
 #### Temperature
 
-[[Temperature]] controls the degree of randomness in token selection:
+Temperature controls the degree of randomness in token selection:
 
-- **Temperature = 0** (greedy decoding): Deterministic—always selects the highest probability token
-  - Best for tasks with single correct answers (math, factual retrieval)
-  - May produce identical outputs
-- **Low temperatures** (0.1-0.3): More deterministic, consistent results
-  - Suitable for [[Text Classification]], factual tasks
-- **High temperatures** (0.7-1.0): More random and creative output
-  - Suitable for creative writing, brainstorming
-- **Very high temperatures** (>1.0): All tokens become equally likely
+- **Low Temperature (0.1-0.3)**: Produces more deterministic, focused, and factual outputs. A temperature of 0 (greedy decoding) always selects the highest probability token, though ties may be broken randomly
+- **High Temperature (0.7-1.0)**: Generates more diverse, creative, and unexpected results
+- **Extreme Values**: As temperature approaches infinity, all tokens become equally likely
 
-Temperature works similarly to the softmax function in machine learning, where low values emphasize a single preferred outcome with high certainty, while high values distribute probability more evenly.
+Temperature functions similarly to the softmax function in machine learning—low temperatures emphasize a single preferred output with high certainty, while higher temperatures distribute probability across a wider range of options.
 
-#### Top-K and Top-P
+#### Top-K and Top-P Sampling
 
-Both [[Top-K]] and [[Top-P]] (nucleus sampling) restrict the predicted next token to come from high-probability candidates, controlling randomness and diversity:
+**Top-K sampling** restricts token selection to the K most likely tokens from the model's probability distribution:
+- Higher top-K values produce more creative and varied output
+- Lower top-K values produce more restive and factual output
+- Top-K of 1 is equivalent to greedy decoding
 
-**Top-K Sampling:**
-- Selects from the top K most likely tokens
-- Higher K = more creative, varied output
-- Lower K = more restive, factual output
-- K=1 is equivalent to greedy decoding
+**Top-P sampling** (also called nucleus sampling) selects tokens whose cumulative probability does not exceed a threshold value P:
+- Values range from 0 (greedy decoding) to 1 (all tokens in vocabulary)
+- Provides more flexible control than top-K by adapting to the probability distribution shape
 
-**Top-P Sampling (Nucleus Sampling):**
-- Selects tokens whose cumulative probability doesn't exceed value P
-- P ranges from 0 (greedy decoding) to 1 (all vocabulary)
-- More flexible than Top-K for controlling diversity
+### Configuration Interaction and Best Practices
 
-**Best Practice:** Experiment with both methods to find which produces better results for your specific task.
+When multiple sampling settings are available (as in Vertex AI Studio), they interact in a specific order:
 
-### Putting It All Together
-
-Configuration settings interact with each other. Understanding their combined effect is crucial:
-
-**Processing Order (in Vertex Studio):**
-1. Tokens meeting both Top-K and Top-P criteria become candidates
+1. Tokens meeting both top-K and top-P criteria are identified as candidates
 2. Temperature is applied to sample from these candidates
-3. If only one setting is available, behavior adapts accordingly
-
-**Extreme Settings:**
-
-When one configuration reaches extreme values, it can override others:
-
-| Setting | Extreme Value | Effect |
-|---------|---------------|--------|
-| Temperature | 0 | Top-K and Top-P become irrelevant; highest probability token always selected |
-| Temperature | Very high (>1) | Temperature becomes irrelevant; random sampling from Top-K/Top-P candidates |
-| Top-K | 1 | Only one token passes criteria; temperature and Top-P irrelevant |
-| Top-K | Vocabulary size | All tokens with nonzero probability pass; none filtered out |
-| Top-P | 0 or very small | Only most probable token qualifies; temperature and Top-K irrelevant |
-| Top-P | 1 | All tokens with nonzero probability pass; none filtered out |
+3. If temperature is set to 0, top-K and top-P become irrelevant (deterministic selection)
+4. If temperature is extremely high, temperature becomes irrelevant and candidates are randomly selected
 
 **Recommended Starting Points:**
-
-- **Balanced creativity:** Temperature 0.2, Top-P 0.95, Top-K 30
-- **High creativity:** Temperature 0.9, Top-P 0.99, Top-K 40
-- **Low creativity:** Temperature 0.1, Top-P 0.9, Top-K 20
-- **Deterministic (single correct answer):** Temperature 0
-
-**Note:** Greater freedom in settings (higher temperature, Top-K, Top-P, and output tokens) may result in less relevant text.
+- **Balanced Coherence**: Temperature 0.2, top-P 0.95, top-K 30
+- **Creative Results**: Temperature 0.9, top-P 0.99, top-K 40
+- **Factual/Deterministic**: Temperature 0.1, top-P 0.9, top-K 20
+- **Single Correct Answer** (math, logic): Temperature 0
 
 ---
 
-## Prompting Techniques
+## Core Prompting Techniques
 
 ### Zero-Shot Prompting
 
-[[Zero-Shot Prompting]] is the simplest prompting approach. It provides only a task description and input text without examples.
+Zero-shot prompting is the simplest prompting approach, providing only a task description and input text without any examples. The term "zero-shot" refers to the absence of demonstrations.
 
 **Characteristics:**
-- No examples provided (hence "zero-shot")
-- Works for straightforward tasks
-- Input can be a question, story beginning, or instructions
+- No examples provided to the model
+- Relies entirely on the model's pre-training knowledge
+- Quick to implement but may produce less consistent results
+- Suitable for straightforward tasks
 
-**Example Use Case:** Classifying a movie review as positive, neutral, or negative with just a single instruction.
+**Example Use Case:** Classifying movie reviews as positive, neutral, or negative with a single instruction
 
-**When to use:** For simple, well-defined tasks where the model has sufficient training data.
+**When to Use:** Basic tasks where the model's training data provides sufficient context
 
 ### One-Shot and Few-Shot Prompting
 
-[[Few-Shot Prompting]] provides examples within the prompt to guide the model's output.
+Few-shot prompting involves providing examples within the prompt to help the model understand the desired output pattern.
 
-**One-Shot Prompting:**
-- Provides a single example
-- Model learns from one demonstration
+**One-Shot Prompting:** Provides a single example for the model to imitate
 
-**Few-Shot Prompting:**
-- Provides multiple examples (typically 3-5)
-- Shows a pattern the model should follow
-- Increases likelihood of pattern adherence
+**Few-Shot Prompting:** Provides multiple examples (typically 3-5) to establish a clear pattern
 
-**Guidelines:**
+**Benefits:**
+- Dramatically improves accuracy on complex tasks
+- Helps establish desired output structure and format
+- Guides the model toward specific patterns and styles
+- Particularly effective for classification and structured output tasks
 
-- Choose examples relevant to your task
-- Ensure examples are diverse, high-quality, and well-written
-- Include edge cases for robust handling
-- Number of examples depends on:
-  - Task complexity
-  - Example quality
-  - Model capabilities
-  - Input length limitations
+**Best Practices:**
+- Use relevant, high-quality examples
+- Include diverse examples covering different scenarios
+- Add edge cases to improve robustness
+- Mix up the order of response classes in classification tasks
+- Ensure examples are well-written with no errors that could confuse the model
 
-**Best Practice:** Use at least 3-5 examples for few-shot prompting, adjusting based on task complexity.
+**Number of Examples:** Generally 3-5 examples for most tasks, though more complex tasks may require additional examples. Consider input length limitations of your model.
 
 ### System, Contextual, and Role Prompting
 
-These three techniques guide LLM output by establishing context and perspective:
+These three complementary techniques provide different types of guidance to shape model behavior:
 
 #### System Prompting
 
-[[System Prompting]] sets the overall context and purpose for the model. It defines the "
+System prompting sets the overall context and purpose for the language model, defining the "big picture" of what the model should accomplish.
+
+**Characteristics:**
+- Specifies fundamental capabilities and overarching purpose
+- Provides instructions on output format and structure
+- Useful for ensuring consistent behavior across multiple prompts
+- Can enforce safety and toxicity guidelines
+
+**Applications:**
+- Specifying output format (JSON, XML, structured text)
+- Setting tone and style requirements
+- Defining behavioral constraints and values
+- Limiting hallucinations through structured output requirements
+
+**Example:** "Return valid JSON with sentiment field and movie name field" ensures structured, parseable output
+
+#### Role Prompting
+
+Role prompting assigns a specific character or identity for the model to adopt, helping it generate contextually appropriate responses.
+
+**Characteristics:**
+- Frames the model's output style and voice
+- Adds a layer of specificity and personality
+- Leverages the model's training knowledge about specific roles
+- Effective for creative and specialized tasks
+
+**Applicable Styles:**
+Confrontational, Descriptive, Direct, Formal, Humorous, Influential, Informal, Inspirational, Persuasive
+
+**Example:** "Act as a travel guide" primes the model to provide travel-specific knowledge and recommendations
+
+#### Contextual Prompting
+
+Contextual prompting provides specific details and background information relevant to the current task, helping the model understand nuances and tailor responses accordingly.
+
+**Characteristics:**
+- Supplies immediate, task-specific information
+- Highly dynamic and input-dependent
+- Helps the model understand the specific context
+- Improves relevance and accuracy of responses
+
+**Example:** "You are writing for a blog about retro 80's arcade video games" provides context that shapes all subsequent suggestions
+
+### Step-Back Prompting
+
+Step-back prompting improves LLM performance by first prompting the model to consider general principles related to a task, then using that answer to inform the specific task solution.
+
+**Process:**
+1. Ask a general question related to the specific task
+2. Feed the answer to that general question into a subsequent prompt
+3. Use the general knowledge to solve the specific problem
+
+**Benefits:**
+- Activates relevant background knowledge before solving specific problems
+- Encourages critical thinking and novel application of knowledge
+- Helps mitigate biases by focusing on general principles
+- Produces more accurate and insightful responses
+
+**Example:** Before writing a video game level storyline, first identify 5 engaging themes, then use those themes to create a more compelling storyline
+
+### Chain of Thought (Co

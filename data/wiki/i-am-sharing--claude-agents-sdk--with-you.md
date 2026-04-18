@@ -2,13 +2,13 @@
 title: I am sharing _Claude Agents SDK_ with you
 source_file: I am sharing _Claude Agents SDK_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T20:24:19.465053
-raw_file_updated: 2026-04-17T20:24:19.465053
+compiled_at: 2026-04-17T21:03:05.758176
+raw_file_updated: 2026-04-17T21:03:05.758176
 version: 1
 sources:
   - file: I am sharing _Claude Agents SDK_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T20:24:19.465053
+    added_at: 2026-04-17T21:03:05.758176
 tags: []
 related_topics: []
 backlinked_by: []
@@ -17,193 +17,210 @@ backlinked_by: []
 
 ## Summary
 
-The **Claude Agent SDK** is a comprehensive toolkit developed by [[Anthropic]] for building autonomous agents powered by Claude. Originally designed as the Claude Code SDK to support coding tasks, it has evolved into a general-purpose framework for creating agents that can perform diverse workflows including finance management, personal assistance, customer support, and research. The SDK enables agents to interact with computer systems through tools like file access, bash commands, code generation, and external API integrations via the [[Model Context Protocol]].
+The **Claude Agent SDK** is a comprehensive toolkit developed by [[Anthropic]] for building autonomous agents powered by [[Claude]], Anthropic's large language model. Originally created as the Claude Code SDK to support developer productivity, it has evolved into a general-purpose framework for creating agents that can perform diverse tasks including research, data analysis, and workflow automation. The SDK enables developers to build agents that operate through a core feedback loop: gather context → take action → verify work → repeat.
+
+---
 
 ## Overview
 
-The Claude Agent SDK represents Anthropic's approach to building practical, effective agents by giving Claude the same tools that programmers use daily. Rather than limiting agent capabilities to specific domains, the SDK provides a flexible foundation for creating agents that can handle complex, multi-step tasks across various industries and applications.
+The Claude Agent SDK represents a significant evolution in agent-based AI development. Rather than limiting Claude's capabilities to a single domain, the SDK provides developers with a comprehensive set of tools and primitives to create agents for virtually any workflow automation task.
 
-### Design Philosophy
+### Key Philosophy
 
-The core design principle behind the Claude Agent SDK is that **Claude needs access to a computer**. By providing Claude with:
+The foundational design principle is simple yet powerful: **give Claude the same tools that programmers use every day**. This includes:
 
 - File system access
-- Terminal/bash command execution
-- File creation and editing capabilities
-- Code execution environments
+- Command-line execution
+- Code editing and creation
+- Debugging capabilities
+- Iterative problem-solving
 
-The SDK enables Claude to work like a human would—finding information, taking actions, verifying results, and iterating until tasks are complete.
+By providing Claude with access to a computer environment, the SDK enables agents to operate with the same flexibility and capability as human workers.
 
-## Key Capabilities
+---
 
-### Agent Types
+## Core Agent Loop
 
-The Claude Agent SDK can power diverse agent implementations:
+All agents built with the Claude Agent SDK follow a structured feedback loop that ensures reliability and effectiveness:
 
-- **[[Finance Agents]]**: Understand portfolios, evaluate investments, and perform financial calculations through external APIs
-- **Personal Assistant Agents**: Manage calendars, book travel, schedule appointments, and prepare briefings
-- **Customer Support Agents**: Handle ambiguous user requests, collect data, connect to external systems, and escalate to humans when needed
-- **Deep Research Agents**: Conduct comprehensive research across document collections, synthesize information, and generate detailed reports
-- **And more**: The SDK provides primitives for automating virtually any digital workflow
+### 1. Gather Context
 
-## The Agent Loop
-
-The Claude Agent SDK implements a proven feedback cycle that structures how agents operate:
-
-```
-Gather Context → Take Action → Verify Work → Repeat
-```
-
-This loop provides a mental model for designing effective agents and determining what capabilities they should have.
-
-### Gather Context
-
-Agents need to fetch and update their own context dynamically rather than relying solely on initial prompts.
+Agents must actively retrieve and manage information from various sources:
 
 #### Agentic Search and File System
+The file system serves as a repository of contextual information. When encountering large files such as logs or user uploads, Claude uses [[bash]] scripts (like `grep` and `tail`) to intelligently load relevant portions into its context window. The folder and file structure effectively becomes a form of [[context engineering]].
 
-The file system serves as a repository of information that agents can search and retrieve. When encountering large files (logs, user uploads), agents use bash scripts like `grep` and `tail` to intelligently load relevant portions into context. The folder and file structure becomes a form of [[context engineering]].
-
-**Example**: An email agent might store previous conversations in a `Conversations` folder, allowing it to search and retrieve relevant historical context when needed.
+**Example**: An email agent might organize previous conversations in a 'Conversations' folder, allowing it to search and retrieve relevant past interactions when needed.
 
 #### Semantic Search
+Semantic search offers faster performance than agentic search but with trade-offs in accuracy and transparency. It involves:
 
-An alternative to agentic search that involves:
-
-- Chunking relevant content
+- Chunking relevant context
 - Embedding chunks as vectors
 - Querying vectors for conceptual matches
 
-**Note**: Semantic search is typically faster but less accurate, less transparent, and harder to maintain. Best practice is to start with agentic search and add semantic search only if performance demands it.
+**Recommendation**: Start with agentic search and only add semantic search if performance requirements demand it.
 
 #### Subagents
+The SDK natively supports subagents for two primary purposes:
 
-The SDK supports [[subagents]] for two primary purposes:
+1. **Parallelization**: Multiple subagents can work on different tasks simultaneously
+2. **Context Management**: Subagents maintain isolated context windows and return only relevant information to the orchestrator, preventing context bloat
 
-1. **Parallelization**: Spin up multiple subagents to work on different tasks simultaneously
-2. **Context Management**: Each subagent maintains its own isolated context window, returning only relevant information rather than full context
-
-This approach is ideal for tasks requiring agents to sift through large amounts of information where most won't be useful.
-
-**Example**: An email agent could spawn multiple search subagents in parallel, each running different queries against email history and returning only relevant excerpts.
+**Example**: An email agent could spawn multiple search subagents in parallel, each querying different aspects of email history and returning only relevant excerpts.
 
 #### Compaction
+The **compaction feature** automatically summarizes previous messages as the context limit approaches, preventing context overflow during extended agent operations. This feature is built on Claude Code's compact functionality.
 
-For long-running agents, the SDK's compaction feature automatically summarizes previous messages as the context limit approaches, preventing context overflow. This feature is built on Claude Code's compact slash command.
+### 2. Take Action
 
-### Take Action
-
-Once context is gathered, agents need flexible mechanisms to execute tasks.
+Once context is gathered, agents require flexible mechanisms for executing tasks:
 
 #### Tools
+Tools are the primary building blocks of agent execution. They should be:
 
-Tools are the primary building blocks of agent execution. They should represent the main actions an agent will take, and should be designed with context efficiency in mind. Tools are prominently featured in Claude's context window, making them the primary actions Claude considers.
+- Prominent in the context window
+- Representative of primary, frequent actions
+- Consciously designed for context efficiency
 
-**Best Practice**: Define tools as the agent's primary, most frequent actions.
+**Example**: An email agent might define tools like `fetchInbox` or `searchEmails` as its primary actions.
 
-**Example**: An email agent might define tools like `fetchInbox` or `searchEmails`.
+Tools are customizable and developers should focus on making them effective through proper design patterns.
 
-#### Bash and Scripts
+#### Bash & Scripts
+Bash provides general-purpose flexibility for agents to perform computer-based work. Claude can write and execute shell scripts to accomplish tasks that require system-level operations.
 
-Bash provides a general-purpose mechanism for agents to perform flexible work using a computer. Agents can write and execute shell scripts to accomplish complex tasks.
-
-**Example**: An email agent could write code to download PDF attachments, convert them to text, and search across them.
+**Example**: An email agent could write code to download PDF attachments, convert them to text, and search across their contents.
 
 #### Code Generation
+The SDK excels at code generation, which offers several advantages:
 
-Code generation is a powerful capability because code is:
+- **Precision**: Code is unambiguous
+- **Composability**: Code components can be reused
+- **Reliability**: Complex operations can be expressed reliably
 
-- Precise and unambiguous
-- Composable and reusable
-- Ideal for complex operations that require reliability
+Code generation is particularly effective for tasks like creating formatted documents, performing calculations, and building interactive elements.
 
-The Claude Agent SDK excels at code generation, enabling agents to create Python scripts, spreadsheets, presentations, and other structured outputs.
-
-**Example**: An email agent could generate code to create rules for processing inbound emails.
+**Example**: Claude can write Python scripts to create Excel spreadsheets, PowerPoint presentations, and Word documents with consistent formatting and complex functionality.
 
 #### Model Context Protocol (MCP)
+The [[Model Context Protocol]] provides standardized integrations to external services, handling authentication and API calls automatically. This eliminates the need for custom integration code or OAuth management.
 
-The [[Model Context Protocol]] provides standardized integrations to external services, handling authentication and API calls automatically. This allows agents to connect to tools like:
-
+**Supported integrations include**:
 - Slack
 - GitHub
 - Google Drive
 - Asana
-- And growing ecosystem of integrations
+- And growing ecosystem of services
 
-**Benefit**: Agents can use pre-built integrations without custom code or OAuth management.
+**Example**: An email agent could call `search_slack_messages` or `get_asana_tasks` without implementing custom authentication or API handling.
 
-**Example**: An email agent could search Slack messages or check Asana tasks using MCP servers.
+### 3. Verify Work
 
-### Verify Work
+Agents that can evaluate and improve their own output are fundamentally more reliable. The SDK provides three effective verification approaches:
 
-Agents that can evaluate and improve their own output are fundamentally more reliable. They catch mistakes before they compound, self-correct when drifting, and improve through iteration.
+#### Defining Rules
+Rules-based feedback is the most effective verification method. Provide clearly defined rules for outputs and explain which rules failed and why.
 
-#### Rules-Based Feedback
+**Code linting** is an excellent example: generating TypeScript and linting it provides multiple layers of feedback compared to generating pure JavaScript.
 
-Provide clearly defined rules for expected outputs and explain which rules failed and why. Code linting is an excellent form of rules-based feedback because it provides multiple layers of validation.
-
-**Example**: An email agent could verify that email addresses are valid and check whether the user has previously contacted that address.
+**Example**: An email agent could verify that email addresses are valid (error if not) and check if the recipient has been contacted before (warning if not).
 
 #### Visual Feedback
+For visual tasks like UI generation or testing, screenshots and renders provide valuable verification data. Agents can evaluate:
 
-For visual tasks (UI generation, testing, formatting), provide visual feedback through screenshots or renders. Agents can verify:
+- **Layout**: Correct element positioning and spacing
+- **Styling**: Colors, fonts, and formatting accuracy
+- **Content Hierarchy**: Proper information order and emphasis
+- **Responsiveness**: Appearance across different viewport sizes
 
-- **Layout**: Are elements positioned correctly? Is spacing appropriate?
-- **Styling**: Do colors, fonts, and formatting appear as intended?
-- **Content Hierarchy**: Is information presented correctly with proper emphasis?
-- **Responsiveness**: Does the output look broken or cramped?
+Tools like [[Playwright]] can automate this feedback loop by capturing screenshots, testing different viewport sizes, and validating interactive elements.
 
-Tools like [[Playwright]] can automate visual feedback loops within agent workflows.
+#### LLM as a Judge
+A separate language model can evaluate agent output based on fuzzy rules. While less robust and carrying latency costs, this approach can provide performance improvements for certain applications.
 
-#### LLM as Judge
+**Example**: A subagent judge could evaluate the tone of email drafts to ensure they match the user's communication style.
 
-Use another language model to evaluate agent output based on fuzzy rules. While not the most robust method and having latency tradeoffs, this can boost performance when needed.
+---
 
-**Example**: A separate subagent could judge the tone of drafted emails against the user's previous messaging style.
+## Use Cases
 
-## Testing and Improvement
+The Claude Agent SDK enables developers to build agents for diverse applications:
 
-After iterating through the agent loop, test and evaluate agent performance by examining outputs, especially failures. Key evaluation questions:
+### Finance Agents
+Agents that understand investment portfolios and financial goals, evaluate investment opportunities through external APIs, store financial data, and perform complex calculations.
 
-- **Misunderstanding tasks**: Is the agent missing key information? Can you restructure search APIs to make relevant information easier to find?
-- **Repeated failures**: Can you add formal rules in tool calls to identify and fix the failure?
-- **Error correction**: Can you provide more useful or creative tools to approach problems differently?
-- **Performance variation**: Build representative test sets for programmatic evaluations based on actual usage patterns.
+### Personal Assistant Agents
+Agents that manage travel bookings, calendar scheduling, appointment coordination, and brief preparation by connecting to internal data sources and maintaining context across applications.
+
+### Customer Support Agents
+Agents that handle complex customer service requests by collecting user data, connecting to external APIs, communicating with users, and escalating to humans when necessary.
+
+### Deep Research Agents
+Agents that conduct comprehensive research across large document collections by searching file systems, analyzing multiple sources, cross-referencing data, and generating detailed reports.
+
+### Additional Applications
+The SDK's flexibility enables agents for virtually any workflow automation task, from data analysis to content creation.
+
+---
+
+## Best Practices
+
+### Agent Design
+
+1. **Understand Task Requirements**: If your agent misunderstands tasks, it may lack key information. Consider restructuring search APIs to make information discovery easier.
+
+2. **Address Repeated Failures**: If an agent fails repeatedly at a task, add formal rules in tool calls to identify and fix the failure.
+
+3. **Expand Tool Capabilities**: If an agent cannot fix errors, provide more useful or creative tools for alternative approaches.
+
+4. **Performance Testing**: When adding features, build representative test sets for programmatic evaluations based on actual customer usage patterns.
+
+5. **Tool Design**: Tools should represent primary actions and be designed with context efficiency in mind. Avoid cluttering the context window with rarely-used tools.
+
+6. **Context Management**: Actively manage context through search optimization, subagent delegation, and compaction to prevent context exhaustion during long-running operations.
+
+---
 
 ## Getting Started
 
-The Claude Agent SDK is available for developers to use immediately. The framework provides:
+The Claude Agent SDK is available for immediate use. Developers can:
 
-- Clear patterns for building autonomous agents
-- Flexible tools for context gathering, action, and verification
-- Integration with external services through MCP
-- Automatic context management for long-running agents
+1. Access the [[Claude Developer Platform]] for documentation and resources
+2. Implement the agent loop framework in their applications
+3. Start with agentic search and basic tools, expanding capabilities as needed
+4. Build and test agents with representative use cases
+5. Migrate to the latest version if already using the SDK
 
-Developers already using the SDK should migrate to the latest version by following the official migration guide.
+---
 
-## Related Concepts
+## Evolution from Claude Code
 
-- [[Claude Code]] - The agentic coding solution that inspired the SDK
-- [[Model Context Protocol]] - Standardized integrations for external services
-- [[Anthropic]] - The company behind Claude and the SDK
-- [[Context Engineering]] - Structuring information for optimal agent performance
-- [[Subagents]] - Parallel and context-isolated agent instances
-- [[Code Generation]] - Precise, reusable agent outputs
+The Claude Agent SDK evolved from **Claude Code**, an agentic coding solution originally built to support developer productivity at [[Anthropic]]. While Claude Code remains focused on coding tasks, the broader agent framework has proven effective for:
+
+- Deep research and analysis
+- Video creation and editing
+- Note-taking and documentation
+- Data manipulation and visualization
+- And numerous other non-coding applications
+
+This evolution led to the renaming of Claude Code SDK to Claude Agent SDK to reflect its broader capabilities.
+
+---
+
+## Related Technologies
+
+- [[Claude]] - The underlying language model
+- [[Model Context Protocol]] - Standard integration protocol for external services
+- [[Anthropic]] - Developing organization
+- [[Bash]] - Command-line tool for agent execution
+- [[Code Generation]] - Core capability for agent task execution
+- [[Context Management]] - Critical technique for long-running agents
+
+---
 
 ## Metadata
 
 **Source**: Engineering at Anthropic - "Building agents with the Claude Agent SDK"
 
-**Author**: Thariq Shihipar (with Molly Vorweck, Suzanne Wang, Alex Isken, Cat Wu, Keir Bradwell, Alexander Bricken, and Ashwin Bhat)
-
-**Published**: 2025
-
-**Tags**: `#agents` `#claude` `#sdk` `#anthropic` `#ai-development` `#automation` `#llm`
-
-**Related Topics**: 
-- [[Agentic AI]]
-- [[Large Language Models]]
-- [[API Integration]]
-- [[Software Development Tools]]
-- [[Automation Workflows]]
+**Tags**: `#AI-Agents` `#Claude` `#SDK` `#Anthropic` `#Agent-Framework` `

@@ -2,141 +2,225 @@
 title: Daily Dose of Data Science - Full DS Archive 
 source_file: Daily Dose of Data Science - Full DS Archive .pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T20:19:42.064073
-raw_file_updated: 2026-04-17T20:19:42.064073
+compiled_at: 2026-04-17T20:58:35.015378
+raw_file_updated: 2026-04-17T20:58:35.015378
 version: 1
 sources:
   - file: Daily Dose of Data Science - Full DS Archive .pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T20:19:42.064073
+    added_at: 2026-04-17T20:58:35.015378
 tags: []
 related_topics: []
 backlinked_by: []
 ---
-# Daily Dose of Data Science: Complete Archive
-
-## Overview
-
-The **Daily Dose of Data Science** is a comprehensive collection of machine learning, statistics, and data science concepts compiled by Avi Chawla. This archive covers fundamental and advanced topics spanning deep learning, classical machine learning, statistical inference, data engineering, visualization, and software engineering best practices relevant to data science professionals.
+# Daily Dose of Data Science Archive
 
 ## Summary
 
-This wiki documents over 200 distinct data science topics organized into major domains: [[Machine Learning Models and Algorithms]], [[Deep Learning and Neural Networks]], [[Statistical Methods and Inference]], [[Data Processing and Engineering]], [[Data Visualization]], [[Software Engineering for Data Science]], and [[Production ML Systems]]. The material emphasizes practical understanding, intuitive explanations, and real-world applications rather than purely theoretical treatment.
+The **Daily Dose of Data Science** is a comprehensive collection of practical machine learning, data science, and Python programming concepts compiled by Avi Chawla. This archive covers fundamental to advanced topics spanning supervised and unsupervised learning, deep learning optimization, model deployment, statistical analysis, and software engineering best practices. The content emphasizes intuitive explanations, real-world applications, and hands-on implementations across the entire data science pipeline.
 
 ---
 
-## Core Domains
+## Table of Contents
 
-### Machine Learning Fundamentals
+1. [Core Machine Learning Techniques](#core-machine-learning-techniques)
+2. [Deep Learning and Neural Networks](#deep-learning-and-neural-networks)
+3. [Model Optimization and Training](#model-optimization-and-training)
+4. [Statistical Foundations](#statistical-foundations)
+5. [Data Preprocessing and Engineering](#data-preprocessing-and-engineering)
+6. [Model Evaluation and Validation](#model-evaluation-and-validation)
+7. [Unsupervised Learning](#unsupervised-learning)
+8. [Ensemble Methods](#ensemble-methods)
+9. [Model Deployment and Production](#model-deployment-and-production)
+10. [Python Programming Concepts](#python-programming-concepts)
+11. [Data Visualization](#data-visualization)
+12. [Big Data and SQL](#big-data-and-sql)
 
-#### Model Training and Optimization
+---
 
-- **[[Transfer Learning]]** - Training neural networks on related tasks to improve performance on tasks with limited data
-- **[[Fine-tuning]]** - Updating weights of pre-trained models to adapt them to new tasks
-- **[[Multi-task Learning]]** - Training models simultaneously on multiple related tasks with shared representations
-- **[[Federated Learning]]** - Training models on distributed private data without centralizing it
-- **[[Momentum Optimization]]** - Technique to speed up model training by considering moving averages of past gradients
-- **[[Mixed Precision Training]]** - Using lower precision (float16) with float32 to accelerate training while maintaining accuracy
-- **[[Gradient Checkpointing]]** - Reducing memory usage during training by recomputing activations instead of storing them
-- **[[Gradient Accumulation]]** - Simulating larger batch sizes by accumulating gradients across multiple mini-batches
+## Core Machine Learning Techniques
 
-#### Regularization and Generalization
+### Model Interaction and Training Methodologies
 
-- **[[Label Smoothing]]** - Reducing model overconfidence by distributing probability mass across all classes
-- **[[Dropout Regularization]]** - Preventing overfitting by randomly zeroing neurons during training with proper scaling
-- **[[DropBlock]]** - Dropping contiguous regions of features in CNNs instead of individual pixels
-- **[[L2 Regularization and Ridge Regression]]** - Adding penalty term to eliminate multicollinearity and reduce overfitting
-- **[[Early Stopping]]** - Halting training when validation performance plateaus
+The archive identifies four essential training methodologies that leverage model interactions to improve performance:
 
-#### Loss Functions and Metrics
+#### Transfer Learning
 
-- **[[Focal Loss]]** - Addressing class imbalance by downweighting easy examples in classification
-- **[[Binary Cross Entropy]]** - Standard loss function for binary classification tasks
-- **[[Squared Error Loss and Maximum Likelihood]]** - Theoretical foundation for linear regression loss functions
-- **[[Top-k Accuracy]]** - Measuring if correct label appears in top k predictions for multiclass problems
+[[Transfer Learning]] is particularly valuable when working with limited data on a target task while abundant data exists for a related task. The approach involves:
 
-### Classical Machine Learning
+- Training a base neural network model on the related task to capture core patterns
+- Replacing the last few layers with new task-specific layers
+- Training on the target task while freezing weights in the base layers
 
-#### Tree-Based Models
+This technique is commonly used in [[Computer Vision]] tasks and enables models to leverage knowledge from related domains.
 
-- **[[Decision Trees]]** - Interpretable models that recursively split data based on feature thresholds
-- **[[Decision Tree Pruning]]** - Preventing overfitting through cost-complexity pruning
-- **[[Random Forests]]** - Ensemble of decision trees with bagging for improved generalization
-- **[[Random Forests with Random Patches]]** - Training random forests on large datasets using data sampling
-- **[[Out-of-Bag Validation]]** - Evaluating random forests using samples not used in bootstrap samples
-- **[[Tree Compression to Single Tree]]** - Condensing random forest predictions into interpretable single decision tree
-- **[[Decision Tree Matrix Operations]]** - Representing tree inference as matrix operations for GPU acceleration
-- **[[AdaBoost]]** - Iterative boosting algorithm that reweights misclassified samples
-- **[[Gradient Boosting]]** - Sequential ensemble learning where models learn from previous model mistakes
+#### Fine-Tuning
 
-#### Regression Models
+[[Fine-Tuning]] differs from transfer learning by updating weights across some or all layers of a pre-trained model rather than replacing layers entirely. The pre-trained model itself is adjusted to new data, making it a more intensive adaptation approach.
 
-- **[[Linear Regression and OLS]]** - Ordinary least squares regression and why squared error is optimal
-- **[[Poisson Regression]]** - Generalized linear model for count data following Poisson distributions
-- **[[Generalized Linear Models]]** - Family of models extending linear regression to non-normal distributions
-- **[[Zero-Inflated Regression]]** - Combining classification and regression for datasets with excess zeros
-- **[[Huber Regression]]** - Robust regression less sensitive to outliers than standard linear regression
+#### Multi-Task Learning
 
-#### Distance and Similarity
+[[Multi-Task Learning]] (MTL) trains a single model to perform multiple related tasks simultaneously. The model shares knowledge across tasks through shared layers while maintaining task-specific branches. Benefits include:
 
-- **[[k-Nearest Neighbors]]** - Instance-based learning using nearest neighbors for prediction
-- **[[Distance-Weighted kNN]]** - Weighting neighbors by distance for more robust predictions
-- **[[Dynamic k Selection for kNN]]** - Adapting k parameter based on class representation in neighbors
-- **[[Approximate Nearest Neighbors Search]]** - Using inverted file indices to speed up neighbor search
-- **[[Kernel Methods and the Kernel Trick]]** - Computing dot products in high-dimensional spaces without explicit projection
-- **[[Polynomial Kernel]]** - Computing dot products for polynomial feature expansions
-- **[[RBF Kernel]]** - Mapping data to infinite-dimensional space for complex decision boundaries
-- **[[Support Vector Machines]]** - Maximum margin classifiers using kernel methods
+- Improved generalization across all tasks
+- Reduced memory utilization
+- Lower resource consumption during training
 
-#### Clustering
+Implementation requires careful attention to task-relatedness, as unrelated tasks can degrade performance. Dynamic task weighting—adjusting loss contributions inversely proportional to validation accuracy—helps balance learning across tasks of varying difficulty.
 
-- **[[k-Means Clustering]]** - Partitioning data into k clusters by minimizing within-cluster variance
-- **[[Breathing k-Means]]** - Enhanced k-means with dynamic centroid addition and removal
-- **[[Mini-Batch k-Means]]** - Scalable k-means for large datasets using mini-batch updates
-- **[[Gaussian Mixture Models]]** - Probabilistic clustering using mixture of Gaussian distributions
-- **[[DBSCAN]]** - Density-based clustering robust to arbitrary cluster shapes
-- **[[DBSCAN++]]** - Faster DBSCAN using subset density estimation
-- **[[HDBSCAN]]** - Hierarchical DBSCAN handling varying cluster densities
-- **[[Clustering Evaluation Metrics]]** - Silhouette coefficient, Calinski-Harabasz index, DBCV
+#### Federated Learning
 
-#### Dimensionality Reduction
+[[Federated Learning]] addresses the challenge of training models on private, distributed data without centralizing it. The approach:
 
-- **[[Principal Component Analysis (PCA)]]** - Linear dimensionality reduction preserving maximum variance
-- **[[Kernel PCA]]** - Non-linear dimensionality reduction using kernel trick
-- **[[PCA for Visualization]]** - Proper use of PCA for 2D visualization with cumulative explained variance
-- **[[t-SNE]]** - Non-linear visualization technique using Student t-distribution for well-separated clusters
-- **[[t-SNE Hyperparameters]]** - Understanding perplexity and avoiding misinterpretation of t-SNE results
-- **[[SNE vs t-SNE]]** - Differences between standard SNE and improved t-SNE algorithm
-- **[[Accelerated t-SNE Implementations]]** - GPU-accelerated tSNE-CUDA and multi-threaded openTSNE
-- **[[PCA vs t-SNE]]** - Comparing linear (PCA) and non-linear (t-SNE) dimensionality reduction
+- Dispatches models to end devices (smartphones, edge devices)
+- Trains models locally on private user data
+- Aggregates trained models at a central server
+- Combines models to form a complete global model
 
-### Deep Learning and Neural Networks
+This technique preserves privacy while enabling large-scale collaborative learning, particularly valuable for mobile and IoT applications.
 
-#### Architectures and Components
+---
 
-- **[[Neural Network Layers]]** - Understanding linear transformations and activation functions
-- **[[Activation Functions]]** - ReLU, Sigmoid, Tanh enabling non-linear learning
-- **[[Batch Normalization]]** - Normalizing layer inputs for faster training and better generalization
-- **[[Convolutional Neural Networks]]** - Specialized architecture for image data using local connectivity
-- **[[Recurrent Neural Networks]]** - Sequential models with memory for time-series data
-- **[[Transformers]]** - Attention-based architecture dominant in NLP and multimodal models
+## Deep Learning and Neural Networks
 
-#### Knowledge Transfer and Compression
+### Model Compression Techniques
 
-- **[[Knowledge Distillation]]** - Training smaller student models to mimic larger teacher models
-- **[[Model Pruning]]** - Removing neurons contributing minimally to predictions
-- **[[LoRA Fine-tuning]]** - Efficient fine-tuning of large models using low-rank decomposition
-- **[[LoRA Variants]]** - LoRA-FA, VeRA, Delta-LoRA, LoRA+ improvements
-- **[[Retrieval Augmented Generation (RAG)]]** - Augmenting LLM knowledge with external document retrieval
+#### Knowledge Distillation
 
-#### Training Techniques
+[[Knowledge Distillation]] compresses large, complex models into smaller, faster alternatives. A smaller "student" model learns to mimic a larger "teacher" model by matching its probability distributions. This enables:
 
-- **[[Multi-GPU Training Strategies]]** - Data parallelism, model parallelism, tensor parallelism, pipeline parallelism
-- **[[Distributed Training with PyTorch]]** - Scaling training across multiple GPUs and nodes
-- **[[Hyperparameter Optimization]]** - Bayesian optimization for efficient hyperparameter tuning
+- Significant speed improvements (up to 35% faster inference)
+- Minimal accuracy loss
+- Reduced memory footprint
 
-#### Specific Challenges
+Real-world examples include DistilBERT, which achieves 97% of BERT's capabilities at 40% smaller size.
 
-- **[[Data Shuffling in Training]]** - Importance of shuffling mini-batches to prevent pattern learning from order
-- **[[Neural Network Linear Separability]]** - How networks transform data to become linearly separable
-- **[[Double
+#### Neural Network Pruning
+
+[[Neural Network Pruning]] removes neurons that contribute minimally to model performance. By analyzing average neuron activations and removing those below a threshold, models can achieve:
+
+- 72% parameter reduction with only 0.62% accuracy loss
+- Maintained inference speed
+- Significant memory savings
+
+### Activation Functions and Network Behavior
+
+Neural networks progressively transform data through hidden layers to achieve [[Linear Separability]] in the output layer's decision space. The core objective is projecting data into a space where it becomes linearly separable, enabling the output layer to function as a logistic regression classifier.
+
+This can be visualized by inserting a 2D bottleneck layer before the output, revealing how networks map non-linearly separable input data into linearly separable representations.
+
+### Dropout and Regularization
+
+#### Understanding Dropout
+
+[[Dropout]] is often misunderstood. While commonly explained as "randomly zeroing neurons during training," this describes only half the mechanism. The critical second half involves:
+
+**Scaling remaining activations** during training by a factor of 1/(1-p), where p is the dropout rate. This ensures:
+
+- Neuron inputs have consistent expected values during training and inference
+- Numerical coherence between training and evaluation stages
+- Proper gradient flow through the network
+
+Without this scaling step, models would experience distribution shift between training and inference.
+
+#### DropBlock for Convolutional Networks
+
+[[DropBlock]] improves upon standard dropout for [[Convolutional Neural Networks]] by dropping contiguous regions of features rather than individual pixels. This addresses the limitation that correlated spatial features in images can be reconstructed even when individual pixels are dropped.
+
+Benefits include:
+- 1.33% improvement over standard dropout on ImageNet
+- 1.55% improvement when combined with label smoothing
+- Better regularization for spatially correlated data
+
+### Label Smoothing
+
+[[Label Smoothing]] reduces overconfidence in model predictions by intentionally lowering the probability mass of true classes and distributing it uniformly across other classes. This regularization technique:
+
+- Improves generalization and test accuracy
+- Reduces prediction confidence (important consideration for applications requiring calibrated probabilities)
+- Should not be used when confidence estimates are critical
+
+---
+
+## Model Optimization and Training
+
+### Momentum and Optimization
+
+[[Momentum]] addresses unnecessary oscillations in gradient descent by incorporating a moving average of past gradients. The update rule becomes:
+
+```
+v_t = β * v_{t-1} + ∇L(θ)
+θ = θ - α * v_t
+```
+
+This enables the optimizer to:
+- Take larger steps in consistent directions
+- Reduce oscillations perpendicular to the primary descent direction
+- Accelerate convergence toward optima
+
+The momentum rate hyperparameter requires careful tuning—too high causes overshooting, too low negates benefits.
+
+### Mixed Precision Training
+
+[[Mixed Precision Training]] uses lower precision (float16) for computations while maintaining float32 for weight updates. This strategy:
+
+- Reduces memory requirements by ~50%
+- Provides 2-3x speedup in tensor operations
+- Maintains model accuracy through careful gradient scaling
+
+Key implementation practices:
+- Scale loss values to ensure gradients don't underflow in float16
+- Maintain weights in float32 for stability
+- Use automatic mixed precision frameworks (PyTorch's `torch.cuda.amp`)
+
+### Gradient Checkpointing
+
+[[Gradient Checkpointing]] reduces memory usage during training by ~50-60% with 15-25% runtime overhead. The technique:
+
+- Stores only activations at segment boundaries during forward pass
+- Recomputes intermediate activations during backward pass as needed
+- Enables larger batch sizes without exceeding memory constraints
+
+Implementation divides networks into segments, storing only boundary activations and recomputing internal activations during backpropagation.
+
+### Gradient Accumulation
+
+[[Gradient Accumulation]] enables training with larger effective batch sizes under memory constraints by:
+
+- Accumulating gradients across multiple mini-batches
+- Updating weights only after processing several batches
+- Achieving same gradient sum as larger batch without explicit increase
+
+For example, with hardware supporting batch size 16 but needing size 64:
+- Train on 4 mini-batches of size 16
+- Accumulate gradients across all 4 batches
+- Update weights once, achieving effective batch size 64
+
+---
+
+## Statistical Foundations
+
+### Probability vs. Likelihood
+
+A critical distinction in statistics:
+
+**[[Probability]]** answers: "What is the chance of observing event X given known parameters?"
+- Assumes parameters are fixed and trustworthy
+- Used in prediction tasks
+
+**[[Likelihood]]** answers: "How well do these parameters explain the observed data?"
+- Parameters are unknown; we assess their plausibility
+- Foundation for [[Maximum Likelihood Estimation]] (MLE)
+
+This distinction is fundamental to understanding statistical inference and model fitting.
+
+### Maximum Likelihood Estimation vs. Expectation Maximization
+
+**[[Maximum Likelihood Estimation]]** (MLE):
+- Requires labeled data
+- Directly maximizes probability of observing data given parameters
+- Straightforward optimization
+
+**[[Expectation Maximization]]** (EM):
+- Handles missing or latent variables
+-

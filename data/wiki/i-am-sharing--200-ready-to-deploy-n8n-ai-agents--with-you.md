@@ -2,172 +2,138 @@
 title: I am sharing _200+ Ready To Deploy n8n AI Agents_ with you
 source_file: I am sharing _200+ Ready To Deploy n8n AI Agents_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T20:15:31.590497
-raw_file_updated: 2026-04-17T20:15:31.590497
+compiled_at: 2026-04-17T20:54:19.044896
+raw_file_updated: 2026-04-17T20:54:19.044896
 version: 1
 sources:
   - file: I am sharing _200+ Ready To Deploy n8n AI Agents_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T20:15:31.590497
+    added_at: 2026-04-17T20:54:19.044896
 tags: []
 related_topics: []
 backlinked_by: []
 ---
-# n8n AI Agents and Workflows Library
-
-## Overview
-
-**n8n AI Agents and Workflows Library** is a comprehensive collection of 200+ ready-to-deploy automation workflows designed for [[n8n]], a powerful open-source workflow automation platform. This library provides pre-built solutions across multiple business domains including [[sales automation]], [[marketing automation]], [[IT operations]], and [[customer support]], enabling organizations to rapidly implement [[AI agents]] and intelligent automation without building from scratch.
+# n8n AI Agents: 200+ Ready-to-Deploy Workflows
 
 ## Summary
 
-This library represents a curated collection of production-ready [[n8n workflows]] that integrate with leading [[large language models]] ([[LLMs]]) such as [[OpenAI]], [[Google Gemini]], [[Claude]], and [[DeepSeek]], along with hundreds of third-party services and APIs. The workflows span from simple [[chatbot]] implementations to complex multi-agent systems with [[retrieval-augmented generation]] ([[RAG]]) capabilities, making enterprise-grade AI automation accessible to teams of all technical skill levels.
+A comprehensive collection of over 200 pre-built, production-ready [[n8n]] workflow templates spanning multiple business domains including [[AI Sales]], [[IT Operations]], [[Marketing Automation]], and [[Customer Support]]. These templates demonstrate practical implementations of [[AI agents]], [[RAG systems]], [[chatbots]], and [[automation workflows]] that can be deployed immediately without extensive configuration.
 
----
+## Overview
 
-## Contents
+The **200+ Ready-to-Deploy n8n AI Agents** collection represents a curated library of workflow templates designed for automation professionals, developers, and business operators. Each template integrates popular third-party services, [[Large Language Models]] (LLMs), and [[n8n]] nodes to solve specific business problems.
 
-- [Core Capabilities](#core-capabilities)
-- [AI Agent Categories](#ai-agent-categories)
-- [Sales and Revenue Operations](#sales-and-revenue-operations)
-- [Marketing and Content Creation](#marketing-and-content-creation)
-- [Customer Support and Service](#customer-support-and-service)
-- [IT Operations and Infrastructure](#it-operations-and-infrastructure)
-- [Data Processing and Analytics](#data-processing-and-analytics)
-- [Advanced Patterns and Architecture](#advanced-patterns-and-architecture)
-- [Learning Resources](#learning-resources)
-- [Metadata](#metadata)
+### Key Statistics
+- **Total Templates**: 200+
+- **Primary Categories**: 4 (Sales, IT Ops, Marketing, Support)
+- **Integration Partners**: 50+ platforms and services
+- **AI Models Supported**: [[OpenAI]], [[Google Gemini]], [[Claude]], [[DeepSeek]], [[Ollama]], and others
 
----
+## Core Workflow Categories
 
-## Core Capabilities
+### AI Assistants & Chatbots
 
-### Personal AI Assistants
+#### Personal AI Assistants
+[[Personal AI assistants]] form a major category of templates, offering intelligent automation for individual productivity:
 
-The library includes several implementations of intelligent personal assistants that integrate with communication platforms and productivity tools:
+- **Angie** - A [[Telegram]]-based personal assistant featuring voice and text interaction, capable of summarizing emails, managing calendar entries, handling task reminders, and retrieving contact information
+- **Multi-Platform Assistants** - Integration with [[Google Workspace]], [[LinkedIn]], [[Twitter]], and [[Gmail]] for centralized task execution
+- **Conversational Agents** - [[Memory]]-enabled assistants powered by [[Google Gemini]] that perform reasoning, web searches, calculations, and contextual responses
 
-**[[Angie - Personal AI Assistant]]** operates through [[Telegram]] with both voice and text interaction capabilities. This [[conversational AI]] system can:
-- Summarize daily emails automatically
-- Look up calendar entries and appointments
-- Remind users of upcoming tasks
-- Retrieve contact information from CRM systems
-- Process voice and text inputs seamlessly
+#### Domain-Specific Chatbots
+Specialized conversational agents designed for particular use cases:
 
-**[[AI Personal Assistant with GPT-4o]]** provides comprehensive productivity management through email, calendar, search, and [[CRM]] integration. This multi-channel assistant:
-- Analyzes priorities across [[Gmail]], [[Google Calendar]], and [[Slack]]
-- Generates daily briefings with actionable tasks
-- Provides executive-level productivity management
-- Maintains context across multiple communication channels
+- **Customer Support Bots** - [[WhatsApp]] and [[Telegram]] interfaces for handling customer inquiries, FAQ responses, and policy-based support
+- **Restaurant Automation** - Table booking systems, menu inquiries, and service information delivery
+- **E-commerce Support** - Product inquiry responders integrated with [[Google Sheets]] and product databases
+- **HR Service Bots** - Employee interaction handling through [[WhatsApp]] with intelligent routing and classification
 
-### Conversational Interfaces
+### Retrieval Augmented Generation (RAG) Systems
 
-Multiple workflow templates demonstrate [[conversational AI]] implementations across different platforms:
+[[RAG]] (Retrieval Augmented Generation) templates enable AI systems to answer questions based on custom knowledge bases:
 
-- **[[Conversational Telegram Bot]]** supporting text and voice messages with [[GPT-4o]] processing
-- **[[Multimodal Chat Assistant]]** handling text, images, and [[PDF]] documents
-- **[[WhatsApp Chatbot]]** for customer service with text, voice, image, and document support
-- **[[Local Chatbot with RAG]]** using document-based knowledge bases for accurate responses
+- **Document-Based Chatbots** - Systems using [[PDF]] uploads, [[Google Drive]] integration, and [[Pinecone]] vector databases for knowledge retrieval
+- **Vector Store Integration** - Templates utilizing [[Qdrant]], [[Pinecone]], and [[Supabase]] for semantic search and context-aware responses
+- **Knowledge Graph RAG** - [[InfraNodus]] GraphRAG implementation providing multi-expert knowledge bases without complex vector store setup
+- **RAG Starter Templates** - Simplified entry points for knowledge-based agent development with minimal configuration
 
-### Voice-Based Automation
+### Sales & Lead Generation
 
-Voice interaction patterns enable hands-free automation:
+The collection includes extensive [[Sales Automation]] workflows:
 
-- **[[Voice-Based Appointment Booking]]** using [[ElevenLabs]] for natural voice interaction
-- **[[AI Voice Chatbot with ElevenLabs]]** featuring knowledge base integration via [[InfraNodus GraphRAG]]
-- **[[Automated Restaurant Call Handling]]** with [[VAPI]] for virtual receptionist services
-- **[[Automate Call Scheduling]]** with voice AI and calendar integration
+#### Lead Generation & Prospecting
+- **Apollo Integration** - Automated lead discovery and enrichment with spreadsheet storage
+- **LinkedIn Scraping** - Profile data extraction for personalized outreach research
+- **Cold Calling Automation** - End-to-end workflows combining [[Apify]] web scraping, [[AI]] research, and [[WhatsApp]] messaging
+- **Lead Magnet Generation** - Research-backed article creation with automatic [[Google Docs]] publishing for LinkedIn sharing
 
----
+#### Sales Engagement
+- **Multi-Channel Sales Agents** - Unified [[WhatsApp]], [[Facebook Messenger]], [[Instagram DM]], and web chat interfaces with [[Airtable]] CRM backend
+- **Email Automation** - Cold email generation, personalized outreach, and sales letter creation using [[OpenAI GPT]] and [[Claude]]
+- **Sales Call Preparation** - Meeting assistants that compile email history and recent [[LinkedIn]] activity via [[WhatsApp]] alerts
+- **Quote Generation** - AI-curated quotes with [[PDF]] delivery and automatic email distribution
 
-## AI Agent Categories
+#### Sales Pipeline Management
+- **CRM Integration** - [[HubSpot]], [[Pipedrive]], [[Airtable]], and [[Odoo]] synchronization workflows
+- **Deal Analysis** - Win/loss classification, outcome analysis with [[Azure OpenAI]], and pattern summarization
+- **Sales Reporting** - Automated [[Magento]], [[Square]], and [[QuickBooks]] report generation with email distribution
+- **Follow-up Automation** - Multi-channel reminders across [[Slack]], [[Telegram]], [[Teams]], and [[Gmail]]
 
-### Multi-Agent Systems
+### Marketing & Content Creation
 
-The library demonstrates sophisticated [[multi-agent architecture]] patterns:
+#### Content Generation
+- **AI Video Production** - Automated short-form video creation using [[Seedance]], [[Veo3]], and [[Klap]] for [[TikTok]], [[YouTube Shorts]], and [[Instagram Reels]]
+- **ASMR Content** - Automated brainstorming, production, and publishing of trending [[YouTube Shorts]]
+- **Podcast Conversion** - Long-form podcast transformation into viral short-form clips with multi-platform posting
+- **Image Generation** - Prompt-driven [[DALL-E]] and [[Gemini]] image creation for marketing visuals, character art, and storyboards
 
-**[[AI Orchestrator: Dynamic Model Selection]]** intelligently routes user queries to the most suitable [[LLM]] based on request type, optimizing both performance and cost-efficiency.
+#### Social Media Automation
+- **LinkedIn Content** - Trending topic generation, AI writing, [[DALL-E]] image creation, and scheduled posting
+- **Multi-Platform Publishing** - Unified content distribution to [[Instagram]], [[Facebook]], [[LinkedIn]], [[Twitter/X]], and [[TikTok]]
+- **Engagement Automation** - Comment generation, reaction selection, and multilingual interaction on [[LinkedIn]] posts
+- **Trend-Based Content** - [[Google Trends]] monitoring with automatic [[LinkedIn]] post creation and [[Perplexity AI]] research
 
-**[[Collaborative Sales Planning]]** uses a CEO orchestrator agent that delegates to Marketing, Operations, and Finance sub-agents to produce coordinated sales-season plans exported to [[PDF]].
+#### Email & Campaign Management
+- **Email Labeling** - Automatic [[Gmail]] categorization using [[OpenAI]] language models
+- **Campaign Analysis** - Performance tracking, engagement-based follow-up triggers, and re-engagement strategies
+- **Newsletter Automation** - Content compilation, AI summarization, and scheduled distribution
 
-**[[Dual-Agent News Research]]** implements specialized agents where one agent researches news while another performs sentiment analysis, with seamless handoff between tasks.
+### IT Operations & DevOps
 
-**[[Multi-Modal Telegram Support Bot]]** accepts text, documents, images, and audio messages, interpreting them using [[OpenAI]] models with context-aware responses.
+#### Monitoring & Alerting
+- **Workflow Monitoring** - [[n8n]] error detection with [[Telegram]] notifications including execution IDs and error details
+- **Website Monitoring** - Multi-URL availability tracking with [[Google Sheets]] logging and [[Discord]] alerts
+- **SSL Certificate Monitoring** - Comprehensive certificate health assessment with dual verification and professional reporting
+- **Network Security** - Weekly [[Shodan]] queries for IP and port analysis with automated monitoring
 
-### Knowledge-Based Agents
+#### Automation & Infrastructure
+- **Backup Systems** - Automated [[n8n]] workflow backups to [[GitHub]], [[Google Drive]], and [[Dropbox]] with date-based organization
+- **Code Review Automation** - [[GitHub]] pull request analysis using [[OpenAI]] agents with custom best practices from [[Google Sheets]]
+- **GitLab Integration** - Merge request review, risk analysis, and automated merging via API
+- **Server Management** - Ubuntu package upgrade monitoring with email notifications and [[Linux]] VPS administration via [[SSH]]
 
-[[RAG]] (Retrieval-Augmented Generation) patterns enable agents to answer questions based on custom knowledge:
+#### System Administration
+- **IAM Compliance** - [[AWS]] MFA enforcement and access key cleanup with automated alerts
+- **Certificate Management** - [[AWS ACM]] expiry tracking and renewal workflows with [[Slack]] approval gates
+- **Key Compromise Response** - Automated IAM key deactivation and credential invalidation with human approval
+- **Cloud Backups** - Periodic backups from [[AWS S3]], [[Azure]], and [[Google Cloud]] to local [[MinIO]]
 
-- **[[RAG Chatbot for Company Documents]]** using [[Google Drive]] and [[Gemini]] with [[Pinecone]] vector database indexing
-- **[[Local Chatbot with RAG]]** supporting unlimited [[PDF]] uploads to [[Qdrant]] vector store
-- **[[RAG Starter Template]]** providing simple vector store setup with form triggers
-- **[[Company Website Chatbot Agent]]** using specialized sub-agents for different customer interaction types
-- **[[Build an All-Source Knowledge Assistant]]** combining [[Claude]], [[RAG]], [[Perplexity]], and [[Google Drive]]
+### Data & Analytics
 
-### Research and Analysis Agents
+#### Data Processing
+- **Web Scraping** - [[ScrapeNinja]] integration for HTML-to-JSON conversion with [[LLM]] extraction functions
+- **Database Interaction** - Natural language queries to [[PostgreSQL]], [[MySQL]], and [[SQLite]] via AI agents
+- **ETL Workflows** - [[Revit]] model extraction and parsing to [[Excel]] with structured data preparation
+- **Data Deduplication** - JavaScript-based duplicate removal from datasets using email matching
 
-Agents designed for information gathering and analysis:
+#### Reporting & Visualization
+- **Dashboard Generation** - Comprehensive n8n instance overview with workflow, node, and tag visualization
+- **Spreadsheet Analytics** - [[Google Sheets]] integration for data analysis, pivot tables, and automated reporting
+- **PDF Report Generation** - Branded [[PDF]] creation with automatic email distribution
+- **SQL Agent Tools** - AI-powered database querying with custom SQL tool integration
 
-- **[[AI Research Assistant via Telegram]]** using [[GPT-4o mini]], [[DeepSeek R1]], and [[SerpAPI]] for web research
-- **[[AI Web Researcher for Sales]]** preparing personalized outreach materials
-- **[[News Research and Sentiment Analysis Agent]]** with [[Gemini]] and [[SearXNG]]
-- **[[Deep Research - Sales Lead Magnet Agent]]** generating research-backed articles with automatic [[Google Docs]] export
+### Security & Compliance
 
----
-
-## Sales and Revenue Operations
-
-### Lead Generation and Qualification
-
-The library provides comprehensive lead generation automation:
-
-**[[Lead Gen Agent (Telegram)]]** turns a Telegram bot into an outbound prospecting machine using [[Apollo]] to find and qualify leads, with LinkedIn profile research capabilities.
-
-**[[AI-Powered Cold Call Machine]]** generates qualified leads from [[LinkedIn]], evaluates them using AI-based scoring, identifies decision-makers, and produces personalized cold call scripts saved to [[Google Sheets]] CRM.
-
-**[[Find High-Intent Sales Leads]]** scrapes [[Glassdoor]] job listings using [[Bright Data]] and generates targeted pitches with [[GPT]].
-
-**[[BeyondPresence Sales Intelligence]]** monitors video agent conversations in real-time to score leads (0-100+) based on buying signals with instant [[Slack]] alerts.
-
-### Sales Engagement and Outreach
-
-Multi-channel sales automation workflows:
-
-**[[Generate Personalized Sales Emails with LinkedIn Data]]** combines [[LinkedIn]] profile scraping with [[Claude 3.7]] via [[OpenRouter]] for personalized outreach at scale.
-
-**[[Automate Sales Cold Calling Pipeline]]** fully automates end-to-end cold calling using [[Apify]] for web scraping, [[RAG]] for content creation, and [[WhatsApp]] messaging.
-
-**[[Generate Cold Emails & Sales Letters]]** with [[OpenAI GPT]] and [[Google Docs]], exposing specialized tools for Sales Letter and Copy Assistant functions.
-
-**[[AI Sales Agent with Telegram Approvals]]** provides complete food delivery automation with orders, payments, customer service, and order tracking.
-
-**[[Multi-Platform AI Sales Agent]]** with [[RAG]], [[CRM]], calendar, and [[Stripe]] integration for lead qualification and booking automation.
-
-### Sales Pipeline Management
-
-Workflows for tracking and optimizing the sales process:
-
-**[[Automate Sales Pipeline: BuiltWith Technology Data to Trello]]** transforms technology stack data into actionable Trello lead cards with visual pipeline organization.
-
-**[[Track Pipedrive Deals in Google Sheets]]** pulls deals from [[Pipedrive]], categorizes by stage, and logs to [[Google Sheets]] for reporting.
-
-**[[Conversational Sales Agent for WooCommerce]]** detects customer intent, searches products, answers FAQs, generates [[Stripe]] payment links, and captures leads into CRM.
-
-**[[Analyze Sales Deal Outcomes with Azure OpenAI]]** processes deal outcomes, classifies win/loss reasons, and creates professional [[HTML]] email digests.
-
-### Sales Operations and Fulfillment
-
-Backend systems supporting sales execution:
-
-**[[Automate QuickBooks Customers & Sales Receipts]]** from [[Google Sheets]] entries, creating end-to-end customer profiles and accounting records.
-
-**[[Create QuickBooks Online Customers with Sales Receipts]]** for [[Stripe]] payments with automatic customer creation.
-
-**[[Automate PDF Purchase Orders to Sales Orders]]** in [[Adobe Commerce]] using AI to process PDF purchase orders via email.
-
-**[[Automate Sales Tax Calculation]]** using [[Sales Tax Calculator API]] with [[Google Sheets]] integration.
-
-**[[Generate AI-Curated Sales Quotes]]** with [[OpenAI]], [[Qdrant]], and [[CraftMyPDF]] for branded [[PDF]] delivery.
-
-### Sales Analytics and Reporting
-
-Data-
+#### Threat Detection
+- **Phishing Analysis** - Automated URL analysis using [[NixGuard AI]] for phishing and malware detection
+- **Email Security** - [[Gmail]] header analysis for IP reputation, spoofing detection, and sender verification

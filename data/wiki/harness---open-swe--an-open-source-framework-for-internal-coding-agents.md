@@ -2,13 +2,13 @@
 title: Harness - Open SWE_ An Open-Source Framework for Internal Coding Agents
 source_file: Harness - Open SWE_ An Open-Source Framework for Internal Coding Agents.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T20:11:38.227067
-raw_file_updated: 2026-04-17T20:11:38.227067
+compiled_at: 2026-04-17T20:50:22.337800
+raw_file_updated: 2026-04-17T20:50:22.337800
 version: 1
 sources:
   - file: Harness - Open SWE_ An Open-Source Framework for Internal Coding Agents.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T20:11:38.227067
+    added_at: 2026-04-17T20:50:22.337800
 tags: []
 related_topics: []
 backlinked_by: []
@@ -17,72 +17,27 @@ backlinked_by: []
 
 ## Summary
 
-**Open SWE** is an open-source framework for building internal [[coding agents]] that integrate with existing developer workflows. Built on [[Deep Agents]] and [[LangGraph]], it provides customizable architectural components based on patterns observed in production deployments at companies like Stripe, Ramp, and Coinbase. The framework emphasizes isolated execution environments, curated toolsets, and workflow integration through [[Slack]], [[Linear]], and [[GitHub]].
-
----
+**Open SWE** is an open-source framework built on [[Deep Agents]] and [[LangGraph]] that provides core architectural components for deploying [[AI coding agents]] in production engineering environments. The framework captures patterns observed in production implementations at companies like [[Stripe]], [[Ramp]], and [[Coinbase]], offering a customizable foundation for organizations building internal coding agents that integrate with existing developer workflows.
 
 ## Overview
 
-Open SWE captures architectural patterns observed across multiple production [[AI agent]] implementations. Rather than requiring engineers to adopt new interfaces, these systems integrate directly into existing workflows through familiar communication and task management platforms.
+Open SWE emerged from observing several engineering organizations independently developing internal coding agents that operate alongside their development teams. These systems—including Stripe's Minions, Ramp's Inspect, and Coinbase's Cloudbot—converged on similar architectural patterns despite being developed independently. This convergence suggested common requirements for deploying [[AI agents]] in production engineering contexts.
 
-### Key Insight
+The framework provides a reusable, customizable implementation of these patterns while remaining flexible enough for organizations to adapt components to their specific needs and infrastructure.
 
-Several major engineering organizations have independently developed internal coding agents that converge on similar architectural patterns:
-- Stripe's **Minions**
-- Ramp's **Inspect**
-- Coinbase's **Cloudbot**
+## Architecture
 
-Open SWE abstracts these common patterns into a reusable, customizable framework.
+Open SWE's architecture consists of six core components:
 
----
+### 1. Agent Harness: Deep Agents Composition
 
-## Architectural Patterns
+Rather than forking existing agents or building from scratch, Open SWE composes on the [[Deep Agents]] framework. This approach mirrors how Ramp built Inspect on top of OpenCode.
 
-### Isolated Execution Environments
+**Advantages of composition:**
+- **Upgrade path**: Improvements in Deep Agents (better context management, efficient planning, optimized token usage) can be incorporated without rebuilding customizations
+- **Customization without forking**: Organization-specific tools, prompts, and workflows remain as configuration rather than modifications to core agent logic
 
-Tasks run in dedicated cloud sandboxes with full permissions inside strict boundaries. This architecture:
-- Isolates the blast radius of agent mistakes from production systems
-- Allows agents to execute commands without approval prompts for each action
-- Provides a contained environment for testing and development work
-
-### Curated Toolsets
-
-Rather than accumulating tools over time, Open SWE maintains a focused, carefully selected set of tools. Research from Stripe indicates that tool curation matters more than tool quantity—their agents have access to approximately 500 tools, all carefully maintained.
-
-### Slack-First Invocation
-
-All three reference implementations prioritize [[Slack]] as the primary interface. This design choice:
-- Meets developers in existing communication workflows
-- Eliminates context switches to new applications
-- Reduces friction in agent adoption
-
-### Rich Context at Startup
-
-Agents pull full context from [[Linear]] issues, [[Slack]] threads, or [[GitHub]] PRs before beginning work. This approach:
-- Reduces overhead of discovering requirements through tool calls
-- Provides task-specific information upfront
-- Minimizes back-and-forth communication
-
-### Subagent Orchestration
-
-Complex tasks are decomposed and delegated to specialized child agents, each with:
-- Isolated context
-- Focused responsibilities
-- Independent execution paths
-
----
-
-## Open SWE Architecture
-
-### 1. Agent Harness: Composition on Deep Agents
-
-Open SWE composes on the [[Deep Agents]] framework rather than forking or building from scratch. This approach provides:
-
-**Advantages:**
-- **Upgrade path**: Improvements in context management, planning efficiency, and token usage flow automatically to customizations
-- **Customization without forking**: Org-specific tools, prompts, and workflows remain as configuration rather than core modifications
-
-**Supported Infrastructure:**
+Deep Agents provides essential infrastructure:
 - Built-in planning via `write_todos`
 - File-based context management
 - Native [[subagent]] spawning via the `task` tool
@@ -90,26 +45,25 @@ Open SWE composes on the [[Deep Agents]] framework rather than forking or buildi
 
 ### 2. Sandbox: Isolated Cloud Environments
 
-Each task runs in its own isolated cloud sandbox—a remote Linux environment with full shell access.
+Each task runs in its own isolated cloud sandbox—a remote [[Linux]] environment with full shell access. The repository is cloned in, and the agent receives complete permissions while errors remain contained within that environment.
 
-**Supported Providers:**
+**Supported sandbox providers:**
 - [[Modal]]
 - [[Daytona]]
 - [[Runloop]]
 - [[LangSmith]]
 - Custom implementations
 
-**Key Behaviors:**
-- Repository is cloned into the sandbox
-- Agent receives complete permissions within the boundary
-- Errors are contained within the environment
+**Key behaviors:**
 - Each conversation thread gets a persistent sandbox, reused across follow-up messages
-- Sandboxes automatically recreate if unreachable
+- Sandboxes automatically recreate if they become unreachable
 - Multiple tasks run in parallel, each in its own sandbox
+
+This follows the pattern: isolate first, then grant full permissions inside the boundary.
 
 ### 3. Tools: Curated, Not Accumulated
 
-Open SWE ships with a focused toolset designed for common coding tasks:
+Open SWE ships with a focused, carefully selected toolset rather than accumulating tools over time:
 
 | Tool | Purpose |
 |------|---------|
@@ -120,28 +74,21 @@ Open SWE ships with a focused toolset designed for common coding tasks:
 | `linear_comment` | Post updates to Linear tickets |
 | `slack_thread_reply` | Reply in Slack threads |
 
-**Built-in Deep Agents tools:**
-- `read_file`, `write_file`, `edit_file`
-- `ls`, `glob`, `grep`
-- `write_todos`
-- `task` (subagent spawning)
+**Built-in Deep Agents tools:** `read_file`, `write_file`, `edit_file`, `ls`, `glob`, `grep`, `write_todos`, and `task` (subagent spawning)
 
-**Design Philosophy:**
-A smaller, curated toolset is easier to test, maintain, and reason about. Organizations can add explicit tools for internal APIs, custom deployment systems, or specialized testing frameworks as needed.
+A smaller, curated toolset is easier to test, maintain, and reason about. Organizations can add additional tools for internal APIs, custom deployment systems, or specialized testing frameworks.
 
 ### 4. Context Engineering: AGENTS.md + Source Context
 
 Open SWE gathers context from two sources:
 
-**AGENTS.md File:**
-- Read from the repository root during sandbox execution
-- Injected into the system prompt
-- Encodes conventions, testing requirements, architectural decisions, and team-specific patterns
+**AGENTS.md file**: If a repository contains an `AGENTS.md` file at the root, it's read from the sandbox and injected into the system prompt. This file encodes:
+- Conventions
+- Testing requirements
+- Architectural decisions
+- Team-specific patterns
 
-**Source Context:**
-- Full [[Linear]] issue (title, description, comments) or [[Slack]] thread history
-- Assembled and passed to the agent before execution
-- Provides task-specific information without additional tool calls
+**Source context**: The full [[Linear]] issue (title, description, comments) or [[Slack]] thread history is assembled and passed to the agent before it starts, providing task-specific context without additional tool calls.
 
 This two-layer approach balances repository-wide knowledge with task-specific information.
 
@@ -149,15 +96,13 @@ This two-layer approach balances repository-wide knowledge with task-specific in
 
 Open SWE's orchestration combines two complementary mechanisms:
 
-**Subagents:**
-- Deep Agents framework supports spawning child agents via the `task` tool
-- Main agent delegates independent subtasks to isolated subagents
-- Each subagent has its own middleware stack, todo list, and file operations
+**Subagents**: The Deep Agents framework supports spawning child agents via the `task` tool. The main agent can delegate independent subtasks to isolated subagents, each with:
+- Its own middleware stack
+- Separate todo list
+- Independent file operations
 
-**Middleware:**
-Deterministic middleware hooks run around the agent loop:
-
-- **`check_message_queue_before_model`**: Injects follow-up messages ([[Linear]] comments or [[Slack]] messages that arrive mid-run) before the next model call, allowing users to provide additional input while the agent is working
+**Middleware**: Deterministic middleware hooks run around the agent loop:
+- **`check_message_queue_before_model`**: Injects follow-up messages (Linear comments or Slack messages arriving mid-run) before the next model call, allowing users to provide additional input while the agent is working
 - **`open_pr_if_needed`**: Acts as a safety net that commits and opens a PR if the agent didn't complete this step, ensuring critical steps happen reliably
 - **`ToolErrorMiddleware`**: Catches and handles tool errors gracefully
 
@@ -165,74 +110,71 @@ This separation between agentic (model-driven) and deterministic (middleware-dri
 
 ### 6. Invocation: Slack, Linear, and GitHub
 
-Open SWE follows the observed pattern of multi-platform invocation:
+Open SWE follows the observed pattern of Slack as a primary invocation surface:
 
-**Slack:**
-- Mention the bot in any thread
-- Supports `repo:owner/name` syntax to specify repository
+**Slack**: Mention the bot in any thread
+- Supports `repo:owner/name` syntax to specify which repository to work on
 - Agent replies in-thread with status updates and PR links
 
-**Linear:**
-- Comment `@openswe` on any issue
-- Agent reads full issue context
+**Linear**: Comment `@openswe` on any issue
+- Agent reads the full issue context
 - Reacts with 👀 to acknowledge
 - Posts results back as comments
 
-**GitHub:**
-- Tag `@openswe` in PR comments on agent-created PRs
-- Agent addresses review feedback and pushes fixes to the same branch
+**GitHub**: Tag `@openswe` in PR comments on agent-created PRs
+- Addresses review feedback
+- Pushes fixes to the same branch
 
-**Thread Management:**
 Each invocation creates a deterministic thread ID, so follow-up messages on the same issue or thread route to the same running agent.
 
-### 7. Validation: Prompt-Driven + Safety Nets
+## Validation and Safety
 
-The agent is instructed to:
-- Run linters and formatters
-- Execute tests before committing
-- Use the `open_pr_if_needed` middleware as a backstop
+The agent is instructed to run linters, formatters, and tests before committing. The `open_pr_if_needed` middleware acts as a backstop—if the agent finishes without opening a PR, the middleware handles it automatically.
 
-Organizations can extend this validation layer by adding:
-- Deterministic CI checks
+Validation can be extended by adding:
+- Deterministic [[CI]] checks
 - Visual verification
 - Review gates as additional middleware
 
----
-
 ## Why Deep Agents
 
-Open SWE is built on [[Deep Agents]] for several architectural advantages:
+[[Deep Agents]] provides the foundation that makes Open SWE's architecture composable and maintainable:
 
 ### Context Management
-
-Long-running coding tasks produce large amounts of intermediate data (file contents, command outputs, search results). [[Deep Agents]] handles this through:
-- File-based memory
-- Offloading large results instead of keeping everything in conversation history
-- Prevention of context overflow when working on larger codebases
+Long-running coding tasks produce large amounts of intermediate data (file contents, command outputs, search results). Deep Agents handles this through file-based memory, offloading large results instead of keeping everything in conversation history. This prevents context overflow when working on larger codebases.
 
 ### Planning Primitives
+The built-in `write_todos` tool provides a structured way to:
+- Break down complex work
+- Track progress
+- Adapt plans as new information emerges
 
-The built-in `write_todos` tool provides:
-- Structured way to break down complex work
-- Progress tracking
-- Plan adaptation as new information emerges
-- Particular utility for multi-step tasks spanning extended periods
+This proves particularly helpful for multi-step tasks spanning extended periods.
 
 ### Subagent Isolation
-
-When the main agent spawns a child agent via the `task` tool:
-- Subagent gets its own isolated context
-- Different subtasks don't pollute each other's conversation history
-- Leads to clearer reasoning on complex, multi-faceted work
+When the main agent spawns a child agent via the `task` tool, that subagent gets its own isolated context. Different subtasks don't pollute each other's conversation history, leading to clearer reasoning on complex, multi-faceted work.
 
 ### Middleware Hooks
-
-[[Deep Agents]]' middleware system allows:
-- Injection of deterministic logic at specific points in the agent loop
-- Implementation of message injection and automatic PR creation
-- Behaviors that need to happen reliably
+Deep Agents' middleware system allows injection of deterministic logic at specific points in the agent loop. This is how Open SWE implements message injection and automatic PR creation—behaviors that need to happen reliably.
 
 ### Upgrade Path
+Because Deep Agents is actively developed as a standalone library, improvements to context compression, prompt caching, planning efficiency, and [[subagent]] orchestration can flow to Open SWE without requiring users to rebuild customizations.
 
-Because [[Deep Agents]] is actively developed as a standalone library:
-- Improvements to context compression, prompt caching, planning efficiency,
+## Patterns from Production Deployments
+
+Analysis of Stripe's Minions, Ramp's Inspect, and Coinbase's Cloudbot revealed several convergent patterns:
+
+### Isolated Execution Environments
+Tasks run in dedicated cloud sandboxes with full permissions inside strict boundaries. This isolates the blast radius of mistakes from production systems while allowing agents to execute commands without approval prompts for each action.
+
+### Curated Toolsets
+Rather than accumulating tools over time, production systems maintain carefully selected toolsets. Stripe's agents have access to approximately 500 tools, but these are curated and maintained. Tool curation appears to matter more than tool quantity.
+
+### Slack-First Invocation
+All three systems integrate with [[Slack]] as a primary interface, meeting developers in their existing communication workflows rather than requiring context switches to new applications.
+
+### Rich Context at Startup
+Agents pull full context from [[Linear]] issues, Slack threads, or [[GitHub]] PRs before beginning work, reducing the overhead of discovering requirements through tool calls.
+
+### Subagent Orchestration
+Complex tasks get decomposed and delegated to specialized child agents, each with isolated context

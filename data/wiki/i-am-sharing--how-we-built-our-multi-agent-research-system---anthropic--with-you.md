@@ -2,208 +2,221 @@
 title: I am sharing _How we built our multi-agent research system _ Anthropic_ with you
 source_file: I am sharing _How we built our multi-agent research system _ Anthropic_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T20:13:50.719867
-raw_file_updated: 2026-04-17T20:13:50.719867
+compiled_at: 2026-04-17T20:52:40.290035
+raw_file_updated: 2026-04-17T20:52:40.290035
 version: 1
 sources:
   - file: I am sharing _How we built our multi-agent research system _ Anthropic_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T20:13:50.719867
+    added_at: 2026-04-17T20:52:40.290035
 tags: []
 related_topics: []
 backlinked_by: []
 ---
-# Multi-Agent Research System at Anthropic
+# Multi-Agent Research System Architecture
 
 ## Summary
 
-Anthropic's Research feature implements a sophisticated [[multi-agent system]] that uses multiple [[Claude]] language models working in parallel to conduct complex research tasks more effectively than single-agent approaches. The system employs an orchestrator-worker architecture where a lead agent coordinates specialized subagents to explore different aspects of research queries simultaneously. This approach achieved 90.2% performance improvement over single-agent systems on internal evaluations, though it requires careful [[prompt engineering]], robust [[evaluation methodology]], and significant production engineering to maintain reliability at scale.
+Anthropic's Research feature demonstrates a sophisticated [[multi-agent system]] that uses multiple [[Claude]] agents working in parallel to explore complex topics more effectively than single-agent approaches. The system employs an orchestrator-worker pattern where a lead agent coordinates specialized subagents, achieving 90.2% performance improvement over single-agent systems on breadth-first research queries. This architecture required novel approaches to [[prompt engineering]], [[agent evaluation]], and production reliability to transition from prototype to reliable production system.
 
 ## Overview
 
-[[Claude]] now includes Research capabilities that enable it to search across the web, [[Google Workspace]], and various integrations to accomplish complex research tasks. The development of this multi-agent system from prototype to production revealed critical lessons about [[system architecture]], [[tool design]], and [[prompt engineering]] that are applicable to building other multi-agent systems.
+The multi-agent research system represents a significant advancement in [[artificial intelligence]] application design. Rather than using traditional linear pipelines or static [[retrieval-augmented generation]] (RAG), the system dynamically coordinates multiple agents to search for information simultaneously across web sources, Google Workspace, and integrated tools.
 
-A multi-agent system consists of multiple [[AI agents]] (language models autonomously using tools in loops) working together toward common objectives. The Research feature's key innovation is its ability to handle open-ended problems that are difficult to predict in advance, making it particularly well-suited for research tasks that require dynamic adaptation and exploration.
+### Key Innovation
 
-## Benefits of Multi-Agent Architecture
+The fundamental insight driving this architecture is that research tasks are inherently unpredictable and path-dependent. Unlike traditional software pipelines that follow predetermined steps, research requires continuous adaptation based on emerging discoveries. Multi-agent systems excel at this because they:
 
-### Handling Unpredictability
-
-Research work involves inherently unpredictable problems where fixed paths cannot be predetermined. The dynamic, path-dependent nature of research requires systems that can:
-
-- Continuously update approaches based on discoveries
-- Follow leads that emerge during investigation
-- Pivot or explore tangential connections as needed
-- Operate autonomously for many turns
-
-Traditional linear, one-shot [[pipeline|pipelines]] cannot handle these requirements, making [[AI agents]] with iterative decision-making capabilities essential.
-
-### Information Compression Through Parallelization
-
-The essence of search is compression—distilling insights from vast information sources. Multi-agent systems facilitate compression by:
-
-- Operating multiple agents in parallel with separate context windows
-- Exploring different aspects of questions simultaneously
-- Condensing the most important information tokens for the lead agent
-- Providing separation of concerns through distinct tools, prompts, and exploration trajectories
-- Reducing path dependency and enabling thorough independent investigations
-
-### Scaling Intelligence
-
-Once intelligence reaches a threshold, multi-agent systems become vital for scaling performance. While individual humans have become more intelligent over millennia, human societies have become exponentially more capable through collective intelligence and coordination. Similarly, even generally-intelligent [[AI agents]] face limits when operating as individuals; groups of agents accomplish far more.
-
-### Performance Metrics
-
-Internal evaluations demonstrated significant performance improvements:
-
-- **Multi-agent system with [[Claude Opus 4]] lead agent and [[Claude Sonnet 4]] subagents outperformed single-agent Claude Opus 4 by 90.2%** on internal research evaluations
-- Example: When identifying all board members of Information Technology S&P 500 companies, the multi-agent system succeeded through task decomposition while the single agent failed with sequential searches
-
-### Token Efficiency Analysis
-
-Analysis of the BrowseComp evaluation revealed that three factors explain 95% of performance variance:
-
-1. **Token usage**: 80% of variance explained by total tokens consumed
-2. **Tool calls**: Number of tool invocations
-3. **Model choice**: Selection of [[Claude]] model versions
-
-This validates the architecture that distributes work across agents with separate context windows, effectively scaling token usage for complex tasks. Notably, upgrading to [[Claude Sonnet 4]] provided larger performance gains than doubling the token budget on earlier models, demonstrating the importance of model efficiency.
-
-### Economic Considerations
-
-While multi-agent systems deliver superior results, they have significant costs:
-
-- Agents typically use approximately **4× more tokens than chat interactions**
-- Multi-agent systems use approximately **15× more tokens than standard chats**
-- Economic viability requires tasks where the value justifies increased token consumption
-
-### Limitations and Constraints
-
-Multi-agent systems are not universally applicable. They work poorly for:
-
-- Domains requiring all agents to share identical context
-- Tasks involving many dependencies between agents
-- Most [[coding]] tasks with fewer parallelizable components
-- Situations requiring real-time agent coordination and delegation
-
-Multi-agent systems excel at valuable tasks involving heavy parallelization, information exceeding single context windows, and interfacing with numerous complex tools.
+- Operate with separate [[context windows]], enabling parallel exploration of different aspects
+- Provide separation of concerns through distinct tools and exploration trajectories
+- Reduce path dependency through independent investigations
+- Scale token usage across multiple agents to handle information exceeding single context window limits
 
 ## System Architecture
 
 ### Orchestrator-Worker Pattern
 
-The Research system uses a multi-agent architecture based on the orchestrator-worker pattern:
+The Research system uses a hierarchical architecture where:
 
-- **Lead Agent (Orchestrator)**: Analyzes queries, develops research strategy, and spawns specialized subagents
-- **Subagents (Workers)**: Operate in parallel, exploring different aspects of the research question simultaneously
+1. **Lead Agent (Orchestrator)**: Analyzes user queries, develops research strategy, and spawns specialized subagents
+2. **Subagents (Workers)**: Execute specific research tasks in parallel, using [[search tools]] and evaluation mechanisms
+3. **Citation Agent**: Post-processes findings to ensure proper source attribution
 
 ### Workflow Process
 
 ```
 User Query
     ↓
-Lead Agent Analysis & Planning
+Lead Agent Planning
     ↓
-Subagent Creation (Parallel)
+Parallel Subagent Creation
     ↓
-Iterative Search & Evaluation
+Independent Information Gathering
     ↓
-Result Synthesis & Quality Assessment
+Result Synthesis & Decision Making
     ↓
 Citation Processing
     ↓
-Final Output to User
+Final Output
 ```
 
-### Key Process Steps
+The lead agent saves its research plan to external memory to persist context when approaching token limits (200,000+ tokens). Each subagent independently performs web searches, evaluates results using [[interleaved thinking]], and returns findings to the orchestrator.
 
-1. **Lead Agent Planning**: When a user submits a query, the LeadResearcher agent:
-   - Analyzes the query
-   - Develops a comprehensive strategy
-   - Saves the plan to [[Memory]] to persist context (important when context window exceeds 200,000 tokens)
-   - Spawns specialized Subagents with specific research tasks
+### Comparison to Traditional Approaches
 
-2. **Parallel Subagent Execution**: Each Subagent independently:
-   - Performs web searches using available tools
-   - Evaluates tool results using interleaved thinking
-   - Returns findings to the LeadResearcher
-   - Operates with its own context window and exploration trajectory
+Unlike static RAG systems that retrieve pre-identified chunks similar to input queries, this architecture:
+- Dynamically finds relevant information
+- Adapts to new findings iteratively
+- Analyzes results to formulate high-quality answers
+- Enables continuous refinement of search strategy
 
-3. **Iterative Synthesis**: The LeadResearcher:
-   - Synthesizes results from multiple subagents
-   - Assesses whether additional research is needed
-   - Creates additional subagents or refines strategy as necessary
+## Performance Characteristics
 
-4. **Citation Processing**: Once sufficient information is gathered:
-   - The system passes findings to a CitationAgent
-   - Citations are identified and properly attributed to sources
-   - All claims are verified against their sources
+### Benchmarking Results
 
-5. **Result Delivery**: Final research results with complete citations are returned to the user
+Internal evaluations demonstrate significant performance advantages:
 
-### Distinction from Traditional Approaches
+- **Multi-agent vs. Single-agent**: Multi-agent system with [[Claude Opus 4]] lead agent and [[Claude Sonnet 4]] subagents outperformed single-agent Claude Opus 4 by **90.2%** on internal research evaluation
+- **Example task**: Identifying all board members of Information Technology S&P 500 companies—multi-agent system succeeded through task decomposition while single-agent system failed with sequential searches
+- **Token efficiency**: Token usage explains 80% of performance variance, with model choice and tool calls accounting for remaining 15%
 
-Unlike traditional [[Retrieval Augmented Generation (RAG)]] systems that use static retrieval, the multi-agent architecture employs:
+### Token Economics
 
-- **Dynamic search** that adapts to new findings
-- **Multi-step processes** that analyze results and formulate high-quality answers
-- **Iterative refinement** based on intermediate discoveries
-- **Flexible tool usage** rather than predetermined retrieval paths
+The system trades increased token consumption for improved performance:
+
+- **Agents vs. chat**: ~4× more tokens than standard chat interactions
+- **Multi-agent vs. chat**: ~15× more tokens than standard interactions
+- **Economic requirement**: Tasks must justify increased token costs through sufficiently high value
+
+### Optimal Use Cases
+
+Multi-agent systems excel at:
+- Valuable tasks with heavy parallelization potential
+- Information exceeding single context window capacity
+- Complex tool integration scenarios
+- Breadth-first queries pursuing multiple independent directions
+
+Multi-agent systems are less suitable for:
+- Domains requiring shared context across all agents
+- Tasks with heavy interdependencies between agents
+- Most coding tasks (limited parallelization opportunities)
+- Real-time agent coordination and delegation
 
 ## Prompt Engineering Principles
 
-Effective multi-agent systems rely heavily on prompt engineering, as each agent is steered by its prompt instructions. The following principles proved effective:
+### Core Strategies
 
-### 1. Think Like Your Agents
+**1. Think Like Your Agents**
+Develop accurate mental models of agent behavior by simulating execution with exact prompts and tools. Observing step-by-step execution reveals failure modes: agents continuing with sufficient results, using verbose queries, or selecting incorrect tools.
 
-Understanding agent behavior is essential for effective iteration:
+**2. Teach Orchestrator Delegation**
+Lead agents must receive detailed task descriptions including:
+- Specific objectives
+- Output format requirements
+- Tool and source guidance
+- Clear task boundaries
 
-- Build simulations using the exact prompts and tools from production systems
-- Watch agents work step-by-step to identify failure modes
-- Develop accurate mental models of agent behavior
-- Recognize obvious improvement opportunities through direct observation
+Early attempts using simple instructions like "research the semiconductor shortage" resulted in vague interpretations and duplicated work across subagents.
 
-Common failure modes revealed through simulation:
+**3. Scale Effort to Query Complexity**
+Embed explicit scaling rules in prompts:
+- Simple fact-finding: 1 agent, 3-10 tool calls
+- Direct comparisons: 2-4 subagents, 10-15 calls each
+- Complex research: 10+ subagents with clearly divided responsibilities
 
-- Agents continuing research when sufficient results already obtained
-- Overly verbose search queries reducing result relevance
-- Incorrect tool selection for tasks
+**4. Critical Tool Design and Selection**
+Agent-tool interfaces are as critical as [[human-computer interaction]] (HCI) design:
+- Examine all available tools before selection
+- Match tool usage to user intent
+- Prefer specialized tools over generic ones
+- Provide explicit heuristics for tool selection
+- Ensure distinct tool purposes with clear descriptions
 
-### 2. Teach the Orchestrator How to Delegate
+Poor tool descriptions send agents down incorrect paths; a 40% decrease in task completion time resulted from improved tool descriptions.
 
-The lead agent must decompose queries into clear subtasks with detailed descriptions:
+**5. Enable Agent Self-Improvement**
+[[Claude 4]] models can serve as prompt engineers:
+- Diagnose failure modes from prompts
+- Suggest improvements
+- Tool-testing agents can rewrite descriptions to avoid failures
+- Iterative testing reveals key nuances and bugs
 
-- **Objective**: Clear goal for each subagent
-- **Output format**: Specific structure for returned results
-- **Tool guidance**: Explicit direction on which tools and sources to use
-- **Task boundaries**: Clear limits on scope and effort
+**6. Start Wide, Then Narrow Down**
+Mirror expert human research practices:
+- Begin with short, broad queries
+- Evaluate available information
+- Progressively narrow focus
+- Avoid overly specific queries that return few results
 
-**Problem**: Early versions with simple instructions like "research the semiconductor shortage" led to:
-- Subagent work duplication
-- Information gaps
-- Misinterpreted tasks
-- Ineffective division of labor (e.g., one subagent exploring 2021 automotive chip crisis while two others duplicated 2025 supply chain investigations)
+**7. Guide the Thinking Process**
+[[Extended thinking mode]] serves as a controllable scratchpad:
+- Lead agents use thinking to plan approaches and assess tool fit
+- Determine query complexity and subagent count
+- Define each subagent's role
+- Subagents use interleaved thinking after tool results to evaluate quality and identify gaps
+- Extended thinking improved instruction-following, reasoning, and efficiency
 
-**Solution**: Detailed task descriptions prevent duplication and ensure comprehensive coverage.
+**8. Parallel Tool Calling**
+Transform speed and performance through parallelization:
+- Lead agent spins up 3-5 subagents in parallel rather than serially
+- Subagents use 3+ tools in parallel
+- Result: Up to 90% reduction in research time for complex queries
 
-### 3. Scale Effort to Query Complexity
+## Agent Evaluation Methods
 
-Agents struggle to judge appropriate effort levels. Embedding scaling rules in prompts helps:
+### Unique Evaluation Challenges
 
-- **Simple fact-finding**: 1 agent with 3-10 tool calls
-- **Direct comparisons**: 2-4 subagents with 10-15 calls each
-- **Complex research**: 10+ subagents with clearly divided responsibilities
+Multi-agent systems present evaluation difficulties absent in traditional systems:
+- Agents may take completely different valid paths to identical goals
+- No single "correct" sequence of steps to validate
+- Require flexible evaluation judging outcomes and process reasonableness
+- Non-deterministic behavior even with identical starting conditions
 
-Explicit guidelines prevent overinvestment in simple queries, a common early failure mode.
+### Evaluation Approaches
 
-### 4. Tool Design and Selection Are Critical
+**Start Early with Small Samples**
+- Begin with ~20 queries representing real usage patterns
+- Early-stage changes often show dramatic impact (30% → 80% success)
+- Small sample sizes sufficient to detect large effect sizes
+- Don't delay evaluations waiting for large-scale test sets
 
-Agent-tool interfaces are as critical as [[human-computer interfaces]]:
+**LLM-as-Judge Evaluation**
+Scalable evaluation of free-form research outputs using LLM judges evaluating against rubric criteria:
+- **Factual accuracy**: Claims match sources
+- **Citation accuracy**: Cited sources match claims
+- **Completeness**: All requested aspects covered
+- **Source quality**: Primary sources preferred over secondary
+- **Tool efficiency**: Appropriate tool usage and call count
 
-- **Right tool selection is often strictly necessary**: Searching the web for context existing only in Slack dooms the agent from the start
-- **Tool description quality matters**: Poor descriptions send agents down completely wrong paths
-- **Explicit heuristics help agents choose correctly**:
-  - Examine all available tools first
-  - Match tool usage to user intent
-  - Search the web for broad external exploration
-  - Prefer specialized tools over generic ones
+Single LLM call with unified prompt outputting 0.0-1.0 scores and pass-fail grades proved most consistent with human judgments.
+
+**Human Evaluation**
+Manual testing catches automation-missed edge cases:
+- Hallucinated answers on unusual queries
+- System failures and subtle biases
+- Source selection problems (e.g., SEO-optimized content farms over authoritative sources)
+- Essential for production reliability despite automated evaluations
+
+### Emergent Behavior Considerations
+
+Multi-agent systems exhibit emergent behaviors arising without specific programming. Small changes to lead agent prompts unpredictably affect subagent behavior, requiring:
+- Understanding interaction patterns beyond individual agent behavior
+- Prompts as collaboration frameworks rather than strict instructions
+- Clear division of labor definitions
+- Solid heuristics and observability
+- Tight feedback loops
+
+## Production Reliability and Engineering
+
+### State Management Challenges
+
+Agents are inherently stateful, maintaining context across many tool calls:
+- Minor system failures can cascade into catastrophic agent failures
+- Errors compound across long-running processes
+- Restarts are expensive and frustrating for users
+- Solutions require durable execution and graceful error handling
+
+**Mitigation strategies:**
+- Resume execution from checkpoint rather than restart
+- Leverage model intelligence for graceful error handling (inform agents of tool failures, enable adaptation)
+- Combine AI adaptability
