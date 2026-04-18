@@ -108,6 +108,16 @@ class WikiCompiler:
                     elif line.startswith("ingested_from:"):
                         metadata["ingested_from"] = line.split(":", 1)[1].strip()
 
+        # If no source_url found in frontmatter, try to extract from markdown content
+        # (for older scraped files that have **Source:** markdown links)
+        if not metadata.get("source_url"):
+            import re
+            # Look for **Source:** [URL](URL) pattern
+            match = re.search(r'\*\*Source:\*\*\s+\[(https?://[^\]]+)\]', content)
+            if match:
+                metadata["source_url"] = match.group(1)
+                metadata["ingested_from"] = "url"
+
         return metadata
 
     def _generate_wiki_entry(self, content: str, title: str, source: str) -> str:
