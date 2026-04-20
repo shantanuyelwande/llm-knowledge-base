@@ -40,6 +40,10 @@ jobs:
       run: |
         cp data/output/knowledge.html data/output/index.html
 
+    - name: Copy ingest.html
+      run: |
+        cp ingest.html data/output/ingest.html
+
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
