@@ -4,13 +4,13 @@ source_file: share-google-S4lTnOo7l96jQZFyP-1776347437.md
 source_url: https://share.google/S4lTnOo7l96jQZFyP
 ingested_from: url
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-20T05:18:47.333319
-raw_file_updated: 2026-04-20T05:18:47.333319
+compiled_at: 2026-04-21T04:53:35.150388
+raw_file_updated: 2026-04-21T04:53:35.150388
 version: 1
 sources:
   - file: share-google-S4lTnOo7l96jQZFyP-1776347437.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-20T05:18:47.333319
+    added_at: 2026-04-21T04:53:35.150388
 tags: []
 related_topics: []
 backlinked_by: []
@@ -19,216 +19,212 @@ backlinked_by: []
 
 ## Summary
 
-This article explores how to build custom [[AI agent|AI agents]] using the [[OpenAI Agents SDK]] integrated with [[Modal]] for scalable, parallel execution. It demonstrates a progression from a basic coding agent to a sophisticated multi-agent system capable of running complex tasks like [[Parameter Golf]] optimization challenges on [[GPU]] infrastructure. The guide emphasizes composable architecture patterns including [[agent orchestration]], [[sandbox|sandboxes]], memory management, and async parallel processing.
-
----
+This article explores how to build custom [[AI Agent|agent harnesses]] using the [[OpenAI Agents SDK]] integrated with [[Modal]] infrastructure. It demonstrates a progressive approach to creating sophisticated agentic systems, starting from basic coding agents and advancing to parallel, GPU-accelerated multi-agent architectures capable of handling complex research tasks.
 
 ## Overview
 
-The [[OpenAI Agents SDK]] provides a foundational framework for building agent harnesses—the tools and context that enable [[Large Language Models]] (LLMs) to autonomously complete coding, research, and other complex tasks. When combined with [[Modal]]'s compute infrastructure, particularly its [[Sandbox|Sandboxes]] and [[GPU]] resources, developers can create powerful, scalable systems for autonomous work.
-
-This approach represents a significant shift from using off-the-shelf agent solutions like Codex or Claude Code toward building customized internal agent systems, as demonstrated by companies like [[Ramp]] with their background coding agents.
-
----
+The [[OpenAI Agents SDK]] represents a significant advancement in building customizable AI agent systems. Unlike off-the-shelf solutions such as Codex and Claude Code, the SDK provides developers with the building blocks needed to construct powerful internal agentic tools tailored to specific organizational needs. This guide demonstrates integration with [[Modal]], a cloud platform specializing in serverless computing and GPU resources, to create scalable agent systems.
 
 ## Core Concepts
 
-### What is an Agent?
+### What is an Agent Harness?
 
-An [[AI agent|Agent]] is fundamentally a loop that runs an [[Large Language Model|LLM]] with access to callable tools (functions) until a task reaches completion. The broader ecosystem around this core loop—including tools, state management, memory, and execution environment—is called a "harness."
+An **agent harness** is the complete system built around a core [[AI Agent]] loop. It encompasses:
+- The fundamental agent loop (an LLM running tools iteratively to task completion)
+- Supporting tools and functions available to the agent
+- State management and memory systems
+- Context management strategies
+- Integration layers with external systems
 
-### The Agent Harness
+The harness represents the product engineering layer where developers customize agents for specific use cases.
 
-An agent harness encompasses:
-- **Tools**: Functions the agent can invoke
-- **State**: Context and memory available to the agent
-- **Environment**: The execution context (local, sandboxed, etc.)
-- **Capabilities**: Bound sets of tools and resources
+### The Basic Coding Agent
 
----
+The simplest agent implementation is a loop containing:
+1. An [[LLM|Large Language Model]] that reasons about tasks
+2. A set of available tools the agent can invoke
+3. An `exec()` function allowing shell command execution
 
-## Building Progression
+**Security Consideration:** Basic implementations executing arbitrary commands on the host system pose significant security risks and are not recommended for production use.
 
-### Stage 1: Basic Local Coding Agent
+## Progressive Architecture Development
 
-The simplest agent implementation provides an `exec(command)` tool that allows the LLM to run arbitrary shell commands. While functional, this approach poses significant security risks with malicious prompts or unreliable models.
+### Stage 1: Securing with Sandboxes
 
-**Key limitation**: Operates on the host system with full access.
+[[Sandbox|Sandboxes]] are isolated Linux environments built on VMs or security-hardened containers. Integrating sandboxes provides:
 
-### Stage 2: Sandboxed Execution
+- **Isolation**: The LLM operates within a contained environment rather than the host system
+- **Safety**: Arbitrary code execution cannot compromise the host
+- **Resource Control**: GPU allocation and computational resources are managed independently
 
-[[Modal]] provides [[Sandbox|Sandboxes]]—isolated Linux environments running on VMs or security-hardened containers. The [[OpenAI Agents SDK]] includes a `SandboxAgent` class that:
-
-- Manages remote sandbox execution
-- Includes a `ShellTool` with built-in guardrails
-- Maintains a `ModalSandboxSession` client connection
+The OpenAI Agents SDK provides a `SandboxAgent` class that:
+- Pre-loads tools for remote sandbox interaction
+- Includes a `ShellTool` class with built-in guardrails
+- Manages `ModalSandboxSession` for client-sandbox communication
 - Supports [[GPU]] attachment via `ModalSandboxClientOptions`
 
-This approach isolates the agent's execution environment from the host system while maintaining full capability.
+### Stage 2: Adding Memory with Sessions
 
-### Stage 3: Memory and Sessions
+By default, agents are stateless—each invocation has no knowledge of previous interactions. **Sessions** solve this by:
 
-By default, agents are stateless. The [[OpenAI Agents SDK]] provides `Sessions` objects that:
+- Accumulating conversation context across multiple agent runs
+- Maintaining state across different agent instances
+- Enabling multi-turn interactions with persistent memory
 
-- Accumulate context across multiple agent runs
-- Maintain conversation history and state
-- Persist across different agent instances
-- Enable multi-turn interactions
+**Challenge Introduced:** [[Context Rot|Context rot]] emerges when memory accumulates indefinitely, requiring intelligent context management strategies.
 
-**Challenge introduced**: [[Context rot]]—the degradation of context quality as memory accumulates indefinitely.
+### Stage 3: Orchestration with Subagents
 
-**Solution**: Explicit context management and selective memory reset strategies.
+To manage long-horizon tasks while controlling context bloat, agents are split into two types:
 
-### Stage 4: Orchestration with Subagents
+**Orchestrator Agent:**
+- Maintains high-level task memory
+- Makes strategic decisions
+- Delegates implementation work
 
-To manage long-horizon tasks while controlling [[context window|context]] bloat, the architecture splits into:
+**Subagent:**
+- Receives focused task descriptions
+- Operates with fresh context window
+- Returns work summaries rather than detailed logs
+- Session memory is discarded after task completion
 
-- **Orchestrator Agent**: Main agent maintaining high-level task context and memory
-- **Subagents**: Short-lived agents spawned for focused, specific tasks with fresh context windows
+This separation keeps orchestrator context lean while enabling specialized task execution.
 
-The orchestrator has an `invoke_subagent` tool that:
-- Creates a new agent with isolated [[Session|Sessions]]
-- Returns a summary of work completed
-- Keeps orchestrator context lean and focused
+### Stage 4: Asynchronous Parallel Processing
 
-This pattern follows [[agent orchestration]] principles.
+A **SubAgentPool** manages multiple concurrent subagents:
 
-### Stage 5: Parallel Async Execution
+- Orchestrator spawns parallel subagents without blocking
+- `asyncio.Future` objects track work in progress
+- Tools enable selective waiting for specific tasks to complete
+- Orchestrator visibility maintained through:
+  - **Hooks**: Track active tools for each subagent
+  - **Status Updates**: Subagents report progress without exiting
+  - **List Subagents Tool**: Provides orchestrator with real-time worker status
 
-Rather than blocking on subagent completion, a `SubAgentPool` enables:
+### Stage 5: Resource Management with Quotas
 
-- Multiple parallel subagents managed by the orchestrator
-- Async task execution using `asyncio.Future`
-- Non-blocking orchestrator behavior
-- Tools for selective waiting on specific work threads
+GPU resource costs are controlled through quota systems:
 
-**Visibility mechanisms**:
-- **Hooks**: Track active tools in each subagent
-- **Status tool**: Allows subagents to report progress without exiting
-- **List subagents tool**: Shows orchestrator the state of all active subagents
+- Fixed limits on expensive GPU resources (e.g., 8x H100s)
+- Prevents unbounded spawning of parallel subagents
+- Balances computational capability with cost constraints
 
-### Stage 6: Resource Management with Quotas
+### Stage 6: Filesystem Snapshots for Deduplication
 
-With unbounded async spawning capability, quota systems become essential to:
-- Limit concurrent [[GPU]] usage
-- Control expensive resource allocation
-- Prevent runaway compute costs
-- Maintain predictable resource consumption
+**Filesystem Snapshots** freeze sandbox state into reusable images, enabling:
 
-### Stage 7: Filesystem Snapshots
+- **Efficiency**: New subagents branch from established checkpoints rather than starting from scratch
+- **Context Management**: Filesystems serve as implicit memory, offloading information from token-limited [[Context Window|context windows]]
+- **Artifact Persistence**: Code repositories and trained models remain available to future agents
+- **Branching**: Multiple work threads can diverge from known-good states
 
-[[Filesystem Snapshot|Filesystem Snapshots]] freeze sandbox state into reusable images, enabling:
+### Stage 7: Skills Subsystem
 
-- **Work deduplication**: Subagents start from pre-configured checkpoints rather than from scratch
-- **Reduced setup overhead**: Eliminates redundant dependency installation and repository cloning
-- **Implicit memory**: The filesystem acts as persistent memory across agent generations
-- **Context offloading**: Complex state can be stored on disk rather than in token-limited context windows
+A pluggable **skills system** allows agents to selectively opt into specialized knowledge:
 
-This creates a branching architecture where new subagents can resume work from known good states.
+- Generic harness remains general-purpose
+- Domain-specific skills (e.g., Parameter Golf challenge expertise) are modular
+- Reduces prompt engineering overhead
+- Enables harness reuse across different problem domains
 
-### Stage 8: Skills System
+## Practical Implementation: Parameter Golf
 
-A pluggable skills subsystem allows the orchestrator to selectively opt into specialized knowledge domains via:
+[[Parameter Golf]] is an OpenAI challenge to achieve baseline intelligence thresholds with minimal model parameters. The complete harness enables:
 
-- Skill plugins with domain-specific prompts
-- Optional context loading
-- Generalized harness with specialized capabilities
-- Task-specific optimization without core harness modification
+1. **Parallel Research**: Multiple subagents simultaneously explore different approaches
+2. **GPU Acceleration**: Each subagent has access to GPU resources for model training
+3. **Checkpoint Management**: Successful approaches are snapshotted for branching
+4. **Autonomous Operation**: Orchestrator manages experiment workflow without human intervention
+5. **Context Efficiency**: Long-horizon research without token explosion
 
----
+## Key Technical Components
 
-## Practical Example: Parameter Golf
+### ModalSandboxSession
+Client interface for remote sandbox communication, managing state and tool invocation.
 
-[[Parameter Golf]] is an [[OpenAI]] challenge to achieve baseline intelligence thresholds with minimal model parameters. The complete harness enables:
+### Capabilities
+Binding mechanisms for attaching tools to specific sandbox instances, enabling stateful tool interactions.
 
-1. **Parallel exploration**: Multiple subagents simultaneously explore different ML frameworks
-2. **Stateful progression**: Filesystem snapshots preserve working states
-3. **Autonomous research**: Orchestrator directs research strategy while subagents implement
-4. **GPU optimization**: Efficient resource utilization across multiple parallel experiments
-5. **Context management**: Lean orchestrator context despite complex ongoing work
+### Hooks System
+Monitoring mechanism tracking agent tool usage and execution state across the subagent pool.
 
----
+### Async Task Management
+Non-blocking orchestrator operations enabling true parallelism while maintaining coordination.
 
-## Key Architectural Patterns
+## Design Principles
 
-### Composition Over Monoliths
+1. **Composability**: Systems are built by composing simple, focused components
+2. **Context Efficiency**: Memory and context are carefully managed to prevent bloat
+3. **Isolation**: Work is compartmentalized to prevent cascading failures
+4. **Scalability**: Architecture naturally parallelizes across available resources
+5. **Generalizability**: Core harness remains reusable across different domains
 
-The guide emphasizes that agent harnesses are built by composing features around a core agent loop. Each addition (memory, orchestration, async, quotas, snapshots, skills) is independently valuable and can be selectively applied.
+## Practical Considerations
 
-### Stateful vs. Stateless Design
+### Context Management
+- Keep orchestrator context focused on high-level decisions
+- Delegate implementation details to subagents
+- Use filesystem snapshots to externalize state
+- Implement selective context reset for long-running tasks
 
-- **Stateless components**: Reduce coupling and enable parallelism
-- **Stateful components**: Maintain context and enable long-horizon tasks
-- **Strategic state placement**: Sessions for conversation, filesystem for artifacts
+### GPU Resource Optimization
+- Snapshot sandboxes after expensive setup work
+- Branch subagents from established checkpoints
+- Implement quota systems for cost control
+- Parallelize independent work streams
 
-### Context Economy
+### Debugging and Observability
+- Hook systems provide visibility into subagent activities
+- Status tools enable progress tracking without full context transmission
+- Filesystem artifacts persist for inspection
+- Logs accumulate in isolated environments
 
-Managing token usage through:
-- Delegating detailed work to subagents
-- Storing artifacts on filesystem rather than context
-- Resetting subagent contexts after task completion
-- Explicit memory management in orchestrator
+## Related Concepts
 
-### Isolation and Safety
+- [[AI Agent|AI Agents]]
+- [[OpenAI Agents SDK]]
+- [[Modal]] (cloud platform)
+- [[Sandbox|Sandboxes]] (isolated environments)
+- [[LLM|Large Language Models]]
+- [[GPU]] (graphics processing units)
+- [[Context Window]]
+- [[Context Rot]]
+- [[Orchestration]] (multi-agent coordination)
+- [[Async Programming]]
 
-- Sandboxed execution prevents host compromise
-- Quota systems prevent resource exhaustion
-- Guardrailed tools prevent dangerous operations
-- Stateless subagents limit blast radius of failures
+## Example Use Cases
 
----
+- **Research Automation**: Parallel exploration of ML approaches
+- **Code Generation**: Multi-agent coding tasks with GPU acceleration
+- **Model Training**: Distributed training experiments with checkpoint management
+- **Parameter Optimization**: Concurrent optimization across different configurations
+- **Internal Tools**: Custom agent systems replacing off-the-shelf solutions
 
-## Related Technologies
+## Getting Started
 
-- [[Modal]]: Serverless compute platform providing [[Sandbox|Sandboxes]] and [[GPU]] infrastructure
-- [[OpenAI Agents SDK]]: Framework for building agent harnesses
-- [[OpenAI API]]: LLM backbone for agent reasoning
-- [[Parameter Golf]]: Benchmark task demonstrating parallel agent capabilities
-- [[Ramp]]: Real-world implementation of background coding agents
+The complete implementation is available in the [Modal Labs GitHub repository](https://github.com/modal-labs/openai-agents-python-example).
 
----
-
-## Implementation Considerations
-
-### Getting Started
-
-The complete example implementation is available in the [Modal Labs GitHub repository](https://github.com/modal-labs/openai-agents-python-example).
-
-### Development Workflow
-
-1. Start with local agents for rapid iteration
-2. Move to sandboxes for isolation
-3. Add memory via sessions for multi-turn capability
-4. Implement orchestration for long-horizon tasks
-5. Parallelize with subagent pools
-6. Optimize resources with quotas
-7. Reduce setup overhead with snapshots
-8. Specialize with skills
-
-### Challenges and Solutions
-
-| Challenge | Solution |
-|-----------|----------|
-| Security risks | Sandboxed execution |
-| Stateless behavior | Session objects |
-| Context bloat | Subagent delegation |
-| Blocking execution | Async pools |
-| Resource exhaustion | Quota systems |
-| Redundant setup | Filesystem snapshots |
-| Generic capability | Skills plugins |
+Key resources:
+- [[OpenAI Agents SDK]] documentation
+- [[Modal]] platform and sandbox documentation
+- Example: Training MNIST with one-shot prompts
+- GPU allocation and configuration guides
 
 ---
 
 ## Metadata
 
-**Source**: Modal Engineering Blog  
-**Author**: Erik Dunteman, Modal Labs  
-**Published**: April 15, 2026  
-**Read Time**: 8 minutes  
+**Source:** Modal Engineering Blog  
+**Author:** Erik Dunteman (Member of Technical Staff, Modal)  
+**Published:** April 15, 2026  
+**Read Time:** 8 minutes  
+**Original URL:** https://share.google/S4lTnOo7l96jQZFyP
 
-**Tags**: [[AI agents]], [[LLM]], [[OpenAI]], [[Modal]], [[Sandboxes]], [[GPU computing]], [[Agent orchestration]], [[Async programming]], [[Distributed systems]], [[Machine learning operations]]
+**Tags:** #AI-Agents #OpenAI #Modal #Sandboxes #GPU #Distributed-Computing #Agent-Orchestration #Python #LLM
 
-**Related Topics**: 
-- [[Large Language Models]]
-- [[Agentic systems]]
--
+**Related Topics:**
+- [[Ramp]] - Case study: background coding agents
+- [[Parameter Golf]] - OpenAI efficiency challenge
+- [[Agentic Systems]] - Multi-agent architecture patterns
+- [[Cloud Computing]] - Serverless and containerized
