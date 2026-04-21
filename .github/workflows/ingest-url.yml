@@ -33,97 +33,63 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests beautifulsoup4 html2text
-      
+          pip install firecrawl-py
+
       - name: Scrape URL
         id: scrape
         env:
           URL: ${{ github.event.client_payload.url }}
+          FIRECRAWL_API_KEY: ${{ secrets.FIRECRAWL_API_KEY }}
         run: |
           python << 'EOF'
-          import requests
-          from bs4 import BeautifulSoup
-          import html2text
           import os
           from datetime import datetime
           from urllib.parse import urlparse
-          
+          from firecrawl import FirecrawlApp
+
           url = os.environ.get('URL')
           if not url:
               print("Error: URL is required")
               exit(1)
-          
+
           print(f"Scraping: {url}")
-          
+
           try:
-              # Fetch the content
-              headers = {
-                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-              }
-              response = requests.get(url, headers=headers, timeout=10)
-              response.raise_for_status()
-              
-              # Parse HTML
-              soup = BeautifulSoup(response.content, 'html.parser')
-              
-              # Remove script and style elements
-              for script in soup(["script", "style"]):
-                  script.decompose()
-              
-              # Get title
-              title = soup.find('h1')
-              if title:
-                  title_text = title.get_text(strip=True)
-              else:
-                  title_text = soup.title.string if soup.title else "Untitled"
-              
-              # Convert HTML to Markdown
-              h = html2text.HTML2Text()
-              h.ignore_links = False
-              h.body_width = 0
-              markdown_content = h.handle(str(soup))
-              
-              # Create filename from URL
+              app = FirecrawlApp(api_key=os.environ['FIRECRAWL_API_KEY'])
+              result = app.scrape_url(url, formats=['markdown'])
+
+              markdown_content = result.markdown
+              title_text = (result.metadata or {}).get('title') or 'Untitled'
+
               parsed_url = urlparse(url)
               domain = parsed_url.netloc.replace('www.', '').replace('.', '-')
               path = parsed_url.path.strip('/').replace('/', '-')
               timestamp = datetime.now().strftime("%s")
               filename = f"{domain}-{path[:50]}-{timestamp}.md" if path else f"{domain}-{timestamp}.md"
-              
-              # Ensure data/raw directory exists
+
               os.makedirs('data/raw', exist_ok=True)
               filepath = f"data/raw/{filename}"
-              
-              # Write content with YAML frontmatter (Claude will use this during compilation)
+
               with open(filepath, 'w', encoding='utf-8') as f:
-                  # YAML frontmatter for compilation metadata
                   f.write("---\n")
                   f.write(f"source_url: {url}\n")
                   f.write(f"ingested_from: url\n")
                   f.write(f"ingested_at: {datetime.now().isoformat()}\n")
                   f.write("---\n\n")
-
-                  # Human-readable header
                   f.write(f"# {title_text}\n\n")
                   f.write(f"**Source URL:** [{url}]({url})\n")
                   f.write(f"**Ingested:** {datetime.now().isoformat()}\n\n")
-
-                  # Scraped content
                   f.write("---\n\n")
                   f.write(markdown_content)
-              
+
               print(f"✓ Successfully scraped and saved to {filepath}")
-              
-              # Write to GITHUB_OUTPUT for subsequent steps
+
               with open(os.environ.get('GITHUB_OUTPUT', '/tmp/github_output'), 'a') as out:
                   out.write(f"filename={filename}\n")
                   out.write(f"filepath={filepath}\n")
-              
-          except requests.RequestException as e:
-              print(f"❌ Error fetching URL: {e}")
-              exit(1)
+
           except Exception as e:
-              print(f"❌ Error processing content: {e}")
+              print(f"❌ Error: {e}")
               exit(1)
           EOF
       
