@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install firecrawl-py
+          pip install requests
 
       - name: Scrape URL
         id: scrape
@@ -43,9 +43,9 @@ jobs:
         run: |
           python << 'EOF'
           import os
+          import requests
           from datetime import datetime
           from urllib.parse import urlparse
-          from firecrawl import FirecrawlApp
 
           url = os.environ.get('URL')
           if not url:
@@ -55,11 +55,20 @@ jobs:
           print(f"Scraping: {url}")
 
           try:
-              app = FirecrawlApp(api_key=os.environ['FIRECRAWL_API_KEY'])
-              result = app.scrape_url(url, formats=['markdown'])
+              response = requests.post(
+                  'https://api.firecrawl.dev/v1/scrape',
+                  headers={
+                      'Authorization': f"Bearer {os.environ['FIRECRAWL_API_KEY']}",
+                      'Content-Type': 'application/json',
+                  },
+                  json={'url': url, 'formats': ['markdown']},
+                  timeout=60,
+              )
+              response.raise_for_status()
+              data = response.json()['data']
 
-              markdown_content = result.markdown
-              title_text = (result.metadata or {}).get('title') or 'Untitled'
+              markdown_content = data.get('markdown', '')
+              title_text = (data.get('metadata') or {}).get('title') or 'Untitled'
 
               parsed_url = urlparse(url)
               domain = parsed_url.netloc.replace('www.', '').replace('.', '-')
