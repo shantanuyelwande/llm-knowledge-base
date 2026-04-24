@@ -2,13 +2,13 @@
 title: AI Engineering Guidebook
 source_file: AI Engineering Guidebook.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T21:04:07.199082
-raw_file_updated: 2026-04-17T21:04:07.199082
+compiled_at: 2026-04-24T19:04:06.796999
+raw_file_updated: 2026-04-24T19:04:06.796999
 version: 1
 sources:
   - file: AI Engineering Guidebook.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T21:04:07.199082
+    added_at: 2026-04-24T19:04:06.796999
 tags: []
 related_topics: []
 backlinked_by: []
@@ -17,189 +17,166 @@ backlinked_by: []
 
 ## Summary
 
-AI Engineering is a comprehensive discipline focused on designing, building, and deploying intelligent systems powered by large language models (LLMs). It encompasses the complete lifecycle from model selection and fine-tuning through [[Retrieval-Augmented Generation|RAG]], agent design, optimization, evaluation, and production deployment. This guidebook covers system design patterns, architectural decisions, and practical implementation strategies for creating robust, scalable AI applications.
+This comprehensive guide covers the complete landscape of AI engineering, from foundational [[Large Language Models]] (LLMs) through [[Retrieval-Augmented Generation]] (RAG), [[Fine-tuning]] techniques, [[AI Agents]], and production deployment. It addresses the practical challenges of building, optimizing, evaluating, and operating AI systems at scale.
+
+---
 
 ## Table of Contents
 
-1. [Overview](#overview)
-2. [Core Concepts](#core-concepts)
-3. [Key Components](#key-components)
-4. [Development Lifecycle](#development-lifecycle)
-5. [Advanced Topics](#advanced-topics)
-6. [Deployment and Operations](#deployment-and-operations)
+1. [Introduction](#introduction)
+2. [Large Language Models](#large-language-models)
+3. [Prompt Engineering](#prompt-engineering)
+4. [Fine-tuning](#fine-tuning)
+5. [Retrieval-Augmented Generation](#retrieval-augmented-generation)
+6. [Context Engineering](#context-engineering)
+7. [AI Agents](#ai-agents)
+8. [Model Context Protocol](#model-context-protocol)
+9. [LLM Optimization](#llm-optimization)
+10. [LLM Evaluation](#llm-evaluation)
+11. [LLM Deployment](#llm-deployment)
+12. [LLM Observability](#llm-observability)
 
 ---
 
-## Overview
+## Introduction
 
-AI Engineering represents a shift from traditional machine learning development toward building practical, production-grade systems that leverage the capabilities of large language models. Unlike pure data science, which focuses on statistical analysis and model training, AI Engineering emphasizes:
+AI Engineering represents a fundamental shift in how we build intelligent systems. Rather than developing task-specific models for each problem, modern AI engineering leverages large pre-trained models and adapts them through a combination of [[Prompt Engineering]], [[Fine-tuning]], and [[Retrieval-Augmented Generation]].
 
-- **System design** over isolated models
-- **Practical constraints** (latency, cost, reliability) over raw accuracy
-- **User-centric architecture** over benchmark performance
-- **Operational excellence** over theoretical optimality
-
-The field emerged because deploying LLMs requires solving unique challenges that don't exist in traditional ML: managing variable-length outputs, handling context windows, optimizing token generation, and orchestrating complex multi-step workflows.
+The core philosophy is pragmatic: optimize for real-world constraints including latency, cost, memory, and reliability—not just accuracy. This guide provides both conceptual understanding and practical implementation patterns used in production systems.
 
 ---
 
-## Core Concepts
+## Large Language Models
 
-### Large Language Models (LLMs)
+### What is an LLM?
 
-[[Large Language Models|LLMs]] are [[Transformer]]-based neural networks trained on massive text corpora to predict the next token in a sequence. Through this process, they acquire the ability to understand, generate, and reason with human language.
+A [[Large Language Model]] (LLM) is a [[Transformer]]-based neural network trained on massive text corpora to predict the next [[Token]] in a sequence. Through this process, it acquires the ability to understand, generate, and reason with human language.
 
-**Key characteristics:**
+**Key insight**: LLMs work by predicting one token at a time. When you ask "What is the capital of France?", the model calculates conditional probabilities for each possible next word and selects the most likely one, repeating this process until generating a complete answer.
 
-- **Foundation**: Trained on diverse internet-scale text data (books, articles, code, conversations)
-- **Mechanism**: Predict the next token by calculating conditional probabilities based on previous tokens
-- **Scale**: Measured by parameter count (billions to trillions), training data size, and computational resources
-- **Emergence**: Larger models develop unexpected capabilities like reasoning, multi-step planning, and tool use
+### The Evolution from Task-Specific to General Models
 
-**What makes an LLM "large":**
+Before LLMs, AI systems were fragmented:
+- Translation systems handled only translation
+- Summarizers knew only summarization
+- Sentiment classifiers recognized only sentiment
+
+Each new problem required a new model and pipeline. LLMs changed this by learning the general structure of language across millions of domains, enabling a single model to perform many tasks without explicit programming for each one.
+
+### What Makes an LLM "Large"?
 
 The "large" in LLM refers to three dimensions:
-- **Number of parameters**: Billions or trillions of learned values
-- **Training data**: Massive corpora spanning multiple domains
-- **Compute**: Enormous computational resources (distributed across many GPUs)
 
-These dimensions directly correlate with model capabilities. Larger models demonstrate better instruction-following, multi-step reasoning, and generalization to unseen tasks.
+1. **Number of parameters**: Billions or trillions of learnable weights
+2. **Training data scale**: Massive corpora spanning diverse domains
+3. **Compute resources**: Significant computational investment during training
 
-### How LLMs Generate Text
+As models scaled across these dimensions, a clear capability shift emerged: larger models began following detailed instructions, performing multi-step reasoning, and solving novel problems. This wasn't from adding new rules but from the model learning deeper relationships in language.
 
-LLMs generate text through an autoregressive process where each token is predicted based on all previous tokens. The process relies on **conditional probability**: given the context so far, what is the most likely next token?
+### LLM Architecture
 
-**The generation process:**
+#### Core Components
 
-1. Encode input text into tokens
-2. Pass through transformer layers to get probability distribution over vocabulary
-3. Sample or select next token according to generation strategy
-4. Append to context and repeat
+**[[Transformer]]**: The foundational architecture that allows models to attend to all input tokens simultaneously and identify which parts of text are most relevant to each other.
 
-**Temperature and randomness:**
+**[[Tokenization]]**: Text is broken into tokens (words, subwords, or punctuation) and mapped to numerical representations. This keeps vocabulary manageable while handling any language input.
 
-- **Low temperature** (~0): Deterministic, greedy selection of highest probability tokens
-- **High temperature** (0.7-1.0): More random sampling, increased diversity and creativity
-- **Temperature tuning**: Critical for balancing coherence with diversity
+**Transformer Layers**: Multiple layers stacked on top of each other, where each layer refines understanding by comparing tokens, attending to important parts, and updating representations.
 
-### 7 LLM Generation Parameters
+**[[Positional Encoding]]**: Since Transformers don't naturally understand token order, positional encodings provide sequence information, enabling interpretation of ordered structures like sentences and code.
 
-Fine-grained control over LLM output comes through generation parameters:
+**Parameters**: Billions of learnable values that store patterns learned from text and form the basis for language understanding and generation.
 
-1. **Max tokens**: Hard cap on output length
-2. **Temperature**: Controls randomness in sampling
-3. **Top-k**: Restrict sampling to k most probable tokens
-4. **Top-p (nucleus sampling)**: Sample from smallest set of tokens covering cumulative probability p
-5. **Frequency penalty**: Reduce likelihood of repeated tokens
-6. **Presence penalty**: Encourage novel tokens not yet in output
-7. **Stop sequences**: Custom tokens that halt generation
+**[[Distributed Training]]**: Due to model size, training occurs across many GPUs in parallel, with parameters, computations, and data distributed for efficiency.
 
-### 4 LLM Text Generation Strategies
+### Training an LLM from Scratch
 
-Different decoding strategies produce different output characteristics:
+LLM development follows four stages:
 
-1. **Greedy**: Always select highest probability token (fast, repetitive)
-2. **Multinomial sampling**: Sample from probability distribution (diverse, less coherent)
-3. **Beam search**: Keep top-k partial sequences, explore tree of possibilities (better global optimization)
-4. **Contrastive search**: Balance probability and diversity to prevent repetition loops
+#### Stage 1: Pre-training
 
----
+The model learns language fundamentals by training on massive corpora to predict the next token. It absorbs grammar, world facts, and reasoning patterns. However, pre-trained models simply continue text—they're not conversational.
 
-## Key Components
+#### Stage 2: Instruction Fine-tuning (IFT)
 
-### Training LLMs from Scratch
+The model learns to follow prompts by training on instruction-response pairs. This enables it to:
+- Answer questions
+- Summarize content
+- Write code
+- Follow specific formatting
 
-The standard training pipeline involves four stages:
+At this point, the model has consumed the internet's raw knowledge, and human-labeled instruction data becomes the limiting factor.
 
-#### 1. Pre-training
+#### Stage 3: Preference Fine-tuning (PFT)
 
-- **Objective**: Learn language fundamentals on massive corpora
-- **Data**: Internet-scale text (books, articles, code, conversations)
-- **Task**: Next-token prediction on unlabeled data
-- **Result**: Model understands grammar, facts, reasoning patterns, but isn't conversational
+Using [[Reinforcement Learning with Human Feedback]] (RLHF), the model learns to align with human preferences. Users indicate which response they prefer, creating preference data. A [[Reward Model]] predicts human preference, and the LLM is updated using [[Proximal Policy Optimization]] (PPO) to align with humans even when no single "correct" answer exists.
 
-#### 2. Instruction Fine-tuning (IFT)
+#### Stage 4: Reasoning Fine-tuning
 
-- **Objective**: Teach the model to follow instructions and respond conversationally
-- **Data**: Instruction-response pairs (can be synthetic or human-created)
-- **Task**: Supervised fine-tuning to match expected outputs
-- **Result**: Model can answer questions, summarize, write code, etc.
+For tasks with verifiable correct answers (math, logic), the model generates answers and receives rewards based on correctness. This [[Reinforcement Learning with Verifiable Rewards]] approach uses techniques like [[GRPO]] (Group Relative Policy Optimization) to sharpen reasoning capabilities.
 
-#### 3. Preference Fine-tuning (PFT) / RLHF
+### How LLMs Work: Conditional Probability
 
-- **Objective**: Align model outputs with human preferences
-- **Data**: Human feedback on response pairs ("which response is better?")
-- **Algorithm**: [[RLHF|Reinforcement Learning with Human Feedback]] using PPO
-- **Result**: Model learns nuanced alignment without explicit "correct" answers
+LLMs operate on [[Conditional Probability]]—given the words that have come before, what is the most likely next word?
 
-#### 4. Reasoning Fine-tuning
+The model calculates probabilities for each possible next token and selects the one with highest probability. Repeating this process generates complete responses.
 
-- **Objective**: Improve performance on tasks with verifiable correct answers
-- **Data**: Problems with ground-truth solutions (math, logic, code)
-- **Signal**: Automatic reward based on correctness, not human judgment
-- **Method**: [[GRPO|Group Relative Policy Optimization]] or similar RL algorithms
-- **Result**: Specialized reasoning capabilities for specific domains
+**The creativity problem**: Always picking the highest probability word produces repetitive, dull outputs. This is where [[Temperature]] comes in.
 
-### Prompt Engineering
+#### Temperature and Sampling
 
-[[Prompt Engineering]] is the practice of designing inputs to guide LLM behavior without modifying model weights. It's the fastest, lowest-effort way to improve outputs.
+Instead of always selecting the most likely token, the model can "sample" from the probability distribution:
 
-**3 prompting techniques for reasoning:**
+- **Low temperature** (~0): Probabilities concentrate around the most likely token, producing nearly deterministic outputs
+- **High temperature** (0.7–1.0): Probabilities become more uniform, producing diverse and creative outputs
 
-1. **Chain of Thought (CoT)**: Ask model to reason step-by-step before answering
-2. **Self-Consistency**: Generate multiple reasoning paths, select most common answer
-3. **Tree of Thoughts (ToT)**: Explore multiple reasoning branches at each step, evaluate paths
+### LLM Generation Parameters
 
-**Bonus: Attentive Reasoning Queries (ARQ)**
+Seven key parameters control text generation:
 
-Instead of free-form reasoning, guide models through explicit domain-specific questions encoded in JSON schemas. This maintains alignment and creates auditable reasoning steps.
+1. **Max tokens**: Hard cap on response length. Too low causes truncation; too high wastes compute.
 
-**JSON Prompting**
+2. **Temperature**: Controls randomness. Low for factual tasks (QA, chatbots); high for creative tasks (brainstorming).
 
-Structured JSON outputs eliminate ambiguity and ensure consistent formatting. Models are trained on massive amounts of structured API data, so they respond with precision when given JSON schema.
+3. **Top-k**: Restricts sampling to the k most probable tokens. Prevents both random outputs and excessive repetition.
 
-### Fine-tuning Techniques
+4. **Top-p (nucleus sampling)**: Samples from the smallest set of tokens covering cumulative probability p. More adaptive than top-k.
 
-Traditional full-model fine-tuning is impractical for LLMs due to memory and computational costs. Instead, efficient techniques reduce trainable parameters while preserving performance:
+5. **Frequency penalty**: Reduces likelihood of reusing tokens that appeared frequently. Useful for avoiding redundancy.
 
-#### 1. LoRA (Low-Rank Adaptation)
+6. **Presence penalty**: Encourages new tokens not yet seen. Pushes for diversity in exploratory generation.
 
-Decompose weight update matrices into low-rank factors A and B, training only these small matrices instead of full weights. Reduces trainable parameters by 99%+ while maintaining performance.
+7. **Stop sequences**: Custom tokens that halt generation immediately. Critical for structured outputs like JSON.
 
-#### 2. LoRA-FA (Frozen-A)
+**Bonus - Min-p sampling**: Dynamically adjusts based on model confidence. If the top token has 60% probability, few options remain. If 20%, many pass the threshold. Automatically balances coherence and diversity.
 
-Freeze matrix A, train only matrix B to reduce activation memory requirements.
+### Text Generation Strategies
 
-#### 3. VeRA (Vector-based Rank Adaptation)
+Four main approaches to selecting tokens:
 
-Share frozen random matrices across layers, train only small layer-specific scaling vectors.
+#### 1. Greedy Strategy
 
-#### 4. Delta-LoRA
+Always choose the highest probability token. Simple but produces repetitive outputs.
 
-Update weight matrices by adding deltas between consecutive training steps' low-rank products.
+#### 2. Multinomial Sampling
 
-#### 5. LoRA+
+Sample from the full probability distribution. Introduces diversity but can be incoherent.
 
-Use higher learning rate for matrix B than matrix A for more optimal convergence.
+#### 3. Beam Search
 
-**Other variants**: QLoRA (quantized), DoRA (weight-decomposed), LoRA-drop (selective layer application)
+Maintains top-k partial sequences and explores alternatives. Approximates global sequence probability maximization. Widely used in machine translation where correctness matters more than creativity.
 
-### Generating Fine-tuning Datasets
+#### 4. Contrastive Search
 
-**Instruction Fine-tuning Dataset (IFT)** requires instruction-response pairs. These can be generated synthetically using frameworks like [[Distilabel]]:
+Balances fluency with diversity by penalizing tokens too similar to previously generated text. Especially effective for longer generations like stories.
 
-1. Start with seed instructions
-2. Generate multiple responses using different LLMs
-3. Use a judge LLM to rank responses
-4. Pair best response with instruction
-5. Result: Synthetic dataset for fine-tuning
+**Bonus - SLED (Self-Logits Evolution Decoding)**: Instead of using only the final layer's logits, examines how logits evolve across all layers. Each layer contributes its own prediction, and SLED nudges final logits toward layer-wise consensus. Requires no retraining and produces more factual outputs.
 
-### SFT vs RFT
+### Training LLMs Using Other LLMs
 
-- **Supervised Fine-Tuning (SFT)**: Train on static labeled dataset of prompt-completion pairs
-- **Reinforcement Fine-Tuning (RFT)**: Use online rewards to train from model-generated outputs
+Modern LLMs are increasingly trained using knowledge from other LLMs through [[Distillation]]:
 
-Choose based on:
-- Have labeled data? → SFT
-- Task verifiable but no labels? → RFT (e.g., GRPO for math)
-- Task requires human judgment? → RLHF
+- Llama 4 Scout and Maverick were trained using Llama 4 Behemoth
+- Gemma 2 and 3 were trained using Google's Gemini
+
+Distillation occurs at two stages:

@@ -2,13 +2,13 @@
 title: I am sharing _Full Stack Agentic AI_ with you
 source_file: I am sharing _Full Stack Agentic AI_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T21:00:39.428997
-raw_file_updated: 2026-04-17T21:00:39.428997
+compiled_at: 2026-04-24T19:00:10.210291
+raw_file_updated: 2026-04-24T19:00:10.210291
 version: 1
 sources:
   - file: I am sharing _Full Stack Agentic AI_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T21:00:39.428997
+    added_at: 2026-04-24T19:00:10.210291
 tags: []
 related_topics: []
 backlinked_by: []
@@ -17,71 +17,71 @@ backlinked_by: []
 
 ## Summary
 
-Full Stack Agentic AI refers to the comprehensive approach to building autonomous [[AI]] systems that dynamically control their own processes and tool usage. Unlike rigid [[workflows]], agentic systems leverage [[Large Language Models]] (LLMs) enhanced with augmentations such as [[retrieval]], [[tools]], and [[memory]] to accomplish complex tasks over extended periods with minimal human intervention.
+Full Stack Agentic AI refers to the complete architecture and implementation of autonomous AI systems that leverage large language models (LLMs) enhanced with tools, retrieval capabilities, and memory systems. These systems operate independently to accomplish complex tasks by dynamically directing their own processes and tool usage.
 
 ---
 
-## What are Agents?
+## Overview
 
-### Definition
+An **Agentic AI System** is an autonomous system that operates independently over extended periods, utilizing various tools and workflows to accomplish complex tasks. Unlike traditional software systems, agentic systems maintain agency—the ability to make decisions about how to approach problems and which tools to employ.
 
-An **Agentic AI System** is an autonomous system that operates independently over extended periods, utilizing various tools and processes to accomplish complex tasks. These systems represent a significant advancement in AI automation, moving beyond predetermined execution paths toward dynamic, self-directed problem-solving.
+## Key Concepts
 
 ### Agents vs. Workflows
 
 Agentic AI Systems can be categorized into two primary types:
 
-#### Workflows
-[[Workflows]] are systems where [[Large Language Models]] and [[tools]] are orchestrated through **predefined paths**. Execution follows a fixed sequence determined during system design, providing predictability and control at the cost of flexibility.
+#### **Workflows**
+Workflows are systems where [[Large Language Models|LLMs]] and tools are orchestrated through **predefined paths**. The flow of execution follows predetermined logic and decision trees established during system design.
 
-#### Agents
-**Agents** are systems where LLMs **dynamically direct their own processes** and [[tool usage]], maintaining autonomous control over how they accomplish tasks. This approach enables adaptive problem-solving and real-time decision-making based on task requirements and intermediate results.
+#### **Agents**
+Agents are systems where LLMs **dynamically direct their own processes** and tool usage. Unlike workflows, agents maintain control over how they accomplish tasks, making real-time decisions about which tools to use and in what sequence.
 
----
+## Core Architecture
 
-## Key Components
+### Fundamental Building Blocks
 
-### Foundational Architecture
+The basic building block of Agentic AI Systems consists of an [[Large Language Models|LLM]] enhanced with key augmentations:
 
-The basic building block of Agentic AI Systems is an [[LLM]] enhanced with critical augmentations:
+- **[[Retrieval Systems|Retrieval]]** - Access to external knowledge bases and information sources
+- **[[Tools and Tool Use|Tools]]** - Capabilities to interact with external systems and services
+- **[[Memory Systems|Memory]]** - Persistent storage of information across interactions
 
-- **[[Retrieval]]** - Access to external knowledge bases and information sources
-- **[[Tools]]** - Integrated capabilities for taking action and interacting with external systems
-- **[[Memory]]** - Mechanisms for retaining and recalling relevant information
+### Implementation Approaches
 
-### Implementation Recommendations
+#### **Integrated Platforms**
+Powerful LLM platforms have these augmentations built-in, providing a cohesive environment for agentic development.
 
-According to Anthropic, successful Agentic AI implementation should focus on two key aspects:
+#### **API-Based Implementation**
+When using APIs, developers must manually connect the LLM with relevant components:
+- Tools and tool selection mechanisms
+- Memory systems and databases
+- Retrieval infrastructure for knowledge access
 
-1. **Use Case Tailoring** - Customizing capabilities to address specific business requirements and domain-specific challenges
-2. **Interface Design** - Providing an easy, well-documented interface that enables the LLM to effectively leverage available capabilities
+## Implementation Recommendations
 
-### Platform Considerations
+According to Anthropic, successful agentic AI implementation requires focus on two key aspects:
 
-- **Built-in Platforms**: Powerful LLM platforms typically include retrieval, tools, and memory capabilities as integrated features
-- **API-Based Approaches**: When using LLM APIs, developers must explicitly connect the model with:
-  - Relevant [[tools]] for task execution
-  - [[Memory]] systems for information retention
-  - External [[databases]] for knowledge access
-  - Mechanisms enabling the LLM to generate search queries and select appropriate tools
+1. **Use Case Tailoring** - Customizing capabilities to address specific domain requirements and business objectives
+2. **Developer Experience** - Ensuring the system provides an easy, well-documented interface for the LLM to interact with all components
 
----
+## Related Concepts
 
-## Related Topics
-
-- [[Large Language Models]] (LLMs)
-- [[AI Workflows]]
-- [[Autonomous Systems]]
-- [[Tool Integration]]
-- [[Retrieval-Augmented Generation]] (RAG)
-- [[AI Memory Systems]]
+- [[Autonomous AI Systems]]
+- [[Large Language Models]]
+- [[Retrieval-Augmented Generation]]
+- [[AI Tools and Tool Use]]
 - [[Prompt Engineering]]
+- [[AI Memory Systems]]
 
 ---
 
 ## Metadata
 
-**Source**: Full Stack Agentic AI  
-**Type**: Conceptual Framework  
-**Tags**: #agentic-ai #llm #autonomous-systems #ai-architecture #agents #workflows  
-**Related Articles**: [[Building Autonomous AI]], [[LLM Architecture]], [[AI Tool Integration]]
+**Tags:** #AI #AgenticAI #LLM #Automation #AI-Architecture #FullStack
+
+**Related Topics:** [[Autonomous Systems]], [[AI Workflows]], [[Tool Use in AI]], [[LLM Augmentation]]
+
+**Source:** Full Stack Agentic AI (Anthropic)
+
+**Last Updated:** 2024

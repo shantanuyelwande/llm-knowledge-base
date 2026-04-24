@@ -2,13 +2,13 @@
 title: Anthropic - Claude Skills Guide
 source_file: Anthropic - Claude Skills Guide.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T21:06:05.167393
-raw_file_updated: 2026-04-17T21:06:05.167393
+compiled_at: 2026-04-24T19:06:04.161541
+raw_file_updated: 2026-04-24T19:06:04.161541
 version: 1
 sources:
   - file: Anthropic - Claude Skills Guide.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T21:06:05.167393
+    added_at: 2026-04-24T19:06:04.161541
 tags: []
 related_topics: []
 backlinked_by: []
@@ -17,57 +17,36 @@ backlinked_by: []
 
 ## Summary
 
-A comprehensive guide to building, testing, and distributing **skills** for Claude—reusable instruction sets that teach Claude to handle specific tasks and workflows consistently. Skills are packaged as simple folders containing a SKILL.md file with YAML frontmatter, optional scripts, references, and assets. They work across Claude.ai, Claude Code, and the API, enabling users to customize Claude for their specific needs without re-explaining preferences in every conversation.
-
----
-
-## Table of Contents
-
-1. [Overview](#overview)
-2. [Fundamentals](#fundamentals)
-3. [Planning and Design](#planning-and-design)
-4. [Testing and Iteration](#testing-and-iteration)
-5. [Distribution and Sharing](#distribution-and-sharing)
-6. [Patterns and Troubleshooting](#patterns-and-troubleshooting)
-7. [Resources](#resources)
+**Claude Skills** are structured packages of instructions that teach Claude how to handle specific tasks and workflows consistently. Skills enable users to customize Claude for their needs without re-explaining preferences and domain expertise in every conversation. They work across Claude.ai, Claude Code, and the API, and can be enhanced with [[Model Context Protocol|MCP]] integrations for tool access.
 
 ---
 
 ## Overview
 
-### What is a Skill?
+A skill is fundamentally a folder containing instructions in Markdown with YAML frontmatter, plus optional executable scripts, reference documentation, and assets. Skills represent one of the most powerful customization mechanisms for [[Claude AI|Claude]], enabling repeatable workflows across document creation, process automation, and tool integration.
 
-A **skill** is a set of instructions packaged as a simple folder that teaches [[Claude]] how to handle specific tasks or workflows. Rather than re-explaining preferences, processes, and domain expertise in every conversation, skills allow you to teach Claude once and benefit every time.
+### Purpose and Value
 
-Skills are particularly powerful for:
-- Generating frontend designs from specifications
-- Conducting research with consistent methodology
-- Creating documents following team style guides
-- Orchestrating multi-step processes
-- Coordinating with [[Model Context Protocol (MCP)]] integrations
+Skills address a core limitation of conversational AI: the need to re-establish context and instructions with every new conversation. By packaging domain knowledge, best practices, and step-by-step workflows into reusable skills, users can:
 
-### Who Should Build Skills?
+- Teach Claude once and benefit consistently across many conversations
+- Maintain standardized processes across teams and organizations
+- Reduce token consumption by avoiding repeated explanations
+- Enable complex multi-step workflows without manual guidance at each step
 
-- Developers who want Claude to follow specific workflows consistently
-- Power users seeking to standardize Claude's behavior
-- Teams looking to establish organization-wide standards for Claude usage
-- [[MCP]] server builders enhancing tool access with workflow guidance
+### Target Users
 
-### Key Benefits
-
-- **Consistency**: Claude follows the same process every time
-- **Efficiency**: Eliminates repetitive explanations and prompt engineering
-- **Portability**: Works identically across Claude.ai, Claude Code, and the API
-- **Composability**: Multiple skills can load simultaneously without conflicts
-- **Token Optimization**: Progressive disclosure minimizes context usage
+Skills are designed for:
+- **Developers** building consistent, repeatable workflows with Claude
+- **Power users** wanting Claude to follow specific methodologies
+- **Organizations** standardizing Claude usage across teams
+- **MCP builders** enhancing tool integrations with workflow guidance
 
 ---
 
-## Fundamentals
+## Core Architecture
 
-### Skill Structure
-
-A skill is a folder containing:
+### File Structure
 
 ```
 your-skill-name/
@@ -82,40 +61,58 @@ your-skill-name/
     └── report-template.md
 ```
 
-#### Critical Naming Rules
+### Required Components
 
-- **Folder name**: Use kebab-case (e.g., `notion-project-setup` ✅)
-  - No spaces, underscores, or capitals
-- **Main file**: Must be exactly `SKILL.md` (case-sensitive)
-  - No variations like `SKILL.MD` or `skill.md`
-- **No README.md**: All documentation goes in SKILL.md or references/
+**SKILL.md** is the only required file. It must:
+- Be named exactly `SKILL.md` (case-sensitive)
+- Contain YAML frontmatter with metadata delimiters (`---`)
+- Include a `name` field in kebab-case
+- Include a `description` field explaining what the skill does and when to use it
 
-### Core Design Principles
+### Naming Conventions
 
-#### Progressive Disclosure
+- **Folder names**: kebab-case (e.g., `notion-project-setup`)
+- **File name**: Exactly `SKILL.md` with no variations
+- **No README.md** inside the skill folder (documentation goes in SKILL.md or `references/`)
 
-Skills use a three-level system to minimize token usage:
+---
 
-1. **YAML Frontmatter** (always loaded): Provides just enough information for Claude to know when to use the skill without loading all content
-2. **SKILL.md Body** (loaded when relevant): Full instructions and guidance
-3. **Linked Files** (loaded as needed): Additional documentation, templates, and resources
+## Design Principles
 
-#### Composability
+### Progressive Disclosure
 
-Skills are designed to work alongside other skills. A well-designed skill:
+Skills implement a three-level information hierarchy to minimize token usage while maintaining specialized expertise:
+
+1. **YAML Frontmatter** (always loaded): Minimal metadata telling Claude whether the skill is relevant to the current task
+2. **SKILL.md Body** (conditionally loaded): Full instructions loaded when Claude determines the skill applies
+3. **Linked Files** (on-demand): Additional documentation loaded only as needed
+
+This approach prevents skill content from unnecessarily consuming context tokens in conversations where the skill isn't relevant.
+
+### Composability
+
+Skills are designed to work alongside each other. A well-designed skill:
 - Doesn't assume it's the only capability available
-- Coordinates with other tools and skills
-- Explicitly handles edge cases involving multiple skills
+- Coordinates cleanly with other skills
+- Clearly defines its scope and boundaries
+- Handles cases where multiple skills might apply
 
-#### Portability
+### Portability
 
-Skills work identically across all Claude surfaces (Claude.ai, Claude Code, API) without modification, provided the environment supports any required dependencies.
+Skills work identically across:
+- [[Claude.ai]]
+- [[Claude Code]]
+- [[Claude API]]
 
-### YAML Frontmatter: The Critical Component
+A skill created once works across all surfaces without modification, provided the environment supports any required dependencies.
 
-The YAML frontmatter determines whether Claude loads your skill. It must appear at the top of SKILL.md, enclosed in triple dashes.
+---
 
-#### Required Fields
+## YAML Frontmatter
+
+The frontmatter is the critical component determining whether Claude loads a skill. It appears in Claude's system prompt and must be carefully structured.
+
+### Minimal Required Format
 
 ```yaml
 ---
@@ -124,178 +121,156 @@ description: What it does. Use when user asks to [specific phrases].
 ---
 ```
 
-#### Field Specifications
+### Field Specifications
 
-**name** (required)
-- kebab-case only
-- No spaces or capitals
-- Should match folder name
+#### name (required)
+- Must be in kebab-case
+- No spaces, capitals, or special characters
+- Should match the folder name
+- Cannot contain "claude" or "anthropic" (reserved terms)
 
-**description** (required)
-- Must include both: what the skill does AND when to use it
-- Under 1024 characters
-- No XML tags (< or >)
-- Include specific trigger phrases users might say
-- Mention file types if relevant
+#### description (required)
+Must include both:
+- **What the skill does**: Clear statement of functionality
+- **When to use it**: Trigger conditions and example phrases users might say
 
-**license** (optional)
-- Use for open-source skills
-- Common values: MIT, Apache-2.0
+Additional requirements:
+- Under 1,024 characters
+- No XML angle brackets (`<` or `>`)
+- Include specific tasks and file types when relevant
+- Provide example trigger phrases users would naturally use
 
-**compatibility** (optional)
+#### license (optional)
+- Used for open-source skills
+- Common values: `MIT`, `Apache-2.0`
+
+#### compatibility (optional)
 - 1-500 characters
-- Indicates environment requirements (product, system packages, network access)
+- Indicates environment requirements
+- Examples: required system packages, network access needs, product compatibility
 
-**metadata** (optional)
-- Custom key-value pairs
-- Suggested: author, version, mcp-server
+#### metadata (optional)
+- Custom key-value pairs for skill information
+- Suggested fields: `author`, `version`, `mcp-server`, `category`, `tags`
+- Example:
+  ```yaml
+  metadata:
+    author: ProjectHub
+    version: 1.0.0
+    mcp-server: projecthub
+    category: productivity
+  ```
 
-#### Security Restrictions
+### Security Restrictions
 
-Forbidden in frontmatter:
-- XML angle brackets (< >)
-- Skills named with "claude" or "anthropic" prefix (reserved)
+**Forbidden in frontmatter:**
+- XML angle brackets (`<` or `>`)
+- Skills named with "claude" or "anthropic" prefix
 
-### Writing Effective Descriptions
+These restrictions exist because frontmatter appears in Claude's system prompt, making malicious content a potential injection vector.
 
-The description is the first level of progressive disclosure. Structure it as:
+---
 
-**[What it does] + [When to use it] + [Key capabilities]**
+## Writing Effective Skills
 
-#### Good Examples
+### Description Field Best Practices
 
-```
-Analyzes Figma design files and generates developer handoff 
-documentation. Use when user uploads .fig files, asks for 
-"design specs", "component documentation", or "design-to-code 
-handoff".
-```
+The description is the first level of progressive disclosure. It must provide just enough information for Claude to know when the skill should be used without loading all content into context.
 
-```
-Manages Linear project workflows including sprint planning, 
-task creation, and status tracking. Use when user mentions 
-"sprint", "Linear tasks", "project planning", or asks to 
-"create tickets".
-```
+**Structure:** `[What it does] + [When to use it] + [Key capabilities]`
 
-#### Bad Examples
+**Good Examples:**
+- "Analyzes Figma design files and generates developer handoff documentation. Use when user uploads .fig files, asks for 'design specs', 'component documentation', or 'design-to-code handoff'."
+- "Manages Linear project workflows including sprint planning, task creation, and status tracking. Use when user mentions 'sprint', 'Linear tasks', 'project planning', or asks to 'create tickets'."
 
-- Too vague: "Helps with projects."
-- Missing triggers: "Creates sophisticated multi-page documentation systems."
-- Too technical: "Implements the Project entity model with hierarchical relationships."
+**Poor Examples:**
+- "Helps with projects." (too vague)
+- "Creates sophisticated multi-page documentation systems." (missing trigger conditions)
+- "Implements the Project entity model with hierarchical relationships." (too technical, no user triggers)
 
-### Writing Main Instructions
+### Main Instructions Structure
 
-After frontmatter, structure instructions in Markdown using this template:
+After the frontmatter, organize instructions in Markdown using this recommended structure:
 
 ```markdown
----
-name: your-skill
-description: [description]
----
-
 # Your Skill Name
 
 ## Instructions
 
 ### Step 1: [First Major Step]
 Clear explanation of what happens.
-
 Example:
 ```bash
 python scripts/fetch_data.py --project-id PROJECT_ID
 ```
-
 Expected output: [describe what success looks like]
+
+### Step 2: [Next Step]
+...
 
 ## Examples
 
 ### Example 1: [common scenario]
-User says: "Set up a new marketing campaign"
+**User says:** "Set up a new marketing campaign"
 
-Actions:
+**Actions:**
 1. Fetch existing campaigns via MCP
 2. Create new campaign with provided parameters
 
-Result: Campaign created with confirmation link
+**Result:** Campaign created with confirmation link
 
 ## Troubleshooting
 
 ### Error: [Common error message]
-Cause: [Why it happens]
-Solution: [How to fix]
+**Cause:** Why it happens
+**Solution:** How to fix
+
 ```
 
-#### Best Practices for Instructions
+### Instruction Best Practices
 
-- **Be specific and actionable**: Include exact commands, parameters, and expected outputs
-- **Include error handling**: Document common issues and solutions
-- **Reference bundled resources clearly**: Link to documentation in references/
-- **Use progressive disclosure**: Keep SKILL.md focused on core instructions; move detailed docs to references/
+**Be Specific and Actionable**
+- Provide exact commands or code to run
+- Explain expected outputs
+- Include common failure modes and solutions
+
+**Include Error Handling**
+- Document common error messages
+- Explain why errors occur
+- Provide step-by-step solutions
+
+**Reference Bundled Resources Clearly**
+- Link to documentation in `references/`
+- Explain what information to consult before proceeding
+- Provide context for when to use external resources
+
+**Use Progressive Disclosure**
+- Keep SKILL.md focused on core instructions
+- Move detailed documentation to `references/`
+- Link to additional resources rather than inlining them
 
 ---
 
-## Planning and Design
+## Common Skill Use Cases
 
-### Start with Use Cases
+### Category 1: Document & Asset Creation
 
-Before writing code, identify 2-3 concrete use cases your skill should enable.
+**Purpose:** Creating consistent, high-quality output including documents, presentations, applications, designs, and code.
 
-#### Good Use Case Definition
+**Real Example:** Frontend Design skill - "Create distinctive, production-grade frontend interfaces with high design quality. Use when building web components, pages, artifacts, posters, or applications."
 
-```
-Use Case: Project Sprint Planning
-
-Trigger: User says "help me plan this sprint" or "create 
-sprint tasks"
-
-Steps:
-1. Fetch current project status from Linear (via MCP)
-2. Analyze team velocity and capacity
-3. Suggest task prioritization
-4. Create tasks in Linear with proper labels and estimates
-
-Result: Fully planned sprint with tasks created
-```
-
-#### Key Questions
-
-- What does a user want to accomplish?
-- What multi-step workflows does this require?
-- Which tools are needed (built-in or [[MCP]])?
-- What domain knowledge or best practices should be embedded?
-
-### Common Skill Use Case Categories
-
-#### Category 1: Document & Asset Creation
-
-**Used for**: Creating consistent, high-quality output including documents, presentations, apps, designs, and code.
-
-**Real example**: Frontend design skill
-
-**Key techniques**:
+**Key Techniques:**
 - Embedded style guides and brand standards
 - Template structures for consistent output
 - Quality checklists before finalizing
-- Uses Claude's built-in capabilities
+- Uses Claude's built-in capabilities (no external tools required)
 
-#### Category 2: Workflow Automation
+### Category 2: Workflow Automation
 
-**Used for**: Multi-step processes benefiting from consistent methodology, including coordination across multiple [[MCP]] servers.
+**Purpose:** Multi-step processes that benefit from consistent methodology, including coordination across multiple [[Model Context Protocol|MCP]] servers.
 
-**Real example**: skill-creator skill
+**Real Example:** Skill Creator skill - "Interactive guide for creating new skills. Walks the user through use case definition, frontmatter generation, instruction writing, and validation."
 
-**Key techniques**:
+**Key Techniques:**
 - Step-by-step workflow with validation gates
-- Templates for common structures
-- Built-in review and improvement suggestions
-- Iterative refinement loops
-
-#### Category 3: MCP Enhancement
-
-**Used for**: Workflow guidance to enhance tool access an [[MCP]] server provides.
-
-**Real example**: sentry-code-review skill (from Sentry)
-
-**Key techniques**:
-- Coordinates multiple [[M
+-
