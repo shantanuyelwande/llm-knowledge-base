@@ -1,1 +1,1 @@
-Do not create unnecessary summary files.
+@CLAUDE.md

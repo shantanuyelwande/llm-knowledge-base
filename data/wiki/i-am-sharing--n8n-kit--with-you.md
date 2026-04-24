@@ -2,236 +2,220 @@
 title: I am sharing _n8n kit_ with you
 source_file: I am sharing _n8n kit_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T21:00:21.611505
-raw_file_updated: 2026-04-17T21:00:21.611505
+compiled_at: 2026-04-24T18:59:51.395525
+raw_file_updated: 2026-04-24T18:59:51.395525
 version: 1
 sources:
   - file: I am sharing _n8n kit_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T21:00:21.611505
+    added_at: 2026-04-24T18:59:51.395525
 tags: []
 related_topics: []
 backlinked_by: []
 ---
-# n8n Starter Kit: Complete Guide to Workflow Automation and AI Integration
+# The Ultimate n8n Starter Kit (2025)
 
 ## Summary
 
-The **n8n Starter Kit** is a comprehensive educational resource for learning workflow automation and AI integration using n8n, a low-code, node-based automation platform. This guide covers fundamental concepts of [[workflow automation]], core n8n components, advanced workflow design, and practical [[AI agent]] implementation. Suitable for beginners and professionals seeking to automate business processes and build intelligent automation systems.
+The Ultimate n8n Starter Kit is a comprehensive educational guide created by Nate Herk that covers [[workflow automation]], [[n8n]] fundamentals, and [[AI agent]] integration. The kit spans five modules covering everything from basic automation concepts to advanced [[AI]] integrations, providing both theoretical knowledge and practical implementation strategies for building automated workflows.
 
 ---
 
 ## Table of Contents
 
-1. [Introduction to Workflow Automation](#introduction-to-workflow-automation)
-2. [Getting Started with n8n](#getting-started-with-n8n)
-3. [Core Concepts and Nodes](#core-concepts-and-nodes)
-4. [Building and Managing Workflows](#building-and-managing-workflows)
-5. [AI Integration and Agents](#ai-integration-and-agents)
-6. [Advanced Topics](#advanced-topics)
+1. [Introduction](#introduction)
+2. [Module 1: Introduction to n8n](#module-1-introduction-to-n8n)
+3. [Module 2: Core Concepts and Nodes](#module-2-core-concepts-and-nodes)
+4. [Module 3: Building and Managing Workflows](#module-3-building-and-managing-workflows)
+5. [Module 4: Introduction to AI Agents](#module-4-introduction-to-ai-agents)
+6. [Module 5: Advanced AI Integrations](#module-5-advanced-ai-integrations)
 
 ---
 
-## Introduction to Workflow Automation
+## Introduction
 
-### What is Workflow Automation?
+[[Workflow automation]] represents a fundamental shift in how organizations handle repetitive, predictable tasks. Rather than relying on manual intervention, automation tools enable consistent, efficient execution of business processes. [[n8n]] stands out as a flexible, cost-effective platform that bridges multiple software applications, enabling seamless data exchange and process automation.
 
-[[Workflow automation]] is the process of using technology to perform tasks or processes without manual intervention. It involves setting up [[rules]] and [[triggers]] that automate repetitive or predictable actions, ensuring tasks happen consistently and efficiently.
+This starter kit provides a structured learning path for users ranging from beginners to advanced practitioners seeking to master workflow automation and [[AI]] integration.
 
-**Common Examples:**
+---
+
+## Module 1: Introduction to n8n
+
+### Lesson 1.1: Understanding Workflow Automation
+
+#### What is Workflow Automation?
+
+[[Workflow automation]] is the process of using technology to perform tasks or processes without manual intervention. It involves setting up [[trigger|triggers]] and rules that automate repetitive or predictable actions, ensuring tasks happen consistently and efficiently.
+
+**Practical Examples:**
 - Automatically sending "Thank You" emails after form submissions
-- Syncing new entries in a [[Google Sheets]] to a [[CRM]] like [[HubSpot]]
-- Routing customer tickets from email to support platforms
+- Syncing new entries in Google Sheets to [[CRM|CRM systems]] like HubSpot
 
-### Key Components
+#### Key Components of Workflow Automation
 
-Effective workflow automation relies on three fundamental components:
+**1. Trigger Events**
 
-#### 1. Trigger Events
-
-A **trigger** is what starts a workflow. Common triggers include:
+A [[trigger]] is what starts a workflow:
 - New email received
 - Form submission
-- Scheduled time or date
-- [[Webhook]] call
-- Manual execution
+- Specified time or date
 
-#### 2. Actions
+**2. Actions**
 
-**Actions** are the tasks performed in response to a trigger:
-- Updating a [[database]]
+[[Action|Actions]] are the tasks performed in response to a trigger:
+- Updating a database
 - Sending a notification
-- Posting a message in [[Slack]]
-- Creating records in external services
+- Posting a message in Slack
 
-#### 3. Conditions
+**3. Conditions**
 
-**Conditions** ensure that actions only happen when certain criteria are met:
+[[Condition|Conditions]] ensure that actions only happen when certain criteria are met:
 - Only send an email if the contact is marked as a VIP
-- Only add a task to a project manager if the due date is within 7 days
-- Process data only if it meets specific validation rules
+- Only add a task if the due date is within 7 days
 
-### Benefits of Workflow Automation
+#### Why Workflow Automation is Important
 
-#### Saves Time
-Manual tasks like data entry or copying and pasting information are time-consuming. Automation lets you focus on more strategic or creative work.
+**Saves Time**
+Manual tasks like data entry or copying and pasting information are time-consuming. Automation allows focus on strategic or creative work.
 
-**Example:** Automatically updating your [[CRM]] with data from web forms instead of manually inputting it.
-
-#### Reduces Errors
+**Reduces Errors**
 Humans make mistakes, especially when performing repetitive tasks. Automation ensures consistency and accuracy.
 
-**Example:** Ensuring every new invoice is recorded correctly in your accounting software.
+**Scales Your Operations**
+As businesses grow, managing repetitive tasks manually becomes unsustainable. Automation scales with organizational needs.
 
-#### Scales Your Operations
-As your business grows, managing repetitive tasks manually becomes unsustainable. Automation scales with your needs.
+#### Real-World Applications
 
-**Example:** Handling thousands of customer queries using an [[AI chatbot]].
-
-### Real-World Applications
-
-**Marketing:** Automating email campaigns with tools like [[Mailchimp]] or n8n. For example, sending a sequence of welcome emails when someone subscribes to a newsletter.
-
-**Sales:** Automatically adding leads from [[LinkedIn]] to your [[CRM]] and assigning them to a sales rep based on location.
-
-**Customer Support:** Using n8n to route customer tickets from email to support desk platforms like [[Zendesk]] or [[Freshdesk]].
+- **Marketing**: Automating email campaigns with tools like Mailchimp or n8n (e.g., sending welcome email sequences)
+- **Sales**: Automatically adding leads from LinkedIn to [[CRM|CRM systems]] and assigning them based on location
+- **Customer Support**: Routing customer tickets from email to support desk platforms like Zendesk or Freshdesk
 
 ---
 
-## Getting Started with n8n
+### Lesson 1.2: Introduction to n8n
 
-### What is n8n?
+#### What is n8n?
 
-**n8n** is a low-code, node-based [[workflow automation]] tool that allows users to connect multiple applications and automate tasks. It's known for its visual interface and flexibility, as it supports custom code and integrations with [[APIs]].
+[[n8n]] is a low-code, [[node]]-based [[workflow automation]] tool that allows users to connect multiple applications and automate tasks. It is known for its visual interface and flexibility, supporting custom code and [[API]] integrations.
 
-### Why Choose n8n?
+#### Key Capabilities
 
-#### Flexibility and Customization
-n8n's source-available nature allows for unparalleled customization. Users can:
-- Create complex workflows with conditional logic, loops, and error handling
-- Add custom code through [[Code Nodes]]
-- Create bespoke integrations
-- Self-host their n8n environment for complete control
+**Flexibility and Customization**
 
-#### Cost-Effectiveness
-- Free to self-host (for those with technical expertise)
-- Cloud plans starting at $20/month with hosting and enterprise features
-- No per-action pricing model like competitors
+As a "fair-code" platform, n8n offers extensive flexibility and customization. Users can create complex workflows with conditional logic, loops, and error handling. Developers can add custom code through [[Code Node|Code Nodes]], and have the option to self-host their n8n environment.
 
-#### Community and Support
-- Active community contributing to continuous improvement
-- Access to shared workflows and [[community nodes]]
-- Support from fellow automation enthusiasts
+**Comparison with Competitors**
 
-#### Data Ownership and Privacy
-- Self-hosting ensures complete control over your data
-- Enhanced security and compliance with data protection regulations
-- No data sharing with third parties
+| Feature | n8n | Zapier | Make.com |
+|---------|-----|--------|----------|
+| **Integrations** | 300+ pre-built, custom nodes | 5,000+ apps | 1,500+ apps |
+| **Complexity Support** | Advanced (conditional logic, loops) | Multi-step workflows | Advanced (routers, error handlers) |
+| **Cost** | Free self-hosting, $20/month cloud | $19.99/month+ (task-based) | $9/month+ (operation-based) |
+| **Customization** | High (source-available) | Limited | Moderate |
+| **Data Ownership** | Full control (self-hosting) | Third-party | Third-party |
 
-### n8n vs. Competitors
+#### Integration Options
 
-#### Zapier
-- **Strengths:** User-friendly interface, extensive library of 5,000+ app integrations
-- **Weaknesses:** May encounter limitations with intricate automation scenarios
-- **Pricing:** Free plan available; paid plans start at $19.99/month (task-based pricing can become costly at scale)
+- **Pre-built Nodes**: Over 300 pre-built integrations for popular services
+- **Community Nodes**: Custom nodes built by community members
+- **Custom Integration**: Ability to create custom nodes for specialized needs
 
-#### Make.com
-- **Strengths:** Visual drag-and-drop interface, supports complex automations with advanced features like routers and error handlers
-- **Weaknesses:** More limited customization compared to n8n
-- **Pricing:** Free plan available; paid plans start at $9/month (operation-based pricing)
+---
 
-#### n8n
-- **Strengths:** 300+ pre-built integrations, custom nodes, source-available codebase, cost-effective at scale
-- **Weaknesses:** Steeper learning curve for beginners
-- **Pricing:** Free self-hosting; cloud plans from $20/month
+### Lesson 1.3: Setting Up n8n
 
-### n8n Integrations
+#### Cloud vs. Self-Hosting
 
-n8n offers:
-- **Over 300 pre-built integrations** for popular services
-- **Community nodes** created by community members
-- **Custom node development** capability
-- **API access** for building custom integrations
+**n8n Cloud**
+- Managed by n8n's team
+- Minimal setup required
+- Ideal for beginners or small businesses
 
-### How n8n Works
+**Self-Hosting**
+- Full control over data and infrastructure
+- Can be hosted using Docker, Node.js, or Kubernetes (k8s) for horizontal scaling
+- Ideal for developers or enterprises with specific security needs
 
-n8n workflows consist of three main components:
+#### Getting Started with n8n Cloud
 
-#### 1. Triggers
-Every workflow begins with a trigger, such as:
-- A new email in [[Gmail]]
-- An incoming [[webhook]]
-- A timer (e.g., run every day at 9:00 AM)
+1. Visit the n8n Cloud Sign-Up Page
+2. Create an account
+3. Access the web-based editor to begin building workflows immediately
 
-#### 2. Core Nodes (Transform - T in ETL)
-These nodes process and transform data as it moves through the workflow:
-- Function nodes that apply custom logic
-- Transformation nodes that format data for output
+#### Self-Hosting n8n
 
-#### 3. Action Nodes (Extract/Load - E or L in ETL)
-The final steps in a workflow perform specific actions, such as:
-- Sending a message to [[Slack]]
-- Uploading a file to [[Dropbox]]
-- Adding an entry to a [[Google Sheet]]
+**Official Resources:**
+- n8n Hosting Guides offer comprehensive instructions for installing n8n using npm or Docker
+- Guidance on configuration, scaling, and securing your n8n instance
 
-### Setting Up n8n
+**Community Tutorials:**
+- Step-by-step guides for self-hosting n8n
+- Installation guides for Linux using Docker Compose
+- Video tutorials demonstrating Docker setup
 
-#### Option 1: n8n Cloud
-- **Managed by:** n8n's team
-- **Setup:** Minimal setup required
-- **Best for:** Beginners or small businesses
-- **Process:** Visit n8n Cloud Sign-Up Page → Create account → Access web-based editor immediately
+---
 
-#### Option 2: Self-Hosting
-- **Control:** Full control over data and infrastructure
-- **Hosting Methods:** [[Docker]], [[Node.js]], [[Kubernetes]] (k8s) for horizontal scaling
-- **Best for:** Developers or enterprises with specific security needs
-- **Resources:** Official n8n Hosting Guides, community tutorials, and video guides available
+### Lesson 1.4: Exploring the n8n Community and Templates
 
-### n8n Community and Templates
+#### Why the Community Matters
 
-The n8n community is a thriving hub for users to:
-- Share tips, templates, and troubleshooting advice
-- Access pre-built workflows at [[n8n Workflow Templates]]
-- Contribute custom workflows and nodes
+The n8n community is a thriving hub for users to share tips, templates, and troubleshooting advice. Beginners can find tremendous value in exploring community-contributed workflows and participating in discussions.
 
-**Example Templates:**
+#### Accessing Templates
+
+**Template Library**
+
+Browse pre-built workflows at n8n Workflow Templates, including:
 - Sending automated birthday emails
-- Synchronizing data between [[Notion]] and [[Google Sheets]]
+- Synchronizing data between Notion and Google Sheets
+
+**Creating and Sharing Templates**
+
+Advanced users can contribute their workflows to the community, helping others learn and adapt their solutions.
 
 ---
 
-## Core Concepts and Nodes
+### Lesson 1.5: Best Video Tutorials on YouTube
 
-### Understanding Nodes
+- **n8n Masterclass: Build AI Agents & Automate Workflows** (Beginner to Pro)
+- **How I'd Teach a 10 Year Old to Build AI Agent**
+- **n8n Beginner Course**: A 9-video series covering APIs, data handling, nodes, error handling, and more
 
-In n8n, **nodes** are the fundamental building blocks of workflows. Each node represents a specific task or action, such as:
-- Retrieving data from an [[API]]
-- Processing information
-- Sending an email
+---
 
-By connecting nodes, you define the sequence and logic of your automated processes.
+### Module 1 Quick Recap
 
-### Types of Nodes
+- Understand [[workflow automation]]: What it is, key components ([[trigger|triggers]], [[action|actions]], [[condition|conditions]]), and importance
+- Introduction to [[n8n]]: Its flexibility, cost-effectiveness, customizability, and data privacy advantages
+- How n8n works: [[trigger]] [[node|nodes]], processing [[node|nodes]], and [[action]] [[node|nodes]]
+- Setup options: n8n Cloud for managed setup or self-hosting for full control
+- Community resources: Templates, shared workflows, and troubleshooting support
 
-#### Trigger Nodes
-Initiate workflows based on specific events or schedules. Identified by an orange lightning bolt.
+---
 
-**Examples:**
-- **Webhook Trigger:** Starts a workflow when a specific [[URL]] is called
-- **Execute Workflow Trigger:** Starts a workflow when another workflow calls it
-- **Gmail Trigger:** Starts a workflow when an email is received
+## Module 2: Core Concepts and Nodes
 
-#### Regular Nodes
-Perform actions like data retrieval, transformation, and delivery.
+### Lesson 2.1: Understanding Nodes
 
-**Examples:**
-- **HTTP Request Node:** Makes [[HTTP]] requests to external [[APIs]]
-- **Filter Node:** Filters data on a defined condition
-- **Merge Node:** Appends or combines two datasets
+#### What Are Nodes?
 
-### Node Structure
+In [[n8n]], [[node|nodes]] are the fundamental building blocks of workflows. Each [[node]] represents a specific task or action, such as retrieving data from an [[API]], processing information, or sending an email. By connecting [[node|nodes]], you define the sequence and logic of your automated processes.
 
-Each node comprises:
+#### Types of Nodes
 
-**Parameters:** Settings that define the node's behavior (e.g.,
+**Trigger Nodes**
+
+[[Trigger node|Trigger nodes]] initiate workflows based on specific events or schedules. They are identified by an orange lightning bolt icon.
+
+Examples:
+- **Webhook Trigger**: Starts a workflow when a specific URL is called
+- **Execute Workflow Trigger**: Starts a workflow when another workflow calls it
+- **Gmail Trigger**: Starts a workflow when an email is received
+
+**Regular Nodes**
+
+Regular [[node|nodes]] perform actions like data retrieval, transformation, and delivery.
+
+Examples:
+- **HTTP Request Node**: Makes HTTP requests to external [[API|

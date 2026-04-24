@@ -2,157 +2,154 @@
 title: Agent Tools & Interoperability with Model Context Protocol (MCP)
 source_file: Agent Tools & Interoperability with Model Context Protocol (MCP).pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T20:51:42.817763
-raw_file_updated: 2026-04-17T20:51:42.817763
+compiled_at: 2026-04-24T18:50:40.095071
+raw_file_updated: 2026-04-24T18:50:40.095071
 version: 1
 sources:
   - file: Agent Tools & Interoperability with Model Context Protocol (MCP).pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T20:51:42.817763
+    added_at: 2026-04-24T18:50:40.095071
 tags: []
 related_topics: []
 backlinked_by: []
 ---
-# Agent Tools & Interoperability with Model Context Protocol (MCP)
+# Agent Tools & Interoperability with Model Context Protocol
 
 ## Summary
 
-This article explores the integration of external tools with [[AI agents]] and [[foundation models]] through the [[Model Context Protocol]] (MCP), an open standard introduced by Anthropic in 2024. It covers tool design best practices, MCP's architectural components, and the security challenges enterprises face when implementing MCP in production environments.
+This article explores the role of agent tools in AI systems and the [[Model Context Protocol]] (MCP), an open standard designed to address the "N x M" integration problem. It covers tool design best practices, MCP's architecture and capabilities, and critical security considerations for enterprise deployment.
+
+---
 
 ## Introduction
 
-[[Foundation models]] and [[large language models]] (LLMs) are fundamentally limited to pattern prediction based on their training data. Without access to external functions, they cannot perceive new information about the world, interact with external systems, or take actions to influence their environment. **Tools** extend these capabilities by acting as an AI system's "eyes" and "hands," enabling [[AI agents]] to accomplish tasks beyond pure content generation.
+[[Foundation models]], even the most advanced, are fundamentally pattern prediction engines without access to external functions. While they excel at diverse tasks—from legal analysis to code generation—they cannot independently access new data, interact with external systems, or take actions to influence their environment.
 
-With the emergence of [[agentic AI]], tools have become essential infrastructure. However, connecting external tools to foundation models presents significant technical and security challenges. The [[Model Context Protocol]] (MCP) was introduced as a standardized solution to streamline tool integration and address these challenges.
+Modern [[foundation models]] now support the ability to call external functions, or **tools**, which serve as the agent's "eyes" and "hands." With the rise of [[Agentic AI]], tools become increasingly critical, enabling AI agents to accomplish specific goals through external actions. However, connecting external tools to foundation models presents significant technical and security challenges.
+
+The [[Model Context Protocol]] (MCP), introduced in 2024 by Anthropic, aims to standardize tool integration and address these challenges through a unified, plug-and-play protocol.
+
+---
 
 ## Tools and Tool Calling
 
-### What is a Tool?
+### What Is a Tool?
 
-In modern AI systems, a **tool** is a function or program that an [[LLM]]-based application can use to accomplish tasks outside the model's native capabilities. Tools broadly serve two purposes:
+In modern AI systems, a **tool** is a function or program that an [[LLM]]-based application uses to accomplish tasks outside the model's native capabilities. Tools fall into two primary categories:
 
-- **Information Retrieval**: Tools allow models to fetch data from various sources, including structured databases and unstructured documents
-- **Action/Execution**: Tools enable models to perform real-world operations, such as sending emails, executing code, or controlling physical devices
+- **Knowledge retrieval**: Fetch data from structured and unstructured sources (databases, documents, web services)
+- **Action execution**: Perform real-world operations such as sending emails, posting messages, executing code, or controlling physical devices
 
-### Example: Weather Agent
+#### Example Use Case
 
-A practical example illustrates the necessity of tools. When asked "What's the weather in my location?", a foundation model cannot answer correctly because:
-- The model lacks access to current weather data
-- The model doesn't know the user's location
-- The model's mathematical capabilities for unit conversion are limited
-
-A weather tool solves this by fetching real-time data and performing the necessary calculations.
+A weather agent tool might call an API to retrieve the forecast for a user's location and convert temperatures to their preferred units. The model cannot accomplish this alone because:
+1. It lacks real-time weather data
+2. It doesn't know the user's location
+3. Mathematical unit conversions are error-prone for LLMs
 
 ### Types of Tools
 
 #### Function Tools
 
-[[Function tools]] are external functions defined by developers that models can call as needed. The tool definition provides details about how the model should use the tool, typically extracted from code documentation (such as Python docstrings in frameworks like [[Google ADK]]).
+All models supporting [[function calling]] allow developers to define external functions that the model can invoke as needed. Tool definitions provide the model with:
+- Clear name
+- Parameter descriptions
+- Natural language description of purpose and usage
 
-**Key characteristics:**
-- Clear name describing the function
-- Parameter definitions with types and descriptions
-- Natural language description of purpose
+In frameworks like Google ADK, tool definitions are extracted from Python docstrings in the tool code.
 
 #### Built-in Tools
 
-Some foundation models offer pre-configured tools where the definition is provided implicitly by the model service. Examples include:
+Some foundation models offer pre-integrated tools with implicit definitions managed by the model service. Examples include:
+- Google Gemini's [[Grounding with Google Search]]
+- [[Code Execution]]
+- [[URL Context]]
+- [[Computer Use]]
 
-- [[Google Gemini]] built-in tools:
-  - Grounding with Google Search
-  - Code Execution
-  - URL Context
-  - Computer Use
-
-Built-in tools are invisible to developers; the model service handles tool definitions separately.
+These tools are provided to the model without requiring developer configuration.
 
 #### Agent Tools
 
-An [[AI agent]] can be invoked as a tool itself, allowing a primary agent to maintain control over interactions while delegating specific tasks to sub-agents. This prevents full handoffs of user conversations and enables better control over input and output processing.
+Agents themselves can be invoked as tools, preventing full handoff of user conversations while allowing the primary agent to maintain control. This is accomplished in frameworks like ADK through the `AgentTool` class, and can even be extended to remote agents via the [[Agent2Agent Protocol]].
 
-**Benefits:**
-- Maintains primary agent control
-- Allows remote agents to be available as tools via protocols like [[A2A (Agent-to-Agent Protocol)]]
-- Enables hierarchical agent architectures
+### Tool Categories & Design Considerations
 
-### Tool Categories and Design Considerations
+| Category | Use Case | Key Design Tips |
+|----------|----------|-----------------|
+| Structured Data Retrieval | Querying databases, spreadsheets | Define clear schemas; optimize for efficient querying |
+| Unstructured Data Retrieval | Searching documents, knowledge bases | Implement robust search; consider context window limits |
+| Built-in Templates | Generating content from templates | Ensure parameters well-defined; clear template guidance |
+| Google Connectors | Interacting with Google Workspace apps | Leverage APIs; handle authentication and rate limits |
+| Third-Party Connectors | Integrating external services | Document API specifications; manage credentials securely |
 
-| Tool Category | Use Case | Design Tips |
-|---|---|---|
-| Structured Data Retrieval | Querying databases, spreadsheets | Define clear schemas, optimize for efficient querying |
-| Unstructured Data Retrieval | Searching documents, web pages, knowledge bases | Implement robust search algorithms, consider context window limitations |
-| Built-in Templates | Generating content from predefined templates | Ensure template parameters are well-defined |
-| Google Connectors | Interacting with Google Workspace apps | Leverage Google APIs, handle rate limits |
-| Third-Party Connectors | Integrating external services | Document API specifications, manage API keys securely |
+---
 
 ## Best Practices for Tool Design
 
-### Documentation is Critical
+### Documentation Is Critical
 
-Tool documentation directly influences how models use tools. Essential elements include:
+Tool documentation is passed to the model as part of the request context, directly influencing how the model uses the tool.
 
-- **Clear Names**: Use descriptive, specific names like `create_critical_bug_in_jira_with_priority` rather than `update_jira`
-- **Parameter Descriptions**: Document all inputs with required types and usage
-- **Short Parameter Lists**: Keep parameters concise to avoid model confusion
-- **Detailed Descriptions**: Explain purpose, inputs, outputs, and any special considerations
-- **Targeted Examples**: Provide examples addressing ambiguities and edge cases
-- **Default Values**: Document default values clearly for model reference
+**Recommended practices:**
+- **Clear names**: Use descriptive, specific names (e.g., `create_critical_bug_in_jira_with_priority` rather than `update_jira`)
+- **Parameter descriptions**: Clearly describe all inputs and outputs, including types and usage
+- **Simplified parameter lists**: Keep parameter lists short with clear names to avoid model confusion
+- **Detailed descriptions**: Provide clear explanations of purpose, parameters, and usage without technical jargon
+- **Targeted examples**: Include examples to clarify ambiguities and demonstrate handling of edge cases
+- **Default values**: Document default values clearly so models can use them correctly
 
 ### Describe Actions, Not Implementations
 
-Tool instructions should explain **what** the model needs to do, not **how** to do it:
+Instructions should describe what the model needs to accomplish, not how to accomplish it.
 
-- ✓ "Create a bug to describe the issue"
-- ✗ "Use the create_bug tool"
-
-This approach:
-- Eliminates conflicts between instructions and tool documentation
-- Prevents model confusion from duplicated instructions
-- Allows autonomous tool selection by the model
+**Best practices:**
+- Say "create a bug to describe the issue" rather than "use the `create_bug` tool"
+- Avoid duplicating tool instructions in system prompts
+- Describe objectives while allowing autonomous tool selection
+- Document tool interactions and side effects
 
 ### Publish Tasks, Not API Calls
 
-Tools should encapsulate user-facing tasks, not mirror complex internal APIs. While APIs are designed for human developers with full knowledge of parameters, agent tools must be usable dynamically by models deciding at runtime which parameters to provide.
+Tools should encapsulate user-facing tasks, not serve as thin wrappers over complex APIs. Enterprise APIs often have tens or hundreds of parameters; agents need tools representing specific, well-defined actions.
 
 ### Make Tools Granular
 
-Follow single-responsibility principles:
-- Define clear, well-documented purposes for each tool
+Follow standard coding best practices by keeping each tool focused on a single responsibility:
+- Define clear, well-documented purposes
 - Avoid multi-tools that encapsulate long workflows
-- Make it easier for models to determine when tools are needed
+- Document side effects and data returns clearly
 
 ### Design for Concise Output
 
-Large responses can:
-- Swamp the [[context window]], increasing cost and latency
-- Impact subsequent requests stored in conversation history
-- Degrade reasoning quality
-
-**Solutions:**
-- Return references rather than full data (e.g., table names instead of large query results)
-- Use external storage systems like database tables or artifact services
+Poorly designed tools can return excessive data, adversely affecting performance and cost:
+- Avoid large responses (tables, files, images)
+- Use external systems for data storage
+- Return references to data rather than the data itself
 
 ### Use Validation Effectively
 
-Implement schema validation for inputs and outputs:
-- Provides additional documentation for models
-- Enables runtime validation of tool operation
-- Helps identify and correct misuse
+Leverage schema validation for tool inputs and outputs:
+- Serve as documentation for the model
+- Provide runtime validation of tool operation
+- Include descriptive error messages that guide the model on remediation
 
-**Error Messages as Documentation:**
-Tool error messages provide opportunities to guide models on addressing failures. Instead of simple error codes, return instructive messages like: "No product data found for product ID XXX. Ask the customer to confirm the product name, and look up the product ID by name."
+---
 
 ## Understanding the Model Context Protocol
 
-### The N × M Integration Problem
+### The "N x M" Integration Problem
 
-Integrating LLMs with external tools traditionally required custom, one-off connectors for each tool-application pairing. This creates an "N × M" integration problem: the number of necessary connections grows exponentially with each new model (N) or tool (M) added to the ecosystem.
+Integrating an LLM with an external tool traditionally requires custom-built, one-off connectors for each pairing. This creates an exponential explosion in development effort as the number of models (N) and tools (M) increases—the "N x M" integration problem.
 
-[[Model Context Protocol]] was introduced in November 2024 by [[Anthropic]] as an open standard to replace fragmented custom integrations with a unified, plug-and-play protocol. MCP aims to serve as a universal interface between AI applications and external tools and data sources, enabling a more modular, scalable, and efficient ecosystem.
+MCP addresses this by providing a unified, plug-and-play protocol that serves as a universal interface between AI applications and external tools and data sources, enabling:
+- Reduced development costs
+- Faster time to market
+- A reusable, shareable ecosystem of tools
+- Decoupling of AI agents from tool implementation details
 
 ### Core Architectural Components
 
-MCP implements a [[client-server model]] inspired by the [[Language Server Protocol]] (LSP):
+MCP implements a client-server model inspired by the [[Language Server Protocol]] (LSP), with three core components:
 
 #### MCP Host
 
@@ -162,57 +159,68 @@ The application responsible for:
 - Orchestrating tool usage
 - Enforcing security policies and content guardrails
 
-May be a standalone application or a sub-component of larger systems like [[multi-agent systems]].
+May be a standalone application or sub-component of larger systems like multi-agent systems.
 
 #### MCP Client
 
-A software component embedded within the Host that:
-- Maintains connections with MCP servers
+A software component embedded in the Host that:
+- Maintains connections with MCP Servers
 - Issues commands and receives responses
-- Manages communication session lifecycle
+- Manages session lifecycle
 
 #### MCP Server
 
-A program providing capabilities to AI applications, often functioning as an adapter or proxy for external tools, data sources, or APIs. Responsibilities include:
-- Advertising available tools (tool discovery)
-- Receiving and executing commands
-- Formatting and returning results
-- Implementing security, scalability, and governance in enterprise contexts
+A program providing capabilities (tools, resources, prompts) for AI applications. Often functions as an adapter or proxy for external tools, APIs, or data sources. Responsibilities include:
+- Tool discovery and advertisement
+- Command execution
+- Result formatting and return
+- Enterprise-level security, scalability, and governance (in enterprise contexts)
 
-### Communication Layer
+### Communication Layer: JSON-RPC, Transports, and Message Types
 
-#### Base Protocol: JSON-RPC 2.0
+#### Base Protocol
 
-MCP uses [[JSON-RPC 2.0]] as its base message format, providing lightweight, text-based, language-agnostic communication.
+MCP uses [[JSON-RPC]] 2.0 as its base message format, providing a lightweight, text-based, language-agnostic structure.
 
 #### Message Types
 
 - **Requests**: RPC calls expecting responses
-- **Results**: Successful outcomes of requests
-- **Errors**: Failed requests with code and description
-- **Notifications**: One-way messages requiring no response
+- **Results**: Successful outcome messages
+- **Errors**: Failure messages with code and description
+- **Notifications**: One-way messages not requiring response
 
 #### Transport Mechanisms
 
 MCP supports two transport protocols:
 
-**stdio (Standard Input/Output)**
-- Used for fast, direct local communication
-- MCP server runs as a subprocess of the Host application
-- Suitable for tools accessing local resources like user filesystems
-
-**Streamable HTTP**
-- Recommended for remote client-server communication
-- Supports SSE streaming responses
-- Allows stateless servers without requiring SSE
-- Can be implemented in plain HTTP servers
+- **stdio (Standard Input/Output)**: Fast, direct communication for local environments where the MCP server runs as a subprocess; used for local resource access
+- **Streamable HTTP**: Recommended for remote client-server communication; supports SSE streaming while allowing stateless servers
 
 ### Key Primitives
 
-MCP defines several key entity types to enhance LLM-based applications:
+MCP defines several key entity types that enhance LLM interactions with external systems:
 
-#### Server-Side Capabilities
+**Server-side capabilities:**
+- [[Tools]]
+- [[Resources]]
+- [[Prompts]]
 
-**Tools** (99% support)
-- Standardized way for servers to describe available functions
-- Examples: `read_file`, `get_weather`, `execute_sql`, `create
+**Client-side capabilities:**
+- [[Sampling]]
+- [[Elicitation]]
+- [[Roots]]
+
+Currently, only Tools are broadly supported (99% of tracked clients), while Resources and Prompts are supported by approximately one-third, and client-side capabilities have significantly lower adoption.
+
+#### Tools
+
+The standardized way for a server to describe available functions. Tool definitions must include:
+
+- **name**: Unique identifier
+- **title** (optional): Human-readable display name
+- **description**: Functionality description for humans and LLMs
+- **inputSchema**: JSON schema defining expected parameters
+- **outputSchema** (optional): JSON schema defining output structure
+- **annotations** (optional): Properties describing tool behavior
+
+**Annotation

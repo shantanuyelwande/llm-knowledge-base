@@ -188,3 +188,6 @@ The CLI calls the Anthropic API (requires `ANTHROPIC_API_KEY` in `.env`). When r
 ## Key Principle
 
 The human focuses on curation and critical thinking. Claude handles the bookkeeping: updating cross-references, maintaining the index, keeping the log, and flagging inconsistencies. Never let maintenance burden cause entries to go unlinked or the index to go stale.
+
+General:
+Avoid creating unnecessary summary files.

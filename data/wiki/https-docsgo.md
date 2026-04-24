@@ -2,13 +2,13 @@
 title: https_docs.go
 source_file: https_docs.go.txt
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T20:59:59.087813
-raw_file_updated: 2026-04-17T20:59:59.087813
+compiled_at: 2026-04-24T18:59:28.279032
+raw_file_updated: 2026-04-24T18:59:28.279032
 version: 1
 sources:
   - file: https_docs.go.txt
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T20:59:59.087813
+    added_at: 2026-04-24T18:59:28.279032
 tags: []
 related_topics: []
 backlinked_by: []
@@ -17,121 +17,121 @@ backlinked_by: []
 
 ## Summary
 
-This article provides comprehensive documentation on HTTPS (HyperText Transfer Protocol Secure), the secure version of HTTP that encrypts data transmission between clients and servers. HTTPS is essential for protecting sensitive information, establishing trust, and meeting modern security standards for web applications.
+This article provides comprehensive documentation on HTTPS (Hypertext Transfer Protocol Secure), the secure protocol for transmitting data over the internet. HTTPS combines [[HTTP]] with [[SSL/TLS]] encryption to ensure data confidentiality, integrity, and authentication between clients and servers.
 
 ## Overview
 
-[[HTTPS]] is the secure variant of [[HTTP]] that uses [[encryption]] to protect data transmitted over the internet. It combines HTTP with [[TLS]] (Transport Layer Security) or its predecessor [[SSL]] (Secure Sockets Layer) to ensure confidentiality, integrity, and authenticity of communications between web browsers and servers.
+HTTPS is the secure version of HTTP, the protocol used for transferring data across the World Wide Web. It encrypts all communication between a user's browser and the web server, protecting sensitive information from interception and tampering.
 
-## Key Components
+## Key Features
 
-### Encryption Protocol
+### Security Features
 
-HTTPS relies on [[TLS/SSL]] to encrypt data in transit. This ensures that:
-- **Confidentiality**: Data cannot be read by unauthorized parties
-- **Integrity**: Data cannot be modified without detection
-- **Authentication**: Servers can prove their identity to clients
+- **Encryption**: All data transmitted is encrypted using [[SSL/TLS]] protocols
+- **Authentication**: Verifies the identity of the website through [[Digital Certificates]]
+- **Integrity**: Ensures data cannot be modified during transmission
+- **Trust Indicators**: Browsers display security indicators to users
 
-### Digital Certificates
+### Technical Implementation
 
-[[Digital certificates]], issued by [[Certificate Authorities]] (CAs), are fundamental to HTTPS. These certificates contain:
-- The server's public key
-- Server identity information
-- Certificate validity period
-- Digital signature from the CA
+HTTPS operates on port 443 by default, distinct from HTTP which uses port 80. The protocol establishes a secure connection through a [[TLS Handshake]] process before any data is transmitted.
 
-### Handshake Process
+## Core Components
 
-The [[TLS handshake]] is the initial negotiation between client and server that establishes:
-1. Protocol version agreement
-2. Cipher suite selection
-3. Certificate validation
-4. Session key generation
+### SSL/TLS Certificates
 
-## Implementation and Standards
+[[Digital Certificates]] are essential to HTTPS functionality. These certificates:
+- Contain public encryption keys
+- Verify server identity
+- Are issued by [[Certificate Authorities]]
+- Have expiration dates requiring renewal
 
-### Protocol Versions
+### Encryption Protocols
 
-Different versions of TLS provide varying levels of security:
-- **TLS 1.2**: Widely supported, suitable for most applications
-- **TLS 1.3**: Latest standard, improved security and performance
-- [[Deprecated protocols]]: SSL 3.0 and earlier TLS versions should not be used
+HTTPS relies on modern encryption standards:
+- [[TLS 1.2]] and [[TLS 1.3]] are current standards
+- Older protocols like SSL 3.0 and TLS 1.0 are deprecated
+- [[Perfect Forward Secrecy]] provides additional security
+
+## Implementation Considerations
 
 ### Certificate Management
 
-Proper certificate management includes:
-- Obtaining certificates from trusted [[Certificate Authorities]]
-- Regular certificate renewal before expiration
-- Secure storage of private keys
-- [[Certificate pinning]] for enhanced security
+Organizations must:
+- Obtain certificates from trusted [[Certificate Authorities]]
+- Maintain proper [[Certificate Validation]] procedures
+- Monitor certificate expiration dates
+- Update certificates before expiration
 
-## Security Considerations
+### Server Configuration
 
-### Best Practices
+- Configure web servers to support HTTPS
+- Install and manage [[Digital Certificates]]
+- Implement proper [[Cipher Suites]]
+- Enable [[HTTP Strict Transport Security]] (HSTS)
 
-Organizations implementing HTTPS should:
-- Use [[strong cryptography]] and modern cipher suites
-- Enable [[HSTS]] (HTTP Strict Transport Security)
-- Implement [[certificate pinning]] where appropriate
-- Regularly audit and update security configurations
-- Monitor for [[certificate expiration]]
+## Best Practices
 
-### Common Vulnerabilities
+1. **Always Use HTTPS**: Implement HTTPS on all web properties
+2. **Keep Certificates Current**: Regularly update and renew certificates
+3. **Use Strong Encryption**: Deploy modern [[TLS]] versions and cipher suites
+4. **Implement HSTS**: Force browsers to use HTTPS connections
+5. **Monitor Security**: Regularly audit HTTPS configurations
+6. **Redirect HTTP**: Automatically redirect HTTP traffic to HTTPS
 
-Potential security issues include:
-- Expired or invalid [[digital certificates]]
-- Weak [[cipher suites]]
-- Improper [[certificate validation]]
-- Man-in-the-middle attacks due to misconfiguration
+## Common Issues and Solutions
 
-## Performance Impact
+### Certificate Errors
 
-HTTPS introduces minimal performance overhead in modern implementations:
-- [[TLS 1.3]] provides faster handshakes than previous versions
-- Connection reuse reduces repeated handshake costs
-- [[HTTP/2]] and [[HTTP/3]] optimize performance with HTTPS
-- Caching strategies can minimize encryption overhead
+- **Expired Certificates**: Renew certificates before expiration
+- **Domain Mismatch**: Ensure certificate matches domain name
+- **Untrusted Certificate**: Use certificates from recognized [[Certificate Authorities]]
 
-## Adoption and Compliance
+### Performance Considerations
 
-### Industry Standards
+- HTTPS has minimal performance overhead on modern systems
+- [[TLS Session Resumption]] can optimize repeated connections
+- [[HTTP/2]] often works better with HTTPS
 
-HTTPS adoption is now considered mandatory for:
-- E-commerce and financial transactions
-- User authentication systems
-- Personal data handling
-- Compliance with [[GDPR]], [[PCI DSS]], and other regulations
+## Browser Support and User Experience
 
-### Browser Requirements
+Modern browsers display security indicators for HTTPS connections:
+- Green padlock icon indicates secure connection
+- Certificate information is accessible to users
+- Mixed content warnings appear when insecure resources load on HTTPS pages
 
-Modern web browsers:
-- Display security indicators for HTTPS connections
-- Show warnings for mixed content (HTTPS page with HTTP resources)
-- Increasingly require HTTPS for certain features
-- Support [[HSTS preloading]] for maximum security
+## Regulatory and Compliance Requirements
+
+Many regulations require HTTPS implementation:
+- [[PCI DSS]] mandates encryption for payment data
+- [[GDPR]] requires secure data transmission
+- [[HIPAA]] requires encryption for healthcare data
+- Industry standards increasingly require HTTPS
 
 ## Related Technologies
 
-- [[HTTP/2]]: Protocol improvements often paired with HTTPS
-- [[HTTP/3]]: Next-generation protocol using [[QUIC]]
-- [[Certificate Transparency]]: Monitoring and logging of certificates
-- [[OCSP Stapling]]: Efficient certificate status verification
+- [[HTTP/2]] - Modern protocol designed for HTTPS
+- [[HSTS]] - Forces HTTPS usage
+- [[Certificate Pinning]] - Additional security measure
+- [[OCSP Stapling]] - Efficient certificate validation
 
 ---
 
 ## Metadata
 
-**Tags**: #security #web-protocols #encryption #tls #ssl #certificates #https
+**Tags**: #security #encryption #web-protocols #cryptography #networking
 
 **Related Topics**: 
-- [[HTTP]] - Unsecured predecessor protocol
-- [[TLS]] - Underlying encryption protocol
-- [[Certificate Authorities]] - Issuers of digital certificates
-- [[Web Security]] - Broader security concepts
-- [[Network Security]] - Infrastructure security
+- [[HTTP]]
+- [[SSL/TLS]]
+- [[Digital Certificates]]
+- [[Web Security]]
+- [[Cryptography]]
+- [[Certificate Authorities]]
+- [[Network Protocols]]
 
-**Source**: https://docs.google.com/document/d/1rsaK53T3Lg5KoGwvf8ukOUvbELRtH-V0LnOIFDxBryE/preview?tab=t.0#heading=h.pxcur8v2qagu
+**Source**: Google Docs - HTTPS Documentation
 
-**Last Updated**: 2024
+**Last Updated**: [Current Date]
 
-**Status**: Comprehensive overview
+**Status**: Reference Material

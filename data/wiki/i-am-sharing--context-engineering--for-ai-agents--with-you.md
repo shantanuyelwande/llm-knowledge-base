@@ -2,13 +2,13 @@
 title: I am sharing _Context Engineering  for AI Agents_ with you
 source_file: I am sharing _Context Engineering  for AI Agents_ with you.pdf
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-04-17T20:49:07.895890
-raw_file_updated: 2026-04-17T20:49:07.895890
+compiled_at: 2026-04-24T18:48:04.646958
+raw_file_updated: 2026-04-24T18:48:04.646958
 version: 1
 sources:
   - file: I am sharing _Context Engineering  for AI Agents_ with you.pdf
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-04-17T20:49:07.895890
+    added_at: 2026-04-24T18:48:04.646958
 tags: []
 related_topics: []
 backlinked_by: []
@@ -17,21 +17,18 @@ backlinked_by: []
 
 ## Summary
 
-**Context Engineering for AI Agents** is a systematic approach to managing the limited context window of Large Language Models (LLMs) when building AI agent applications. Drawing from Andrej Karpathy's analogy of LLMs as operating systems, context engineering applies across multiple context types including instructions, knowledge, and tool feedback. As AI agents become increasingly sophisticated with long-running tasks and complex tool interactions, effective context management has emerged as a critical engineering discipline for optimizing performance, cost, and reliability.
+**Context Engineering for AI Agents** is a systematic approach to managing the limited context window of [[Large Language Models]] (LLMs) when building [[AI Agents]]. Drawing parallels to operating system RAM management, context engineering encompasses strategies for writing, selecting, compressing, and isolating context to optimize agent performance, reduce token usage, and prevent performance degradation in long-running tasks.
 
 ---
 
 ## Table of Contents
 
 1. [Introduction](#introduction)
-2. [Context Engineering for Agents](#context-engineering-for-agents)
-3. [Core Strategies](#core-strategies)
-   - [Write Context](#write-context)
-   - [Select Context](#select-context)
-   - [Compress Context](#compress-context)
-   - [Isolate Context](#isolate-context)
-4. [Implementation with LangSmith and LangGraph](#implementation-with-langsmith-and-langgraph)
-5. [Conclusion](#conclusion)
+2. [Core Concepts](#core-concepts)
+3. [Context Engineering Strategies](#context-engineering-strategies)
+4. [Implementation with LangGraph and LangSmith](#implementation-with-langgraph-and-langsmith)
+5. [Challenges and Solutions](#challenges-and-solutions)
+6. [Conclusion](#conclusion)
 
 ---
 
@@ -39,169 +36,171 @@ backlinked_by: []
 
 ### The LLM as Operating System
 
-According to Andrej Karpathy, [[Large Language Models|LLMs]] function as a new kind of operating system where:
+As articulated by Andrej Karpathy, [[Large Language Models]] function as a new kind of operating system, where:
 
-- The **LLM** acts as the CPU
-- The **context window** serves as the RAM (working memory)
-- **Context engineering** plays the role of an OS curator, determining what information fits into the model's working memory
+- The LLM itself operates as the CPU
+- The [[context window]] serves as the model's working memory, analogous to RAM
+- Context engineering plays the role of an OS curator, determining what information fits into the available capacity
 
-Just as operating systems must carefully manage limited RAM capacity, developers building [[AI Agent|AI agents]] must strategically manage the limited context window to handle various sources of information.
+Just as operating systems must carefully manage RAM allocation, AI engineers must strategically manage what context is available to the LLM at any given time.
 
 ### Types of Context
 
-Context engineering applies across three primary context types:
+Context engineering encompasses three primary types of information that require management:
 
-- **Instructions** – prompts, memories, few-shot examples, tool descriptions
-- **Knowledge** – facts, semantic information, stored memories
-- **Tools** – feedback from tool calls and external system interactions
+1. **Instructions** - Prompts, memories, [[few-shot examples]], tool descriptions
+2. **Knowledge** - Facts, historical information, domain-specific data
+3. **Tools** - Feedback from [[tool calling]] operations
 
 ---
 
-## Context Engineering for Agents
+## Core Concepts
 
-### The Challenge of Long-Running Tasks
+### Why Context Engineering Matters
 
-As [[AI Agent|agents]] have become more sophisticated with improved reasoning and [[Tool Calling|tool calling]] capabilities, they increasingly handle long-running tasks that interleave multiple LLM invocations with tool calls. While this enables complex problem-solving, it creates significant challenges:
+As the complexity of [[AI Agents]] has grown, context engineering has emerged as a critical discipline. Major AI organizations recognize its importance:
 
-- **Context Window Overflow** – Extended interactions exceed available context capacity
-- **Cost and Latency Escalation** – Accumulating tokens dramatically increase computational costs
-- **Performance Degradation** – Longer context can paradoxically reduce agent effectiveness
+- **Cognition**: Context engineering is "effectively the #1 job of engineers building AI agents"
+- **Anthropic**: Context from tool calls accumulates over multiple agent turns, requiring careful management strategies
 
-### Context-Related Performance Problems
+### The Problem: Context Degradation
 
-Drew Breunig identified four specific ways that longer context degrades agent performance:
+Long-running agent tasks accumulate tokens that can cause several performance problems, identified by Drew Breunig:
 
 | Problem | Description |
 |---------|-------------|
-| **Context Poisoning** | Hallucinations that make their way into the context window |
-| **Context Distraction** | Context so voluminous it overwhelms the LLM's training |
-| **Context Confusion** | Superfluous context that influences responses unexpectedly |
-| **Context Clash** | Conflicting information within the context window |
+| **Context Poisoning** | Hallucinations become embedded in the context, corrupting future decisions |
+| **Context Distraction** | Excessive context overwhelms the model's reasoning |
+| **Context Confusion** | Superfluous information causes incorrect responses |
+| **Context Clash** | Conflicting information in context leads to contradictory outputs |
 
-### Industry Recognition
-
-Both [[Cognition]] and [[Anthropic]] have identified context engineering as fundamental to agent development:
-
-- Cognition emphasizes that context engineering is "effectively the #1 job of engineers building AI agents"
-- Anthropic notes that context from tool calls accumulates over hundreds of agent turns, requiring careful management strategies
+These issues can result in:
+- Exceeding context window limits
+- Increased costs and latency
+- Degraded agent performance
+- Token waste in long-running conversations (potentially spanning hundreds of turns)
 
 ---
 
-## Core Strategies
+## Context Engineering Strategies
 
-Context engineering strategies are organized into four primary buckets: write, select, compress, and isolate.
+### 1. Write Context
 
-### Write Context
-
-Writing context means **saving information outside the context window** to help agents perform tasks.
+**Write context** means saving information outside the context window to help an agent perform a task, preserving it for future use.
 
 #### Scratchpads
 
-[[Scratchpad|Scratchpads]] enable agents to take notes and persist information during task execution, mirroring how humans solve complex problems by taking notes for future reference.
+Scratchpads function as an agent's note-taking system, allowing agents to persist information during task execution:
 
-**Implementation approaches:**
-- Tool-based: A tool that writes to persistent storage (files, databases)
-- State-based: A field in the agent's runtime state object that persists during the session
+- **Concept**: Save information outside the context window so it remains available to the agent
+- **Implementation**: Can be implemented as a tool that writes to a file, or as a field in a runtime state object
+- **Example**: Anthropic's multi-agent researcher uses scratchpads to save its approach and planning, ensuring critical information isn't lost when the context window exceeds capacity
 
-**Example:** Anthropic's multi-agent researcher uses scratchpads to save its initial plan to memory before the context window reaches capacity, ensuring the strategic approach persists even as context accumulates.
+Scratchpads are particularly valuable within a single session or thread.
 
 #### Memories
 
-While scratchpads support single-session persistence, agents often benefit from cross-session memory. Modern approaches include:
+Memories extend the scratchpad concept across multiple sessions, allowing agents to learn and retain information over time:
 
-- **Reflexion** – Self-generated memories created through reflection after each agent turn
-- **Generative Agents** – Memories synthesized periodically from collections of past feedback
-- **Production implementations** – ChatGPT, Cursor, and Windsurf all implement auto-generated long-term memories based on user-agent interactions
+- **Reflexion**: Introduced reflection following each agent turn, with agents reusing self-generated memories
+- **Generative Agents**: Created memories synthesized periodically from collections of past feedback
+- **Production Examples**: ChatGPT, Cursor, and Windsurf all feature auto-generated long-term memories that persist across sessions based on user-agent interactions
 
-### Select Context
+### 2. Select Context
 
-Selecting context means **pulling relevant information into the context window** to assist agent task execution.
+**Select context** means pulling relevant information into the context window to help an agent perform a task.
 
 #### Scratchpad Selection
 
-The mechanism for scratchpad retrieval depends on implementation:
+The mechanism for retrieving scratchpad context depends on implementation:
 
-- **Tool-based scratchpads** – Agents make tool calls to read relevant sections
-- **State-based scratchpads** – Developers expose specific state fields to the LLM at each turn, providing fine-grained control
+- **Tool-based**: Agents retrieve scratchpad content via tool calls
+- **State-based**: Developers can selectively expose specific state fields to the LLM at each step, providing fine-grained control
 
 #### Memory Selection
 
-When agents maintain larger memory collections, intelligent selection becomes critical. Three memory types commonly require selection:
+When agents maintain large memory collections, selection becomes critical. Different memory types serve different purposes:
 
-- **Episodic Memories** – Few-shot examples demonstrating desired behavior
-- **Procedural Memories** – Instructions to guide agent behavior
-- **Semantic Memories** – Task-relevant facts and relationships
+- **Episodic Memories**: Few-shot examples demonstrating desired behavior
+- **Procedural Memories**: Instructions that steer agent behavior
+- **Semantic Memories**: Facts and task-relevant context
 
-**Selection Approaches:**
+**Selection Challenges:**
 
-1. **Static Selection** – Popular code agents (Claude Code, Cursor, Windsurf) use fixed files:
-   - CLAUDE.md for instructions and examples
-   - Rules files for procedural guidance
-
-2. **Dynamic Selection with Embeddings** – For larger semantic memory collections, [[Embedding|embeddings]] and [[Knowledge Graph|knowledge graphs]] enable relevance-based retrieval
-
-**Challenges:** Memory selection remains difficult at scale. Simon Willison demonstrated unexpected behavior when ChatGPT unexpectedly injected location data from memories into generated images, illustrating risks of uncontrolled memory retrieval.
+- Many code agents use narrow file sets that are always included (e.g., CLAUDE.md, rules files)
+- Larger semantic memory collections require more sophisticated retrieval
+- **Embeddings** and [[knowledge graphs]] are commonly used for memory indexing
+- Selection errors can occur: Simon Willison reported ChatGPT unexpectedly injecting his location from memory into generated images
 
 #### Tool Selection
 
-Agents can become overloaded when provided excessive tool options, especially when tool descriptions overlap. [[Retrieval-Augmented Generation|RAG]] applied to tool descriptions can improve selection accuracy by up to 3-fold by fetching only relevant tools.
+Agents can become overloaded when provided with too many tools, especially when tool descriptions overlap and cause confusion:
 
-#### Knowledge Retrieval
+- **Solution**: Apply [[Retrieval Augmented Generation]] (RAG) to tool descriptions
+- **Results**: Recent papers show 3-fold improvement in tool selection accuracy when using RAG-based filtering
 
-[[RAG|Retrieval-Augmented Generation]] represents a central context engineering challenge in large-scale applications. Code agents demonstrate production-scale RAG complexity:
+#### Knowledge Selection via RAG
 
-- **Indexing challenges** – Simple embedding search becomes unreliable as codebases grow
-- **Hybrid retrieval** – Effective systems combine multiple techniques:
-  - Grep and file-based search
-  - Knowledge graph-based retrieval
-  - Re-ranking steps to order context by relevance
-  - AST parsing for semantically meaningful code chunking
+[[Retrieval Augmented Generation]] is a central context engineering challenge, particularly in code agents operating at production scale:
 
-### Compress Context
+**Challenges identified by Windsurf:**
+- Indexing code ≠ context retrieval
+- Embedding search becomes unreliable as codebases grow
+- Multiple retrieval techniques are necessary: grep/file search, [[knowledge graph]]-based retrieval, and re-ranking steps
 
-Compressing context means **retaining only tokens essential** for task performance.
+### 3. Compress Context
+
+**Compress context** by retaining only the tokens required to perform a task, reducing overall token consumption.
 
 #### Context Summarization
 
-Agent interactions spanning hundreds of turns generate substantial token overhead. Summarization strategies include:
+Summarization distills token-heavy interactions into concise summaries:
 
-- **Auto-compaction** – Claude Code automatically summarizes full interaction trajectories when exceeding 95% of context window capacity
-- **Hierarchical Summarization** – Recursive or tree-based approaches to distill information across agent trajectories
-- **Targeted Summarization** – Applied at specific architectural points:
+- **Trajectory Summarization**: Claude Code runs "auto-compact" when exceeding 95% of context window, summarizing the full history of user-agent interactions
+- **Strategies**: Recursive or hierarchical summarization can be applied across agent trajectories
+- **Targeted Summarization**: Can be applied to specific points in agent design:
   - Post-processing token-heavy tool calls (e.g., search results)
-  - Agent-to-agent boundaries during knowledge handoff
-
-**Implementation Considerations:** Effective summarization requires capturing critical events and decisions. Cognition employs fine-tuned models for this task, indicating the complexity involved.
+  - Summarizing at agent-agent boundaries during knowledge hand-offs
+- **Challenges**: Capturing specific events or decisions requires careful implementation; Cognition uses fine-tuned models for this purpose
 
 #### Context Trimming
 
-While summarization uses LLMs to distill relevant information, trimming uses heuristic-based filtering:
+Trimming filters or "prunes" context rather than summarizing it:
 
-- **Hard-coded heuristics** – Removing older messages from conversation history
-- **Trained pruners** – Systems like Provence use machine learning to intelligently prune context for question-answering tasks
+- **Hard-coded Heuristics**: Remove older messages from conversation history
+- **Trained Pruners**: Provence is an example of a trained context pruner for [[Question-Answering]]
+- **Advantage**: Often simpler than summarization but may lose important details
 
-### Isolate Context
+### 4. Isolate Context
 
-Isolating context means **splitting information** across architectural components to help agents perform tasks.
+**Isolate context** by splitting it across different components or agents to help manage overall token consumption.
 
 #### Multi-Agent Architecture
 
-One of the most effective isolation strategies distributes context across multiple specialized agents:
+One of the most effective isolation strategies is distributing tasks across multiple specialized agents:
 
-**Benefits:**
-- **Separation of Concerns** – Each agent focuses on specific sub-tasks with dedicated tools and instructions
-- **Context Efficiency** – Subagent context windows allocate resources to narrow domains more effectively than single-agent approaches
-- **Performance Gains** – Anthropic's multi-agent researcher demonstrated that multiple agents with isolated contexts outperformed single-agent systems
-
-**Challenges:**
-- **Token Overhead** – Multi-agent systems can use up to 15× more tokens than single-agent chat
-- **Coordination Complexity** – Requires careful prompt engineering for sub-agent planning and coordination
+- **Separation of Concerns**: Each agent handles specific sub-tasks with its own tools, instructions, and context window
+- **Example**: OpenAI Swarm library was motivated by this principle
+- **Performance**: Anthropic's multi-agent researcher demonstrated that many agents with isolated contexts outperformed single-agent approaches, because each subagent's context window can be allocated to narrower, more focused sub-tasks
+- **Parallel Execution**: Subagents can operate in parallel, exploring different aspects of a problem simultaneously
+- **Trade-offs**: 
+  - Can use up to 15× more tokens than single-agent chat (per Anthropic)
+  - Requires careful prompt engineering to coordinate sub-agent work
+  - Demands sophisticated coordination mechanisms
 
 #### Context Isolation with Environments
 
-Alternative isolation approaches use sandboxed execution environments:
+[[HuggingFace]]'s deep researcher demonstrates an alternative isolation approach:
 
-**HuggingFace Code Agent Example:**
-- Agents output code containing desired tool calls
-- Code executes in isolated sandbox environments
-- Selected results pass
+- **Traditional Approach**: Tool calling APIs return JSON objects that are passed to tools, with results returned to the LLM
+- **CodeAgent Approach**: Agents output executable code that runs in a sandbox environment
+- **Benefit**: Token-heavy objects (images, audio, large data structures) can be isolated from the LLM in the environment
+- **Return Values**: Selected context from tool calls is passed back to the LLM as needed
+
+#### State-Based Isolation
+
+An agent's runtime state object provides another isolation mechanism:
+
+- **Schema Design**: Define a state object with multiple fields for different types of information
+- **Selective Exposure**: Only expose certain fields (e.g., messages) to the LLM at each turn
+- **Deferred Access**:
