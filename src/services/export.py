@@ -299,6 +299,28 @@ class ExportService:
                 else:
                     uncategorized.append(article)
 
+            # Determine top 5 core concepts (tags with most articles)
+            core_concepts = sorted(articles_by_tag.items(), key=lambda kv: len(kv[1]), reverse=True)[:5]
+            core_html = ""
+            if core_concepts:
+                core_html = '<div class="core-concepts"><h2>Core Concepts</h2><ul>'
+                for tag, items in core_concepts:
+                    core_html += f'<li><a href="#tag-{tag}">{tag} ({len(items)})</a></li>'
+                core_html += '</ul></div>'
+
+            # Knowledge heatmap - simple bar chart of tag frequencies
+            heatmap_data = sorted(articles_by_tag.items(), key=lambda kv: len(kv[1]), reverse=True)[:20]
+            max_count = max(len(items) for _, items in heatmap_data) if heatmap_data else 1
+            heatmap_html = '<div class="heatmap"><h2>Knowledge Heatmap</h2><svg width="100%" height="{}" xmlns="http://www.w3.org/2000/svg">'.format(20 * len(heatmap_data))
+            y = 0
+            for tag, items in heatmap_data:
+                count = len(items)
+                width_percent = (count / max_count) * 100
+                heatmap_html += f'<rect x="0" y="{y}" width="{width_percent}%" height="18" fill="#667eea"/>\n'
+                heatmap_html += f'<text x="2" y="{y + 14}" fill="white" font-size="12">{tag} ({count})</text>\n'
+                y += 20
+            heatmap_html += '</svg></div>'
+
             # Build accordion HTML sections
             accordion_html = ""
             for tag in sorted(articles_by_tag.keys()):
