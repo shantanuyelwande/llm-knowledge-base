@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingest - LLM Knowledge Base</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { max-width: 600px; width: 100%; background: white; border-radius: 12px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); padding: 40px; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0; }
+        .tab { padding: 10px 20px; cursor: pointer; border: none; background: none; font-weight: 600; color: #666; }
+        .tab.active { color: #667eea; border-bottom: 2px solid #667eea; }
+        .content { display: none; }
+        .content.active { display: block; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; }
+        input, textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 6px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 6px; background: #667eea; color: white; font-weight: 600; cursor: pointer; }
+        .status { margin-top: 20px; padding: 16px; border-radius: 6px; display: none; }
+        .status.show { display: block; }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header"><h1>📥 Ingest Content</h1></div>
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('urlForm')">URL</button>
+            <button class="tab" onclick="switchTab('pdfForm')">PDF</button>
+        </div>
+        
+        <form id="urlForm" class="content active">
+            <div class="form-group"><label>URL *</label><input type="text" id="urlInput" required></div>
+            <button type="submit">Ingest URL</button>
+        </form>
+
+        <form id="pdfForm" class="content">
+            <div class="form-group"><label>PDF File *</label><input type="file" id="pdfInput" accept=".pdf" required></div>
+            <button type="submit">Upload PDF</button>
+        </form>
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        const GITHUB_OWNER = 'shantanuyelwande';
+        const GITHUB_REPO = 'llm-knowledge-base';
+        const GITHUB_TOKEN = localStorage.getItem('github_token') || prompt('Enter GitHub Token:');
+        if(GITHUB_TOKEN) localStorage.setItem('github_token', GITHUB_TOKEN);
+
+        function switchTab(id) {
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function trigger(type, payload) {
+            const res = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/dispatches`, {
+                method: 'POST',
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ event_type: type, client_payload: payload })
+            });
+            return res.ok;
+        }
+
+        document.getElementById('urlForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const success = await trigger('ingest-url', { url: document.getElementById('urlInput').value, triggered_at: new Date().toISOString() });
+            showStatus(success ? 'URL Triggered!' : 'Error', success ? 'success' : 'error');
+        };
+
+        document.getElementById('pdfForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const file = document.getElementById('pdfInput').files[0];
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+                const base64 = event.target.result.split(',')[1];
+                const success = await trigger('ingest-pdf', { filename: file.name, file_content: base64, triggered_at: new Date().toISOString() });
+                showStatus(success ? 'PDF Uploaded!' : 'Error', success ? 'success' : 'error');
+            };
+            reader.readAsDataURL(file);
+        };
+
+        function showStatus(msg, type) {
+            const s = document.getElementById('status');
+            s.textContent = msg; s.className = `status show ${type}`;
+        }
+    </script>
+</body>
+</html>
