@@ -183,19 +183,35 @@ class ExportService:
             raise
     
     def _extract_tags_from_content(self, content: str) -> list:
-        """Extract tags from article frontmatter"""
+        """Extract tags from article frontmatter with robust delimiter and quoting support"""
         try:
-            if content.startswith("---"):
-                end = content.find("\n---\n", 4)
-                if end > 0:
-                    frontmatter = content[4:end]
-                    for line in frontmatter.split("\n"):
-                        if line.startswith("tags:"):
-                            tags_str = line.replace("tags:", "").strip().strip("[]")
-                            tags = [t.strip().strip("'\"") for t in tags_str.split(",")]
-                            return [t for t in tags if t]
-        except:
-            pass
+            content_stripped = content.lstrip()
+            if not content_stripped.startswith("---"):
+                return []
+            
+            # Find the closing '---' on its own line
+            lines = content.splitlines()
+            end_idx = -1
+            for i in range(1, len(lines)):
+                if lines[i].strip() == "---":
+                    end_idx = i
+                    break
+            
+            if end_idx == -1:
+                return []
+                
+            frontmatter = "\n".join(lines[0:end_idx])
+            for line in frontmatter.splitlines():
+                line = line.strip()
+                if line.lower().startswith("tags:"):
+                    tags_part = line[5:].strip()
+                    # Remove brackets if present: [tag1, tag2] -> tag1, tag2
+                    tags_part = tags_part.strip("[]")
+                    # Split by comma, strip whitespace and surrounding quotes
+                    tags = [t.strip().strip("'\"") for t in tags_part.split(",") if t.strip()]
+                    return tags
+        except Exception as e:
+            logger.debug(f"Tag extraction failed: {e}")
         return []
 
     def _extract_source_info(self, content: str) -> dict:
@@ -479,251 +495,7 @@ class ExportService:
         except Exception as e:
             logger.error(f"Error exporting HTML: {e}")
             raise
-        """Export as interactive accordion HTML with categories and a core concept hub"""
-        if articles is None:
-            articles = self.collect_wiki_articles()
 
-        output_file = self.output_dir / "knowledge.html"
-        try:
-            # Extract clean article summaries and source info
-            for article in articles:
-                article['summary'] = self._extract_article_summary(article['content'])
-                article['source_info'] = self._extract_source_info(article['content'])
-
-            # Group articles by primary tag only (to condense categories)
-            articles_by_tag: Dict[str, List[Dict[str, Any]]] = {}
-            uncategorized: List[Dict[str, Any]] = []
-            for article in articles:
-                tags = self._extract_tags_from_content(article['content'])
-                if tags:
-                    primary_tag = tags[0]
-                    articles_by_tag.setdefault(primary_tag, []).append(article)
-                else:
-                    uncategorized.append(article)
-
-            # Determine top 5 core concepts (tags with most articles)
-            core_concepts = sorted(articles_by_tag.items(), key=lambda kv: len(kv[1]), reverse=True)[:5]
-            core_html = ""
-            if core_concepts:
-                core_html = '<div class="core-concepts"><h2>Core Concepts</h2><ul>'
-                for tag, items in core_concepts:
-                    core_html += f'<li><a href="#tag-{tag}">{tag} ({len(items)})</a></li>'
-                core_html += '</ul></div>'
-            # Knowledge heatmap – simple bar chart of tag frequencies
-            heatmap_data = sorted(articles_by_tag.items(), key=lambda kv: len(kv[1]), reverse=True)[:20]
-            max_count = max(len(items) for _, items in heatmap_data) if heatmap_data else 1
-            heatmap_html = '<div class="heatmap"><h2>Knowledge Heatmap</h2><svg width="100%" height="{}" xmlns="http://www.w3.org/2000/svg">'.format(20 * len(heatmap_data))
-            y = 0
-            for tag, items in heatmap_data:
-                count = len(items)
-                width_percent = (count / max_count) * 100
-                heatmap_html += f'<rect x="0" y="{y}" width="{width_percent}%" height="18" fill="#667eea"/>\n'
-                heatmap_html += f'<text x="2" y="{y + 14}" fill="white" font-size="12">{tag} ({count})</text>\n'
-                y += 20
-            heatmap_html += '</svg></div>'
-
-            accordion_html = ""
-            for tag in sorted(articles_by_tag.keys()):
-                article_count = len(articles_by_tag[tag])
-                accordion_html += f'<div class="accordion-item" id="tag-{tag}">\n'
-                accordion_html += f'  <button class="accordion-header" onclick="toggleAccordion(this)"><span>📚 {tag}</span><span class="category-count">{article_count}</span><span class="toggle-icon">▼</span></button>\n'
-                accordion_html += f'  <div class="accordion-content">\n'
-                for article in sorted(articles_by_tag[tag], key=lambda x: x["title"]):
-                    accordion_html += f'    <div class="article-card"><h4>{article["title"]}</h4>'
-                    accordion_html += f'<p class="summary">{article["summary"]}</p>'
-                    source_info = article.get('source_info', {})
-                    source_text = ""
-                    if source_info.get('url'):
-                        source_text = f'🔗 <a href="{source_info["url"]}" target="_blank" rel="noopener">Source</a>'
-                    elif source_info.get('file'):
-                        source_text = f'📑 {source_info["file"]}'
-                    meta_text = f'📄 {article["word_count"]} words'
-                    if source_text:
-                        meta_text = f'{source_text} • {meta_text}'
-                    accordion_html += f'<p class="meta">{meta_text}</p></div>\n'
-                accordion_html += f'  </div>\n</div>\n'
-
-            if uncategorized:
-                accordion_html += f'<div class="accordion-item"><button class="accordion-header" onclick="toggleAccordion(this)"><span>📋 Uncategorized</span><span class="category-count">{len(uncategorized)}</span><span class="toggle-icon">▼</span></button>'
-                accordion_html += f'<div class="accordion-content">\n'
-                for article in sorted(uncategorized, key=lambda x: x["title"]):
-                    source_info = article.get('source_info', {})
-                    source_text = ""
-                    if source_info.get('url'):
-                        source_text = f'🔗 <a href="{source_info["url"]}" target="_blank" rel="noopener">Source</a> • '
-                    elif source_info.get('file'):
-                        source_text = f'📑 {source_info["file"]} • '
-                    accordion_html += f'<div class="article-card"><h4>{article["title"]}</h4><p class="meta">{source_text}📄 {article["word_count"]} words</p></div>\n'
-                accordion_html += f'</div></div>\n'
-
-            # Build search index
-            search_index = self._build_search_index(articles)
-
-            html_content = f"""<!DOCTYPE html>
-<html lang=\"en\">
-<head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <title>Knowledge Base</title>
-    <style>
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-        body {{ font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif; line-height: 1.6; color: #2c3e50; background: #f5f7fa; min-height: 100vh; padding: 20px; }}
-        .container {{ max-width: 1000px; margin: 0 auto; }}
-        .header {{ background: white; border-radius: 12px; padding: 40px; margin-bottom: 40px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; }}
-        .header h1 {{ font-size: 2.8em; margin-bottom: 12px; color: #667eea; font-weight: 700; }}
-        .header p {{ color: #7f8c8d; font-size: 1.1em; margin-bottom: 30px; }}
-        .stats {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 20px; }}
-        .stat {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 24px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2); }}
-        .stat-number {{ font-size: 2.2em; font-weight: 700; margin-bottom: 8px; }}
-        .stat-label {{ font-size: 0.95em; opacity: 0.9; }}
-        .core-concepts {{ background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }}
-        .core-concepts h2 {{ margin-bottom: 12px; color: #667eea; }}
-        .core-concepts ul {{ list-style: none; padding: 0; }}
-        .core-concepts li {{ margin: 6px 0; }}
-        .core-concepts a {{ color: #333; text-decoration: none; }}
-        .core-concepts a:hover {{ text-decoration: underline; }}
-        .accordion-item {{ background: white; border-radius: 10px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); overflow: hidden; transition: box-shadow 0.3s ease; }}
-        .accordion-item:hover {{ box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
-        .accordion-header {{ width: 100%; padding: 18px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; cursor: pointer; font-size: 1.05em; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: all 0.3s ease; }}
-        .accordion-header:hover {{ padding-left: 28px; }}
-        .category-count {{ background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 12px; font-size: 0.85em; font-weight: 500; }}
-        .toggle-icon {{ font-size: 0.8em; transition: transform 0.3s ease; }}
-        .accordion-item.active .toggle-icon {{ transform: rotate(180deg); }}
-        .accordion-content {{ max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }}
-        .accordion-item.active .accordion-content {{ max-height: 8000px; padding: 24px; }}
-        .article-card {{ background: #f8fafb; padding: 18px; margin-bottom: 14px; border-radius: 8px; border-left: 3px solid #667eea; transition: all 0.2s ease; }}
-        .article-card:hover {{ background: white; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transform: translateX(4px); }}
-        .article-card h4 {{ color: #2c3e50; margin-bottom: 8px; font-size: 1.02em; font-weight: 600; }}
-        .summary {{ color: #555; font-size: 0.95em; line-height: 1.5; margin-bottom: 8px; }}
-        .meta {{ color: #999; font-size: 0.85em; }}
-        .footer {{ text-align: center; color: #7f8c8d; margin-top: 50px; padding: 20px; font-size: 0.9em; }}
-        .search-box {{ background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }}
-        .search-input {{ width: 100%; padding: 12px 16px; font-size: 1em; border: 2px solid #e0e0e0; border-radius: 8px; transition: border-color 0.3s ease; }}
-        .search-input:focus {{ outline: none; border-color: #667eea; }}
-        .search-results {{ display: none; margin-bottom: 30px; }}
-        .search-results.active {{ display: block; }}
-        .search-results-header {{ color: #667eea; font-weight: 600; margin-bottom: 15px; }}
-        .search-result-item {{ background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid #667eea; }}
-        .search-result-item h4 {{ color: #2c3e50; margin-bottom: 5px; }}
-        .search-result-snippet {{ color: #666; font-size: 0.9em; margin-bottom: 8px; }}
-        .search-result-meta {{ color: #999; font-size: 0.85em; }}
-        .search-result-tags {{ margin-top: 5px; }}
-        .tag {{ display: inline-block; background: #f0f0f0; padding: 2px 8px; border-radius: 4px; margin-right: 5px; font-size: 0.8em; color: #666; }}
-        .categories-section {{ display: none; }}
-        .categories-section.active {{ display: block; }}
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>📚 Knowledge Base</h1>
-            <p>Organized, categorized knowledge</p>
-            <div class="stats">
-                <div class="stat">
-                    <div class="stat-number">{len(articles)}</div>
-                    <div class="stat-label">Articles</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">{sum(a['word_count'] for a in articles)}</div>
-                    <div class="stat-label">Words</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number">{len(articles_by_tag)}</div>
-                    <div class="stat-label">Categories</div>
-                </div>
-            </div>
-        </div>
-
-        {core_html}
-
-        {heatmap_html}
-
-        <div class="search-box">
-            <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search articles... (type to search)">
-        </div>
-
-        <div class="search-results" id="searchResults">
-            <div class="search-results-header" id="resultsHeader"></div>
-            <div id="resultsList"></div>
-        </div>
-
-        <div class="categories-section" id="categoriesSection">
-            {accordion_html}
-        </div>
-        <div class="footer">
-            <p>Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-        </div>
-    </div>
-    <script>
-        // Search index embedded in page
-        const searchIndex = {search_index};
-
-        // Toggle accordion
-        function toggleAccordion(button) {{ button.parentElement.classList.toggle('active'); }}
-
-        // Search functionality
-        const searchInput = document.getElementById('searchInput');
-        const searchResults = document.getElementById('searchResults');
-        const resultsHeader = document.getElementById('resultsHeader');
-        const resultsList = document.getElementById('resultsList');
-        const categoriesSection = document.getElementById('categoriesSection');
-
-        function performSearch(query) {{
-            if (!query.trim()) {{
-                searchResults.classList.remove('active');
-                categoriesSection.classList.add('active');
-                return;
-            }}
-
-            query = query.toLowerCase();
-            const results = searchIndex.filter(article => {{
-                const title = article.title.toLowerCase();
-                const summary = article.summary.toLowerCase();
-                const tags = article.tags.map(t => t.toLowerCase()).join(' ');
-                const content = article.content.toLowerCase();
-                return title.includes(query) || summary.includes(query) || tags.includes(query) || content.includes(query);
-            }});
-
-            // Display results
-            searchResults.classList.add('active');
-            categoriesSection.classList.remove('active');
-
-            resultsHeader.textContent = results.length + ' result' + (results.length !== 1 ? 's' : '') + ' found';
-            resultsList.innerHTML = results.map(article => {{
-                const sourceHtml = article.source_url
-                    ? `🔗 <a href="${{article.source_url}}" target="_blank" rel="noopener">Source URL</a>`
-                    : article.source_file ? `📑 ${{article.source_file}}` : '';
-                return `
-                    <div class="search-result-item">
-                        <h4>${{article.title}}</h4>
-                        <p class="search-result-snippet">${{article.summary}}</p>
-                        <div class="search-result-meta">
-                            📄 ${{article.word_count}} words
-                            ${{sourceHtml ? ' • ' + sourceHtml : ''}}
-                        </div>
-                        ${{article.tags.length > 0 ? `<div class="search-result-tags">${{article.tags.map(t => `<span class="tag">${{t}}</span>`).join('')}}</div>` : ''}}
-                    </div>
-                `;
-            }}).join('');
-        }}
-
-        searchInput.addEventListener('input', (e) => {{
-            performSearch(e.target.value);
-        }});
-
-        // Initialize with categories showing
-        document.querySelector('.accordion-item')?.classList.add('active');
-    </script>
-</body>
-</html>"""
-            with open(output_file, "w", encoding="utf-8") as f:
-                f.write(html_content)
-
-            logger.info(f"✓ Exported to accordion HTML: {output_file}")
-            return output_file
-        except Exception as e:
-            logger.error(f"Error exporting HTML: {e}")
-            raise
 
     def export_html_old(self, articles: List[Dict[str, Any]] = None) -> Path:
         """Export as single shareable HTML page"""
