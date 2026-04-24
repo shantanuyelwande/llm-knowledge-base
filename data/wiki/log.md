@@ -569,3 +569,8 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 880
 - Time: 2026-04-18 13:51:38
 
+
+## [2026-04-24] create | New foundational pages
+- Created large-language-models.md (Concept)
+- Created model-context-protocol.md (Entity)
+- Healed ~50 links pointing to these terms
