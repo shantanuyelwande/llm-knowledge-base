@@ -382,6 +382,15 @@ class ExportService:
         .stat {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 24px; border-radius: 10px; text-align: center; color: white; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2); }}
         .stat-number {{ font-size: 2.2em; font-weight: 700; margin-bottom: 8px; }}
         .stat-label {{ font-size: 0.95em; opacity: 0.9; }}
+        .core-concepts {{ background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }}
+        .core-concepts h2 {{ color: #667eea; margin-bottom: 12px; font-size: 1.4em; }}
+        .core-concepts ul {{ list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }}
+        .core-concepts li {{ margin: 0; }}
+        .core-concepts a {{ display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: 500; transition: transform 0.2s ease; }}
+        .core-concepts a:hover {{ transform: scale(1.05); }}
+        .heatmap {{ background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }}
+        .heatmap h2 {{ color: #667eea; margin-bottom: 12px; font-size: 1.2em; }}
+        .heatmap svg {{ display: block; }}
         .accordion-item {{ background: white; border-radius: 10px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); overflow: hidden; transition: box-shadow 0.3s ease; }}
         .accordion-item:hover {{ box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
         .accordion-header {{ width: 100%; padding: 18px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; cursor: pointer; font-size: 1.05em; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 12px; transition: all 0.3s ease; }}
@@ -431,6 +440,10 @@ class ExportService:
                 </div>
             </div>
         </div>
+
+        {core_html}
+
+        {heatmap_html}
 
         <div class="search-box">
             <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search articles... (type to search)">
