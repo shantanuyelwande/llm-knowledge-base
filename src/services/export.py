@@ -390,6 +390,36 @@ class ExportService:
         .core-concepts a:hover {{ transform: scale(1.05); }}
         .heatmap {{ background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }}
         .heatmap h2 {{ color: #667eea; margin-bottom: 12px; font-size: 1.2em; }}
+        .heatmap svg {{ display: block; width: 100%; height: auto; }}
+        .heatmap rect {{ transition: fill 0.3s ease; }}
+        .heatmap rect:hover {{ fill: #764ba2; }}
+        .heatmap text {{ font-size: 12px; font-weight: 500; fill: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }}
+        .heatmap .axis-label {{ font-size: 10px; fill: #666; text-anchor: end; }}
+        .heatmap .axis-line {{ stroke: #e0e0e0; stroke-width: 1; }}
+        .heatmap .axis-tick {{ stroke: #e0e0e0; stroke-width: 1; }}
+        .core-concepts {{ background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }}
+        .core-concepts h2 {{ color: #667eea; margin-bottom: 12px; font-size: 1.4em; }}
+        .core-concepts ul {{ list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }}
+        .core-concepts li {{ margin: 0; }}
+        .core-concepts a {{ display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: 500; transition: transform 0.2s ease; }}
+        .core-concepts a:hover {{ transform: scale(1.05); }}
+        .heatmap {{ background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }}
+        .heatmap h2 {{ color: #667eea; margin-bottom: 12px; font-size: 1.2em; }}
+        .heatmap svg {{ display: block; width: 100%; height: auto; }}
+        .heatmap rect {{ transition: fill 0.3s ease; }}
+        .heatmap rect:hover {{ fill: #764ba2; }}
+        .heatmap text {{ font-size: 12px; font-weight: 500; fill: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }}
+        .heatmap .axis-label {{ font-size: 10px; fill: #666; text-anchor: end; }}
+        .heatmap .axis-line {{ stroke: #e0e0e0; stroke-width: 1; }}
+        .heatmap .axis-tick {{ stroke: #e0e0e0; stroke-width: 1; }}
+        .core-concepts {{ background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }}
+        .core-concepts h2 {{ color: #667eea; margin-bottom: 12px; font-size: 1.4em; }}
+        .core-concepts ul {{ list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }}
+        .core-concepts li {{ margin: 0; }}
+        .core-concepts a {{ display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none; font-weight: 500; transition: transform 0.2s ease; }}
+        .core-concepts a:hover {{ transform: scale(1.05); }}
+        .heatmap {{ background: white; padding: 20px; margin-bottom: 30px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); }}
+        .heatmap h2 {{ color: #667eea; margin-bottom: 12px; font-size: 1.2em; }}
         .heatmap svg {{ display: block; }}
         .accordion-item {{ background: white; border-radius: 10px; margin-bottom: 16px; box-shadow: 0 2px 6px rgba(0,0,0,0.07); overflow: hidden; transition: box-shadow 0.3s ease; }}
         .accordion-item:hover {{ box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
