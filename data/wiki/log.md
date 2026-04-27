@@ -1231,3 +1231,55 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1012
 - Time: 2026-04-26 05:18:17
 
+## [2026-04-27 05:30:47] update | ai-tools-catalog
+
+- Source: `ai-tools-catalog.md`
+- Time: 2026-04-27 05:30:47
+
+## [2026-04-27 05:31:10] update | careersatdoordash-com-blog-doordash-unified-dasher-onboarding-a-modular--1776790524
+
+- Source: `careersatdoordash-com-blog-doordash-unified-dasher-onboarding-a-modular--1776790524.md`
+- Time: 2026-04-27 05:31:10
+
+## [2026-04-27 05:31:38] update | anthropic-com-engineering-harness-design-long-running-apps-1776722814
+
+- Source: `anthropic-com-engineering-harness-design-long-running-apps-1776722814.md`
+- Time: 2026-04-27 05:31:38
+
+## [2026-04-27 05:32:04] update | agentfield-ai-blog-beyond-vibe-coding-1776118705
+
+- Source: `agentfield-ai-blog-beyond-vibe-coding-1776118705.md`
+- Time: 2026-04-27 05:32:04
+
+## [2026-04-27 05:32:10] update | x-com-i-status-2043726271449112776-1776192965
+
+- Source: `x-com-i-status-2043726271449112776-1776192965.md`
+- Time: 2026-04-27 05:32:10
+
+## [2026-04-27 05:32:34] update | share-google-S4lTnOo7l96jQZFyP-1776347437
+
+- Source: `share-google-S4lTnOo7l96jQZFyP-1776347437.md`
+- Time: 2026-04-27 05:32:34
+
+## [2026-04-27 05:32:40] update | x-com-i-status-2043745099792953508-1776192723
+
+- Source: `x-com-i-status-2043745099792953508-1776192723.md`
+- Time: 2026-04-27 05:32:40
+
+## [2026-04-27 05:33:04] update | github-blog-ai-and-ml-generative-ai-under-the-hood-security-ar-1776723892
+
+- Source: `github-blog-ai-and-ml-generative-ai-under-the-hood-security-ar-1776723892.md`
+- Time: 2026-04-27 05:33:04
+
+## [2026-04-27 05:33:04] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1000
+- Time: 2026-04-27 05:33:04
+
+## [2026-04-27 05:33:06] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1000
+- Time: 2026-04-27 05:33:06
+
