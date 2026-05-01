@@ -4,6 +4,8 @@ Transform your research materials into an intelligent, queryable knowledge base 
 
 A **CLI-first** project that implements [Karpathy's LLM Wiki Pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): raw sources incrementally compile into a structured, interlinked wiki. Knowledge compounds over time.
 
+![Alt Text](LLM_Wiki_Arch.png)
+
 ## 🎯 Features
 
 - **Data Ingestion**: Add raw documents (articles, PDFs, papers, etc.) to `data/raw/`
