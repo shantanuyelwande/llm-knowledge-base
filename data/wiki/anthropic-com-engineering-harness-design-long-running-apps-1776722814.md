@@ -4,13 +4,13 @@ source_file: anthropic-com-engineering-harness-design-long-running-apps-17767228
 source_url: https://www.anthropic.com/engineering/harness-design-long-running-apps
 ingested_from: url
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-05-02T05:15:44.889822
-raw_file_updated: 2026-05-02T05:15:44.889822
+compiled_at: 2026-05-03T05:35:34.420683
+raw_file_updated: 2026-05-03T05:35:34.420683
 version: 1
 sources:
   - file: anthropic-com-engineering-harness-design-long-running-apps-1776722814.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-05-02T05:15:44.889822
+    added_at: 2026-05-03T05:35:34.420683
 tags: []
 related_topics: []
 backlinked_by: []
@@ -19,41 +19,38 @@ backlinked_by: []
 
 ## Summary
 
-**Harness design** refers to the architectural patterns and scaffolding used to enable [[AI agents]] to effectively build complex applications over extended periods. This article explores how [[Anthropic]] engineers developed novel harness architectures inspired by [[Generative Adversarial Networks]] (GANs) to improve [[Claude]]'s performance on both subjective tasks like [[frontend design]] and objective tasks like [[full-stack software development]]. The work demonstrates that separating evaluation from generation, decomposing complex tasks, and using [[context engineering]] techniques can produce significantly higher-quality outputs than naive single-agent approaches.
+**Harness design** refers to the architectural patterns and orchestration strategies used to enable [[AI agents]] to reliably complete complex, long-running tasks. This article explores how [[Anthropic]] researchers developed multi-agent systems inspired by [[Generative Adversarial Networks]] (GANs) to improve both [[frontend design]] quality and full-stack application development. The key innovation separates the roles of generation and evaluation into distinct agents, enabling iterative refinement and higher-quality outputs than single-agent approaches.
 
 ---
 
 ## Overview
 
-Harness design has emerged as a critical practice at the frontier of [[agentic coding]]. Rather than relying on a single [[language model]] to complete complex tasks in isolation, effective harnesses employ multiple specialized agents working in coordination, structured handoffs between sessions, and systematic evaluation mechanisms. This approach enables [[AI systems]] to build complete, functional applications that would exceed the capabilities of baseline models.
+Harness design has emerged as a critical factor in advancing [[agentic coding]] capabilities. Rather than relying on a single agent to complete complex tasks, effective harnesses decompose work into specialized roles, each addressing specific gaps in model performance.
 
-The key insight is that harness complexity should be justified by concrete performance gains. As models improve, harnesses should be continuously re-evaluated and simplified, removing components that are no longer load-bearing while adding new capabilities that become possible with enhanced model abilities.
+This work, conducted by Prithvi Rajasekaran at [[Anthropic Labs]], demonstrates how novel AI engineering approaches can break through performance ceilings in both subjective domains (like design) and objective ones (like software development).
 
 ---
 
-## The Problem: Why Naive Implementations Fall Short
+## The Problem with Naive Implementations
 
 ### Context Window Limitations
 
-[[Long-running tasks]] present fundamental challenges for [[language models]]. As context windows fill during extended work sessions, models exhibit two related failure modes:
+Long-running tasks present two persistent challenges:
 
-1. **Loss of Coherence**: Models tend to lose track of earlier decisions and context as the conversation history grows, leading to inconsistent implementations and poor architectural decisions.
+1. **Context Window Degradation**: As the [[context window]] fills during extended tasks, models tend to lose coherence. This problem is distinct from simple token limits.
 
-2. **Context Anxiety**: Some models, particularly [[Claude Sonnet 4.5]], exhibit "context anxiety"—a tendency to wrap up work prematurely as they approach their perceived context limit, even when substantial work remains.
+2. **Context Anxiety**: Some models, notably [[Claude Sonnet 4.5]], exhibit "context anxiety"—a tendency to prematurely wrap up work as they approach what they perceive as their context limit.
 
-### Context Resets vs. Compaction
-
-Two approaches exist for managing context growth:
-
-- **Compaction**: Summarizing earlier parts of the conversation in place, allowing the same agent to continue on a shortened history. While this preserves continuity, it doesn't eliminate context anxiety.
-
-- **Context Resets**: Clearing the context window entirely and starting a fresh agent, combined with [[structured artifacts]] that carry the previous agent's state. This provides a clean slate but adds orchestration complexity and token overhead.
-
-The [[Anthropic]] team found that [[Claude Sonnet 4.5]] required context resets to perform well on lengthy tasks, while newer models like [[Claude Opus 4.6]] largely eliminated this behavior natively.
+**Solutions**: 
+- **Context Resets**: Clearing the entire context window and starting fresh with a structured handoff artifact preserves state better than compaction alone
+- **Compaction**: Summarizing earlier conversation in place allows the same agent to continue, but doesn't eliminate context anxiety
+- **Structured Artifacts**: Using files or data structures to carry forward previous agent state across sessions
 
 ### Self-Evaluation Bias
 
-When asked to evaluate their own work, [[AI agents]] consistently exhibit positive bias, praising outputs even when quality is mediocre. This problem is particularly acute for subjective tasks like [[design]] where no binary verification criterion exists. Separating the agent performing work from the agent evaluating it proves to be a strong lever for addressing this issue.
+A second critical failure mode is **self-evaluation bias**. When asked to evaluate their own work, [[AI models]] consistently skew positive, praising mediocre outputs with confidence. This problem is particularly acute in subjective domains like [[design]] but also affects objective tasks.
+
+**Solution**: Separating the agent doing the work from the agent evaluating it creates a feedback loop that drives improvement. While evaluator agents still exhibit some leniency toward LLM-generated outputs, they can be tuned to be appropriately skeptical through careful prompting and calibration.
 
 ---
 
@@ -61,125 +58,131 @@ When asked to evaluate their own work, [[AI agents]] consistently exhibit positi
 
 ### The Challenge
 
-[[Claude]] naturally gravitates toward safe, predictable layouts that are technically functional but visually unremarkable. To push beyond this baseline, the team needed a method to make subjective aesthetic judgments gradable and actionable.
+Without intervention, [[Claude]] typically produces safe, technically functional but visually unremarkable designs. The core problem is that subjective aesthetic judgments resist quantification.
 
-### Design Grading Criteria
+### The Approach
 
-Four explicit criteria were developed to guide both generator and evaluator agents:
+The solution involved two insights:
 
-1. **Design Quality**: Does the design feel like a coherent whole rather than a collection of parts? Strong work combines colors, typography, layout, imagery, and other details to create a distinct mood and identity.
+1. **Grading Criteria as Anchors**: While aesthetics can't be fully reduced to scores, they can be improved by encoding design principles into concrete, gradable criteria
+2. **Generator-Evaluator Loop**: Separating generation from evaluation creates feedback that drives the generator toward stronger outputs
 
-2. **Originality**: Is there evidence of custom creative decisions, or does the design rely on template layouts and library defaults? The criterion explicitly penalizes "AI slop" patterns like purple gradients over white cards.
+### Four Grading Criteria
 
-3. **Craft**: Technical execution including typography hierarchy, spacing consistency, color harmony, and contrast ratios. This is a competence check; most reasonable implementations succeed here by default.
+The harness used four criteria, weighted to emphasize areas where Claude needed improvement:
 
-4. **Functionality**: Usability independent of aesthetics. Can users understand the interface, find primary actions, and complete tasks without guessing?
+| Criterion | Definition | Weight |
+|-----------|-----------|--------|
+| **Design Quality** | Does the design feel like a coherent whole? Do colors, typography, layout, and imagery combine to create a distinct mood and identity? | High |
+| **Originality** | Evidence of custom decisions vs. template layouts and AI-generated patterns. Are there deliberate creative choices? | High |
+| **Craft** | Technical execution: typography hierarchy, spacing, color harmony, contrast ratios. Competence check. | Medium |
+| **Functionality** | Usability independent of aesthetics. Can users understand, find actions, and complete tasks? | Medium |
 
-The team weighted design quality and originality more heavily than craft and functionality, since [[Claude]] already performed well on the latter two dimensions by default.
+### Implementation
 
-### The Generator-Evaluator Loop
-
-The harness operated as follows:
-
-1. A **generator agent** created HTML/CSS/JavaScript frontends based on user prompts
-2. An **evaluator agent** used [[Playwright MCP]] to interact with the live page directly
-3. The evaluator scored each criterion and provided detailed critique
-4. Feedback flowed back to the generator for iteration
-5. The generator made strategic decisions: refine the current direction if scores improved, or pivot to an entirely different aesthetic if the approach wasn't working
-
-Runs typically involved 5-15 iterations, with each cycle pushing the generator in more distinctive directions. Full runs stretched up to four hours.
+- **Generator Agent**: Created HTML/CSS/JS frontends based on user prompts
+- **Evaluator Agent**: Used [[Playwright MCP]] to interact with live pages, taking screenshots and studying implementations before scoring
+- **Iteration Loop**: 5-15 iterations per generation, with evaluator feedback driving refinement
+- **Wall-Clock Time**: Full runs stretched up to 4 hours
 
 ### Key Findings
 
-- The wording of evaluation criteria steered generator output in unanticipated ways (e.g., including "museum quality" in criteria pushed designs toward particular visual convergence)
-- Even on the first iteration, outputs were noticeably better than baseline, suggesting criteria language itself shaped behavior
-- Iteration patterns were not always linearly improving; later implementations were generally better overall, but specific middle iterations sometimes proved superior
-- The generator demonstrated creative leaps—in one case, reimagining a museum website as a 3D spatial experience with CSS perspective rendering
+- Evaluator assessments improved over iterations before plateauing
+- Prompting language directly shaped output character (e.g., "museum quality" pushed toward specific visual convergence)
+- Later implementations were generally better, but not always linearly—some middle iterations were preferred to final versions
+- Even first-iteration outputs were noticeably better than baseline with no prompting, suggesting criteria language itself steered the model away from generic defaults
+
+### Notable Example: Museum Website
+
+When prompted to create a website for a Dutch art museum, the model produced a clean, dark-themed landing page by iteration nine. At iteration ten, it scrapped the approach entirely and reimagined the site as a spatial 3D experience with a checkered floor, artwork hung on walls, and doorway-based navigation—a creative leap not typically seen in single-pass generation.
 
 ---
 
-## Scaling to Full-Stack Coding
+## Full-Stack Application Development
 
-### Three-Agent Architecture
+### The Architecture
 
-Building on insights from the [[frontend design]] work, the team developed a three-agent system for autonomous [[full-stack development]]:
+Building on earlier [[long-running harness]] work, the system employed three specialized agents:
 
 #### Planner Agent
 
-- Takes a simple 1-4 sentence prompt and expands it into a full product specification
-- Deliberately ambitious about scope, focusing on product context and high-level technical design rather than granular implementation details
-- Avoids over-specifying technical details upfront to prevent cascading errors
-- Identifies opportunities to weave [[AI features]] into product specifications
-- Reads and applies [[frontend design skills]] to create visual design language
+- **Role**: Expands simple 1-4 sentence prompts into full product specifications
+- **Approach**: Ambitious on scope, focused on product context and high-level technical design rather than implementation details
+- **Innovation**: Identifies opportunities to weave [[AI features]] into product specs
+- **Rationale**: Avoids cascading errors from over-specified technical details
 
 #### Generator Agent
 
-- Works in [[sprints]], implementing one feature at a time from the specification
-- Uses [[React]], [[Vite]], [[FastAPI]], and [[SQLite]]/[[PostgreSQL]] stack
-- Maintains version control with [[Git]]
-- Self-evaluates work at the end of each sprint before handing off to QA
-- Negotiates a "sprint contract" with the evaluator before implementation begins
+- **Role**: Implements features in sprints using [[React]], [[Vite]], [[FastAPI]], and [[SQLite]]/[[PostgreSQL]]
+- **Approach**: One feature at a time, with self-evaluation before handoff to QA
+- **Tools**: Git for version control
+- **Key Improvement**: Removed sprint construct in later versions when [[Claude Opus 4.6]] demonstrated sufficient capability
 
 #### Evaluator Agent
 
-- Uses [[Playwright MCP]] to click through running applications like a user would
-- Tests UI features, API endpoints, and database states
-- Grades each sprint against both discovered bugs and explicit criteria
-- Evaluates: product depth, functionality, visual design, and code quality
-- Each criterion has a hard threshold; failure in any area triggers detailed feedback
+- **Role**: Quality assurance through automated testing and grading
+- **Tools**: [[Playwright MCP]] for clicking through running applications like a user would
+- **Testing**: UI features, API endpoints, database states
+- **Grading**: Against product-adapted criteria (depth, functionality, design, code quality)
+- **Innovation**: **Sprint Contract** negotiation—generator and evaluator agree on "done" before coding begins
 
 ### Sprint Contracts
 
-Before each sprint, the generator and evaluator negotiate a **sprint contract** that specifies:
+A critical innovation in the harness is the sprint contract mechanism:
 
-- What the generator will build
-- How success will be verified
-- Testable implementation criteria
+1. **Generator proposes** what it will build and how success will be verified
+2. **Evaluator reviews** the proposal to ensure the right thing is being built
+3. **Both iterate** until agreement is reached
+4. **Generator builds** against the agreed contract
+5. **Evaluator tests** against contract criteria
 
-This bridges the gap between high-level user stories and testable implementation, keeping work faithful to specifications without over-constraining the implementation approach.
+This bridges the gap between high-level user stories and testable implementations without over-specifying too early.
 
 ### Communication Pattern
 
-Agents communicate via files:
+Agents communicate via files rather than direct conversation:
 - One agent writes a file
-- Another agent reads and responds within that file or with a new file
-- The previous agent reads the response and continues
-
-This asynchronous pattern maintains clear context and decision trails.
+- Another agent reads and responds in that file or creates a new file
+- This keeps work faithful to specifications while maintaining flexibility
 
 ---
 
-## Case Study: Retro Game Maker
+## Case Study: Retro Video Game Maker
 
-### Comparison: Solo vs. Harness
+### Comparison: Solo vs. Full Harness
 
-The team compared a single-agent baseline against the full three-agent harness using the prompt: *"Create a 2D retro game maker with features including a level editor, sprite editor, entity behaviors, and a playable test mode."*
+| Aspect | Solo Agent | Full Harness |
+|--------|-----------|--------------|
+| **Duration** | 20 minutes | 6 hours |
+| **Cost** | $9 | $200 |
+| **Cost Multiplier** | — | 22x |
+| **Scope** | Basic editors and play mode | 16 features across 10 sprints |
+| **Quality** | Broken core gameplay | Fully functional game |
 
-| Harness | Duration | Cost |
-|---------|----------|------|
-| Solo | 20 min | $9 |
-| Full harness | 6 hr | $200 |
+### Solo Run Results
 
-**Solo Run Results:**
-- Application appeared functional initially
+The solo agent produced an application that appeared functional initially but had critical flaws:
 - Layout wasted space with fixed-height panels
-- Workflow was rigid and unintuitive
-- **Critical failure**: Game entities appeared on screen but didn't respond to input
-- Core wiring between entity definitions and game runtime was broken
+- Workflow was rigid with no UI guidance for proper sequence
+- **Core feature broken**: Entities didn't respond to input; wiring between entity definitions and game runtime was broken
 
-**Harness Run Results:**
-- Planner expanded prompt into 16-feature spec across 10 sprints
-- Included sprite animation system, behavior templates, sound effects, AI-assisted sprite generator, and game export
-- Visual design language applied consistently throughout
-- Sprite editor was richer with cleaner tool palettes and better color picker
-- **Critical success**: Entities responded to input; gameplay functioned
-- Built-in [[Claude integration]] allowed generating game components through prompting
-- Minor issues remained (e.g., physics edge cases, level design limitations)
+### Full Harness Results
 
----
+The harness-generated application demonstrated:
+- Polish and smoothness throughout interface
+- Full viewport utilization with sensible panel sizing
+- Consistent visual identity tracking design direction
+- Richer sprite editor with cleaner tool palettes
+- **Integrated AI features** for generating game components
+- **Functional gameplay**: Users could move entities and play the game
+- Minor physics edge cases (character overlapping platforms) but core functionality worked
 
-## Iterating and Simplifying the Harness
+### Evaluator Findings
 
-### Principle: Stress-Test Assumptions
+The evaluator caught critical issues that would have gone unnoticed:
 
-Every component in a harness encodes an assumption about what the model cannot do independently. These assumptions should be continuously stress-tested because:
+| Contract Criterion | Finding |
+|-------------------|---------|
+| Rectangle fill tool fills rectangular area | **FAIL** — Only places tiles at endpoints; `fillRectangle` function exists but isn't triggered on mouseUp |
+| User can delete entity spawn points | **FAIL** — Delete handler requires both `selection` and `selectedEntityId`, but clicking only sets `selectedEntityId` |
+| User can reorder animation frames via API | **FAIL** — Route
