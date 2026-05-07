@@ -4,13 +4,13 @@ source_file: github-blog-ai-and-ml-generative-ai-under-the-hood-security-ar-1776
 source_url: https://github.blog/ai-and-ml/generative-ai/under-the-hood-security-architecture-of-github-agentic-workflows/?utm_source=substack&utm_medium=email
 ingested_from: url
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-05-06T05:36:23.593906
-raw_file_updated: 2026-05-06T05:36:23.593906
+compiled_at: 2026-05-07T05:39:14.722133
+raw_file_updated: 2026-05-07T05:39:14.722133
 version: 1
 sources:
   - file: github-blog-ai-and-ml-generative-ai-under-the-hood-security-ar-1776723892.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-05-06T05:36:23.593906
+    added_at: 2026-05-07T05:39:14.722133
 tags: []
 related_topics: []
 backlinked_by: []
@@ -19,218 +19,222 @@ backlinked_by: []
 
 ## Summary
 
-**GitHub Agentic Workflows** are automated processes built on [[GitHub Actions]] that execute [[AI agents]] to perform repository tasks. This article examines the security architecture that enables safe agent execution through a multi-layered defense system combining isolation, constrained outputs, and comprehensive logging. The design addresses the unique security challenges posed by non-deterministic agent behavior while maintaining the productivity benefits of automation.
-
----
+GitHub Agentic Workflows are automated systems that execute [[AI agents]] within [[GitHub Actions]] environments while maintaining strict security controls. The architecture implements defense-in-depth security principles through substrate isolation, configuration controls, and planning-layer constraints. Key security measures include zero-secret agent execution, staged write operations with vetting, and comprehensive logging at all trust boundaries.
 
 ## Overview
 
-[[GitHub Agentic Workflows]] represent a new class of automation that combines the power of autonomous [[AI agents]] with the safety requirements of production software development. Unlike traditional [[CI/CD]] pipelines with deterministic execution paths, agentic workflows must handle agents that reason over repository state and make runtime decisions—introducing both opportunities and security challenges.
+[[GitHub Agentic Workflows]] represent a significant evolution in [[software automation]], enabling non-deterministic [[AI agents]] to perform complex repository tasks such as documentation fixes, unit test generation, and code refactoring. However, autonomous agent execution introduces novel security challenges that require architectural innovations beyond traditional [[CI/CD]] security models.
 
-The fundamental security problem is that agents are inherently untrusted: they consume untrusted inputs, make autonomous decisions, and operate in environments with access to sensitive resources. Without proper guardrails, a rogue or prompt-injected agent could leak secrets, spam repositories, or perform unexpected actions that compromise security and maintainability.
-
-GitHub's approach embeds security into the architecture from the ground up through four core principles: **defense in depth**, **zero-secret agents**, **staged and vetted writes**, and **comprehensive logging**.
-
----
+The fundamental tension in agentic automation is balancing utility with safety: agents must reason over repository state and make autonomous decisions, yet they cannot be fully trusted, especially when processing untrusted inputs like issue comments or pull request content.
 
 ## Threat Model
 
-### Agent Characteristics
+GitHub Agentic Workflows operate under a specific threat model that acknowledges two critical properties:
 
-Two properties fundamentally alter the threat model for agentic automation:
+### Agent Non-Determinism
+Agents' ability to reason autonomously over repository state makes them valuable but inherently untrustworthy by default. Unlike deterministic automation, agents cannot be assumed to follow predictable execution paths, particularly when exposed to:
+- Untrusted user inputs
+- [[Prompt injection]] attacks
+- Compromised external data sources
 
-1. **Autonomous Reasoning**: Agents can analyze repository state and act independently, making them valuable but also inherently untrustworthy—especially when processing untrusted inputs like web content or user-submitted issues.
+### Permissive Execution Environment
+[[GitHub Actions]] provide a highly permissive execution environment with a single shared trust domain. While this design enables:
+- Broad component access
+- Good composability
+- Optimal performance
 
-2. **Permissive Execution Environment**: [[GitHub Actions]] traditionally provide a shared trust domain where all components have broad access. This works well for deterministic automation but creates a large blast radius when combined with untrusted agents.
+It creates a large blast radius when combined with untrusted agent execution.
 
-### Attack Assumptions
+### Security Assumptions
 
-GitHub Agentic Workflows assume agents will attempt to:
-- Read and write state beyond their intended scope
+The threat model assumes agents will attempt to:
+- Read and write unauthorized state
 - Communicate over unintended channels
-- Abuse legitimate communication channels for unauthorized purposes
-- Exploit prompt injection vulnerabilities to leak sensitive information
-
-By default, workflows run in strict security mode with these assumptions in mind.
-
----
+- Abuse legitimate channels for malicious purposes
+- Leak sensitive credentials through various vectors
 
 ## Security Architecture
 
-### Layered Defense Strategy
+GitHub Agentic Workflows implement a **layered defense-in-depth architecture** consisting of three distinct layers, each enforcing specific security properties:
 
-GitHub Agentic Workflows implement a **three-layer security architecture**, where each layer limits the impact of failures in the layers above it:
+### Substrate Layer
 
-#### 1. Substrate Layer
+The substrate layer provides the foundational security infrastructure:
 
-The foundation consists of infrastructure-level isolation:
+- **Runner VM**: Executes on GitHub Actions runner virtual machines
+- **Container Isolation**: Deploys trusted containers that limit agent resource access
+- **Kernel-Enforced Boundaries**: Implements OS-level communication boundaries that remain effective even if user-level components are compromised
+- **Privileged Operation Mediation**: Controls access to system calls and sensitive operations
 
-- **GitHub Actions Runner VM**: Provides the base execution environment
-- **Docker Containers**: Isolate agent, MCP servers, firewall, and API proxy components
-- **Kernel-Enforced Boundaries**: Protect against arbitrary code execution within container boundaries
-- **Hypervisor Isolation**: Prevents container escape to the host system
+The substrate layer provides isolation guarantees that hold regardless of agent behavior within its container boundaries.
 
-This layer provides protection even if untrusted code executes arbitrary commands within its isolation boundary.
+### Configuration Layer
 
-#### 2. Configuration Layer
+The configuration layer defines the system structure and connectivity through declarative artifacts:
 
-The middle layer defines system structure and connectivity through declarative artifacts:
+- **Component Loading**: Specifies which components are instantiated
+- **Communication Channels**: Defines permitted pathways between components
+- **Privilege Assignment**: Controls access rights for each component
+- **Token Management**: Controls distribution of authentication credentials (API keys, [[GitHub access tokens]], agent authentication)
 
-- **Workflow Compiler**: Translates high-level workflow definitions into secure configurations
-- **Component Loading**: Controls which services are instantiated
-- **Network Policies**: Define allowed communication channels between components
-- **Token Management**: Controls which credentials are loaded into which containers
-- **Firewall Policies**: Enforce allowlists for external network access
+This layer ensures that even if an agent attempts to access unauthorized resources, the infrastructure prevents such access through configuration-level controls.
 
-The configuration layer ensures that even if a component is compromised, it cannot access resources not explicitly granted to it.
+### Planning Layer
 
-#### 3. Planning Layer
+The planning layer manages temporal aspects of workflow execution:
 
-The top layer manages runtime behavior and data flow:
+- **Staged Workflows**: Decomposes execution into explicit stages
+- **Data Exchange Control**: Defines which components can exchange data at each stage
+- **Safe Outputs Subsystem**: Implements the primary security control for agent write operations
 
-- **Staged Execution**: Decomposes workflows into explicit stages with defined permissions
-- **Safe Outputs MCP**: Buffers and vets all write operations before execution
-- **Call Filtering**: Controls which operations are available and limits call volume
-- **Output Sanitization**: Removes secrets and moderation-flagged content
-
-This layer ensures that even if an agent misbehaves, its effects are limited and auditable.
-
----
+The planning layer creates explicit, auditable sequences of operations rather than allowing continuous agent autonomy.
 
 ## Core Security Principles
 
-### 1. Defense in Depth
+### 1. Don't Trust Agents with Secrets
 
-Rather than relying on a single security mechanism, the architecture implements multiple overlapping defenses:
+Agents are susceptible to [[prompt injection]] attacks that can trick them into leaking sensitive information. GitHub Agentic Workflows implement zero-secret agent execution through multiple mechanisms:
 
-- **Isolation**: Agent runs in dedicated container with no direct access to secrets
-- **Mediation**: All privileged operations flow through trusted intermediaries
-- **Vetting**: Write operations pass through deterministic analysis before execution
-- **Logging**: All activities are recorded at trust boundaries for forensic analysis
+#### Secret Isolation
+- Authentication tokens (agent API keys, MCP server credentials) are isolated in separate trusted containers
+- [[LLM]] authentication tokens are placed in an isolated [[API proxy]] rather than exposed directly to agent containers
+- Agents route all model traffic through the API proxy without direct access to authentication material
 
-If one layer fails, others continue to provide protection.
+#### Container Isolation
+- Agents run in dedicated Docker containers with tightly controlled egress
+- Private networks restrict internet access between agent and firewall
+- [[MCP (Model Context Protocol)]] access flows through a trusted MCP gateway running in a separate container
 
-### 2. Zero-Secret Agents
+#### Filesystem Constraints
+- Host filesystem is mounted read-only at `/host`
+- Agents execute in a `chroot` jail with overlaid empty `tmpfs` layers
+- Only explicitly permitted paths are writable, constraining discoverable surface area
 
-Agents have zero direct access to sensitive credentials, preventing [[prompt injection]] attacks from leaking secrets.
+### 2. Stage and Vet All Writes
 
-#### Implementation Strategy
+Even without secret access, compromised agents can cause harm through:
+- Spam (excessive issues, pull requests, comments)
+- Content injection (malicious URLs, objectionable material)
+- Unintended side effects in repository state
 
-**Network Isolation**:
-- Private network between agent and firewall
-- All internet access mediated through firewall with allowlist policies
-- MCP server access through trusted MCP gateway
-- LLM API calls through authenticated API proxy
+#### Write Buffering
+- Agents stage updates through the safe outputs MCP server rather than writing directly
+- All write operations are buffered for post-execution analysis
 
-**Credential Isolation**:
-- Agent authentication tokens stored in API proxy, not accessible to agent container
-- GitHub PAT (Personal Access Token) held by MCP gateway
-- Environment variables scrubbed of sensitive material
+#### Safe Outputs Analysis
+The safe outputs pipeline applies deterministic analysis in three stages:
 
-**Filesystem Constraints**:
-- Host filesystem mounted read-only at `/host`
-- Agent runs in `chroot` jail with limited writable paths
-- Only necessary files and executables exposed via volume mounts
-- Prevents discovery and reading of sensitive files
+1. **Operation Filtering**: Specifies which write operations are permitted (e.g., create issues, add comments, open pull requests)
+2. **Volume Limiting**: Restricts the number of operations allowed per run (e.g., maximum three pull requests)
+3. **Content Sanitization**: Removes unwanted patterns such as:
+   - Sensitive URLs
+   - Credential-like strings
+   - Content flagged by moderation systems
 
-#### Trade-offs
+Only artifacts passing the entire safe outputs pipeline can proceed to repository.
 
-This approach requires careful balance between security and utility:
-- Agents need access to compilers, interpreters, and scripts for coding tasks
-- Broader in-container access would duplicate existing action provisioning
-- Solution: selective volume mounts and `chroot` jails maintain security while enabling necessary functionality
+### 3. Defend in Depth
 
-### 3. Stage and Vet All Writes
+The layered architecture ensures that failures at one layer are contained by controls at lower layers:
 
-All write operations are buffered, analyzed, and validated before execution.
+- Substrate layer prevents unauthorized system-level access
+- Configuration layer prevents unauthorized component communication
+- Planning layer prevents unauthorized data exchange and side effects
 
-#### Safe Outputs Pipeline
-
-1. **Operation Filtering**: Workflow authors specify which GitHub write operations are allowed (e.g., create issues, add comments)
-2. **Volume Limiting**: Restrict number of operations per run (e.g., maximum three pull requests)
-3. **Content Analysis**: 
-   - Remove unwanted patterns (URLs, API keys)
-   - Moderate content for policy violations
-   - Sanitize output to remove leaked secrets
-4. **Execution**: Only vetted artifacts proceed to actual GitHub writes
-
-#### Benefits
-
-- Prevents spam and resource exhaustion attacks
-- Blocks injection of malicious URLs or content
-- Removes accidentally leaked secrets from outputs
-- Makes agent side effects explicit and auditable
+Each layer makes independent security assumptions and provides distinct guarantees.
 
 ### 4. Log Everything
 
-Comprehensive logging at every trust boundary enables forensic analysis, policy validation, and anomaly detection.
+Comprehensive logging at every trust boundary enables forensic reconstruction and anomaly detection:
 
-#### Logging Scope
+#### Logging Locations
+- **Firewall Layer**: Network and destination-level activity
+- **API Proxy**: Model request/response metadata and authenticated requests
+- **MCP Gateway**: Tool invocations and MCP server activity
+- **Agent Container**: Internal instrumentation for sensitive actions (environment variable access)
 
-- **Firewall Layer**: Network destinations and traffic patterns
-- **API Proxy**: Model requests, responses, and authenticated operations
-- **MCP Gateway**: Tool invocations and MCP server interactions
-- **Agent Container**: Environment variable access and potentially sensitive actions
-- **GitHub MCP**: All read operations and state access
+#### Logging Purposes
+- End-to-end forensic reconstruction of execution paths
+- Policy validation and compliance verification
+- Rapid detection of anomalous agent behavior
+- Foundation for future information-flow controls
 
-#### Future Applications
+## Component Architecture
 
-Pervasive logging enables:
-- Post-incident forensic reconstruction
-- Rapid detection of anomalous behavior
-- Foundation for information-flow controls
-- Policy enforcement across MCP servers based on visibility and authorship
-
----
-
-## Technical Implementation Details
-
-### Container Architecture
+### Network Architecture
 
 ```
-┌─────────────────────────────────────────┐
-│       Agent Container (Untrusted)       │
-│  - chroot jail at /host                 │
-│  - No direct secret access              │
-│  - Limited writable paths               │
-└─────────────────────────────────────────┘
-           │                │
-           │ (http)         │ (http)
-           ▼                ▼
-┌──────────────────┐  ┌──────────────────┐
-│  Firewall        │  │  MCP Gateway     │
-│  - Allowlist     │  │  - Token mgmt    │
-│  - Network logs  │  │  - MCP servers   │
-└──────────────────┘  └──────────────────┘
-           │                │
-           │ (https)        │ (stdio)
-           ▼                ▼
-         Internet      GitHub MCP Server
+Agent Container
+    ↓ (HTTP)
+Firewall (gh-aw-firewall)
+    ↓ (HTTP)
+MCP Gateway (gh-aw-mcpg)
+    ↓ (stdio)
+MCP Servers (GitHub MCP, etc.)
+    ↓
+External Services (GitHub API)
 ```
 
-### MCP Server Isolation
+### Authentication Architecture
 
-[[Model Context Protocol]] (MCP) servers run in isolated containers with:
-- Exclusive access to authentication credentials
-- Controlled network access
-- Mediation of all operations through the gateway
-- Separate logging and audit trails
+```
+LLM Tokens → API Proxy → Agent Container
+MCP Tokens → MCP Gateway → MCP Servers
+GitHub PAT → GitHub MCP → GitHub API
+```
 
-### API Proxy
+## Workflow Execution Model
 
-LLM authentication tokens are held by an API proxy that:
-- Routes all model traffic from agent container
-- Prevents direct token exposure to agent
-- Logs all model interactions
-- Enables future rate limiting and policy enforcement
+### Stage-Based Execution
 
----
+Agentic workflows are decomposed into explicit stages:
 
-## Security Workflow
+1. **Configuration Stage**: Load components, establish connections, distribute credentials
+2. **Execution Stage**: Agent runs with read access to repository state and write buffering
+3. **Analysis Stage**: Safe outputs pipeline processes buffered writes
+4. **Commit Stage**: Vetted operations are applied to repository
 
-### Typical Execution Flow
+### Data Flow
 
-1. **Initialization**: Workflow compiler creates secure configuration with proper isolation and permissions
-2. **Agent Execution**: Agent runs in sandbox, accessing GitHub state through read-only MCP, staging writes through safe outputs MCP
-3. **Write Buffering**: All write operations collected by safe outputs subsystem
-4. **Analysis Pipeline**: Buffered
+- **Inputs**: Repository state, untrusted external inputs
+- **Agent Processing**: Reasoning and tool invocation (buffered writes)
+- **Vetting**: Safe outputs analysis and filtering
+- **Outputs**: Approved repository mutations
+
+## Security Controls and Mechanisms
+
+### Access Control
+
+| Component | GitHub API | MCP Servers | Internet | LLM API |
+|-----------|-----------|-------------|---------|---------|
+| Agent | Read-only via MCP | Through gateway | Firewalled | Via proxy |
+| MCP Gateway | Full access | Full access | Limited | No direct access |
+| API Proxy | No direct access | No direct access | Limited | Full access |
+
+### Information Flow Control
+
+The architecture supports progressive information-flow controls:
+
+- **Current**: GitHub MCP server lockdown mode
+- **Planned**: Policy enforcement based on:
+  - Repository object visibility (public vs. private)
+  - Author role and permissions
+  - Content classification and sensitivity
+
+### Observability and Auditability
+
+Every communication point is:
+- Logged for forensic analysis
+- Observable for policy validation
+- Potentially mediatable for future controls
+
+## Related Technologies
+
+### Model Context Protocol (MCP)
+[[MCP]] enables standardized communication between agents and tools/services. GitHub Agentic Workflows use MCP to:
+- Provide controlled GitHub API access
+- Isolate tool execution in separate containers
+- Manage authentication credentials securely
+
+### GitHub Actions
+[[GitHub Actions]] provide the execution substrate for agentic workflows, offering:
