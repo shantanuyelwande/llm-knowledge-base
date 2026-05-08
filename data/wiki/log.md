@@ -1868,3 +1868,65 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1032
 - Time: 2026-05-07 05:39:18
 
+## [2026-05-08 04:56:31] update | ai-tools-catalog
+
+- Source: `ai-tools-catalog.md`
+- Time: 2026-05-08 04:56:31
+
+## [2026-05-08 04:56:56] update | careersatdoordash-com-blog-doordash-unified-dasher-onboarding-a-modular--1776790524
+
+- Source: `careersatdoordash-com-blog-doordash-unified-dasher-onboarding-a-modular--1776790524.md`
+- Time: 2026-05-08 04:56:56
+
+## [2026-05-08 04:57:23] update | anthropic-com-engineering-harness-design-long-running-apps-1776722814
+
+- Source: `anthropic-com-engineering-harness-design-long-running-apps-1776722814.md`
+- Time: 2026-05-08 04:57:23
+
+## [2026-05-08 04:57:49] update | agentfield-ai-blog-beyond-vibe-coding-1776118705
+
+- Source: `agentfield-ai-blog-beyond-vibe-coding-1776118705.md`
+- Time: 2026-05-08 04:57:49
+
+## [2026-05-08 04:58:16] update | openai-com-business-guides-and-resources-a-practical-guide-to-1777602156
+
+- Source: `openai-com-business-guides-and-resources-a-practical-guide-to-1777602156.md`
+- Time: 2026-05-08 04:58:16
+
+## [2026-05-08 04:58:21] update | x-com-i-status-2043726271449112776-1776192965
+
+- Source: `x-com-i-status-2043726271449112776-1776192965.md`
+- Time: 2026-05-08 04:58:21
+
+## [2026-05-08 04:58:43] update | share-google-S4lTnOo7l96jQZFyP-1776347437
+
+- Source: `share-google-S4lTnOo7l96jQZFyP-1776347437.md`
+- Time: 2026-05-08 04:58:43
+
+## [2026-05-08 04:58:49] update | x-com-i-status-2043745099792953508-1776192723
+
+- Source: `x-com-i-status-2043745099792953508-1776192723.md`
+- Time: 2026-05-08 04:58:49
+
+## [2026-05-08 04:59:13] update | stripe-com-in-guides-primer-on-machine-learning-for-fraud-pro-1777643430
+
+- Source: `stripe-com-in-guides-primer-on-machine-learning-for-fraud-pro-1777643430.md`
+- Time: 2026-05-08 04:59:13
+
+## [2026-05-08 04:59:38] update | github-blog-ai-and-ml-generative-ai-under-the-hood-security-ar-1776723892
+
+- Source: `github-blog-ai-and-ml-generative-ai-under-the-hood-security-ar-1776723892.md`
+- Time: 2026-05-08 04:59:38
+
+## [2026-05-08 04:59:38] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1018
+- Time: 2026-05-08 04:59:38
+
+## [2026-05-08 04:59:41] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1018
+- Time: 2026-05-08 04:59:41
+
