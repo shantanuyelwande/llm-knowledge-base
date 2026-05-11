@@ -4,198 +4,219 @@ source_file: agentfield-ai-blog-beyond-vibe-coding-1776118705.md
 source_url: https://agentfield.ai/blog/beyond-vibe-coding
 ingested_from: url
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-05-10T05:42:34.146739
-raw_file_updated: 2026-05-10T05:42:34.146739
+compiled_at: 2026-05-11T06:03:57.939005
+raw_file_updated: 2026-05-11T06:03:57.939005
 version: 1
 sources:
   - file: agentfield-ai-blog-beyond-vibe-coding-1776118705.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-05-10T05:42:34.146739
+    added_at: 2026-05-11T06:03:57.939005
 tags: []
 related_topics: []
 backlinked_by: []
 ---
-# Multi-Agent Code Generation at Scale
+# Multi-Agent Code Generation Architecture
 
 ## Summary
 
-This article documents the architectural patterns and lessons learned from orchestrating 200+ autonomous AI agents to collaboratively produce production-quality code. The system, called [[SWE-AF]], demonstrates that effective [[multi-agent systems]] require two distinct modes of [[LLM integration]], three nested failure recovery loops, and checkpoint-based execution to handle the inevitable failures that occur at scale.
+This article documents the architectural patterns and lessons learned from orchestrating 200+ autonomous [[LLM]] agents to collaboratively produce production-quality code through a structured, failure-resilient pipeline. The approach moves human responsibility from iterative guidance to final architectural review, achieving high-quality results through systematic failure recovery and verification loops rather than raw model capability.
 
 ## Overview
 
-[[AgentField]] is an infrastructure platform that enables teams to coordinate multiple [[Claude Code]] instances working in parallel on a shared codebase. Rather than having a single engineer iterate with one coding assistant, the system orchestrates dozens of autonomous agents that work in parallel, with human engineers reviewing finished, verified draft pull requests rather than guiding each incremental change.
+[[AgentField]] is an infrastructure system for coordinating multiple autonomous [[AI]] agents on shared codebases. Rather than having a single engineer iterate with one [[Claude Code]] instance, the system enables dozens of parallel agent instances (called "harnesses") to coordinate on the same repository. Each agent has full access to the filesystem, test execution, and git operations.
 
-The first major challenge discovered was the **convergence problem**: getting N independent autonomous processes to produce one coherent result without conflicts, missing dependencies, or broken abstractions. This required developing new primitives for [[isolation]], [[failure recovery]], and [[state reconciliation]].
+The core innovation is moving human engineers from the iteration loop—where they guide each change—to the review loop, where they approve finished, pre-verified draft pull requests. This shift required solving three critical problems:
 
-## Architecture Principles
+1. **Operational clarity** through distinct LLM integration modes
+2. **Systematic failure recovery** through nested control loops
+3. **Cost-effective durability** through checkpointing and isolation
 
-### Two Modes of LLM Integration
+## Key Concepts
 
-The most critical architectural insight is that multi-agent systems require two fundamentally different kinds of LLM access, not one unified approach.
+### Two Primitives for LLM Integration
 
-#### Constrained Calls (.ai())
+The fundamental architectural mistake in multi-agent systems is treating all [[LLM]] calls identically. AgentField separates LLM integration into two distinct primitives:
 
-The first primitive is a **constrained call** (`.ai()`): a single-shot [[LLM]] interaction with:
+#### Constrained Call (`.ai()`)
+
+**Purpose:** Single-shot, deterministic operations with predictable behavior
+
+**Characteristics:**
+- Single turn, no iteration
 - Structured input and output
 - No tool use
-- No iteration
-- Predictable latency and cost
-- Deterministic routing logic
+- Millisecond latency
+- Fraction-of-a-cent cost
 
-These calls handle classification tasks like:
-- "Does this issue need deeper QA?"
-- "Is this change high-risk?"
-- Risk assessment and issue routing
+**Use cases:**
+- Routing decisions ("Does this issue need deeper QA?")
+- Classification ("Is this change high-risk?")
+- Planning guidance generation
+- Risk assessment
 
-Each issue receives an `IssueGuidance` block with structured fields:
+**Example output:**
 ```
-needs_new_tests: boolean
-estimated_scope: "small" | "medium" | "large"
-touches_interfaces: boolean
-needs_deeper_qa: boolean
-agent_guidance: string
+IssueGuidance:
+  needs_new_tests: true
+  estimated_scope: "medium"
+  touches_interfaces: true
+  needs_deeper_qa: true
+  agent_guidance: "Complex parsing logic with edge cases, run QA in parallel"
 ```
 
-A typical constrained call costs fractions of a cent and completes in milliseconds, making it viable for high-volume routing decisions.
+#### Autonomous Harness (`.harness()`)
 
-#### Autonomous Harnesses (.harness())
+**Purpose:** Multi-turn, goal-driven iteration with full development environment access
 
-The second primitive is an **autonomous harness** (`.harness()`): a multi-turn, tool-using, goal-driven agent that:
-- Receives a goal and toolset
-- Iterates until producing a verifiable outcome
-- Has full filesystem access
-- Can execute tests and build processes
-- Maintains git state
-- Discovers failures and retries independently
+**Characteristics:**
+- Multi-turn with iteration
+- Full tool access (filesystem, test runner, git)
+- Goal-oriented execution
+- Variable latency (minutes to hours)
+- Higher cost ($0.50-$4.26 per invocation)
 
-The harness emerged from observing real build failures rather than from theoretical design. It represents the abstraction teams discovered they actually needed after months of iteration.
+**Capabilities:**
+- Read and write files
+- Execute tests
+- Discover failures
+- Iterate on solutions
+- Verify outcomes
 
-In the diagrams-as-code build example, a single coder invocation required up to 150 tool-use turns and cost over $4 on complex issues.
+**Execution model:** Receives a goal and toolset, iterates until producing a verifiable outcome. The system checks what was delivered, not how it was achieved.
 
-### Three Nested Control Loops
+### Three Nested Failure Recovery Loops
 
-Because agents fail constantly—even on trivial tasks—the system requires three hierarchical failure recovery mechanisms.
+In a 200+ invocation build, failures are the normal path, not edge cases. The system implements three hierarchical recovery loops:
 
 #### Inner Loop: Per-Issue Iteration
 
-The **inner loop** runs per issue with a maximum of 5 iterations:
-- Agent attempts to solve the issue
-- [[QA agent]] tests the solution
-- [[Code reviewer]] approves or blocks
-- On rejection, agent retries with feedback
-- Captures both `qa_passed` and `review_approved` states
+**Scope:** Single issue, up to 5 iterations maximum
 
-This loop handles problems that the same agent can solve with better information, such as a missing module export that tests missed.
+**Function:** Allows the same agent to retry with feedback from [[QA]] and review
+
+**Recovery mechanism:** 
+- Agent receives explicit feedback about test failures, code review comments, or architectural issues
+- Agent attempts fix with improved context
+- Loop continues until success or iteration limit
+
+**Example:** The app-module issue failed iteration 1 because a module wasn't exported in `lib.rs`, despite 119 passing tests. Iteration 2 added the missing `pub mod app;` declaration.
 
 #### Middle Loop: Issue Advisor
 
-The **middle loop** activates when the inner loop exhausts its iterations. An issue advisor can take five typed recovery actions:
+**Scope:** Single issue after inner loop exhaustion
 
-| Action | Behavior |
-|--------|----------|
-| `RETRY_MODIFIED` | Relax acceptance criteria, record gap as typed debt |
-| `RETRY_APPROACH` | Same criteria, different strategy |
-| `SPLIT` | Break issue into smaller sub-issues |
-| `ACCEPT_WITH_DEBT` | Close enough; record gaps as typed debt items |
-| `ESCALATE_TO_REPLAN` | Cannot fix locally; restructure remaining work |
+**Function:** Makes typed recovery decisions with five possible actions
 
-The advisor's final invocation includes an explicit warning that this is the last chance, biasing toward acceptance or escalation rather than futile retry.
+| Action | Behavior | Use Case |
+|--------|----------|----------|
+| `RETRY_MODIFIED` | Relax acceptance criteria, record gap as typed [[debt]] | Scope reduction is acceptable |
+| `RETRY_APPROACH` | Same criteria, different strategy | Previous approach was fundamentally wrong |
+| `SPLIT` | Break into smaller sub-issues | Complexity exceeded agent capability |
+| `ACCEPT_WITH_DEBT` | Close enough; record gaps as typed debt | Good enough solution exists |
+| `ESCALATE_TO_REPLAN` | Restructure remaining work | Cannot be fixed locally |
+
+**Key feature:** Final invocation explicitly warns this is the last chance, biasing toward acceptance or escalation rather than futile retry.
+
+**Example:** Integration-tests issue timed out with infinite loop in CLI binary. After two failed iterations, advisor blocked the issue and recorded a typed debt item:
+```json
+{
+  "type": "dropped_acceptance_criterion",
+  "criterion": "integration tests pass end-to-end",
+  "issue_name": "integration-tests",
+  "severity": "high",
+  "justification": "CLI binary deadlocks on invocation; test suite correct but binary needs runtime debugging beyond automated repair"
+}
+```
 
 #### Outer Loop: Replanner
 
-The **outer loop** fires when issues at a dependency level produce unrecoverable failures. The replanner:
-- Views the full execution state
-- Can skip downstream dependents
-- Restructures the remaining issue graph
-- Reduces scope or aborts if necessary
-- Learns from previous replan decisions to avoid repeating failed strategies
+**Scope:** Full build after dependency level completion
 
-If the replanner itself crashes, the system defaults to **continue** rather than abort, treating graceful degradation as preferable to fail-fast for expensive workflows.
+**Function:** Restructures work based on accumulated failures
 
-### Failure Pattern Examples
+**Capabilities:**
+- Skip downstream dependents of failed issues
+- Restructure remaining issue graph
+- Reduce scope
+- Abort if necessary
+- Prevent repeated failed strategies using decision history
 
-#### Deadlocks Beyond Retry
+**Failure mode:** If replanner crashes, system defaults to `continue` rather than abort. For expensive workflows, graceful degradation beats fail-fast.
 
-When the integration-tests issue timed out after 2700 seconds due to a CLI binary infinite loop, retrying the same agent on the same binary produced identical failures. The solution was to **block** the issue, record typed debt, and let downstream work adapt around the gap.
+### Debt-Based Failure Handling
 
-#### Review-Caught Defects
+Rather than retrying indefinitely or silently dropping failures, the system uses **typed debt items**—structured, severity-rated records of deferred work. Downstream agents receive `debt_notes` explaining what upstream failed to deliver, enabling them to work around known gaps instead of building on broken assumptions.
 
-The app-module issue passed all 119 tests and met acceptance criteria, but the code reviewer noticed the module was never exported in `lib.rs`. One missing `pub mod app;` line—invisible to automated tests but critical for library consumers. The inner loop fixed this on iteration 2.
+This approach:
+- Makes failures explicit and traceable
+- Prevents cascading failures from hidden assumptions
+- Allows the build to continue and complete
+- Documents exactly what was deferred and why
 
-#### Regressions on Simple Tasks
+## Execution Architecture
 
-The project-scaffold issue (creating `Cargo.toml` and `src/main.rs`) passed iteration 1 but regressed in iteration 2 when the coder added module declarations for code that didn't exist yet, breaking the build.
+### Planning and Decomposition
 
-#### Cascading Verification
+The planner decomposes large epics into fine-grained issue graphs with explicit dependency structures. Notably, the planner produces more parallelizable structures than humans would typically create:
 
-The final-acceptance-verification issue required three iterations to fix four blocking issues: `set -e` crashes, macOS-specific `stat` flags failing on Linux CI, infinite recursion between test files, and missing dependency checks.
+- Human planners avoid 50-100 issue decompositions due to coordination overhead
+- AI planner creates these structures because the orchestrator absorbs coordination cost
+- Fine-grained issues enable higher parallelism and better failure isolation
 
-## Execution and Durability
+**Planning output includes:**
+- Dependency graph with explicit levels
+- File conflict annotations
+- Estimated scope for each issue
+- Guidance strings for downstream agents
 
-### Checkpoint-Based Execution
+### Isolation with Git Worktrees
 
-For expensive builds (the diagrams project cost $116 across 200+ invocations), restarting from failure is economically impractical. The system checkpoints at every level boundary, capturing:
+Each issue operates in its own git worktree on a dedicated branch (`issue/01-project-scaffold`, `issue/02-types-module`, etc.). This provides:
 
-- Current execution level
-- Completed levels
-- All issues and their status
-- Original plan summary
-- Replan count
-- Accumulated debt items
-- Git state (branches, commits, worktree mappings)
+- **No lock contention:** Multiple issues modify different files simultaneously
+- **Clean isolation:** Changes stay isolated until ready to merge
+- **Parallel execution:** Dependency level runs multiple issues in parallel
 
-When a build fails at invocation 140 of 200, `resume_build()` loads the checkpoint, skips completed work, and continues from the exact failure point. Without checkpointing, the probability of interruption approaches 1 as builds grow longer.
+**Between levels**, a merger agent integrates completed branches into the integration branch. The merger is not mechanical—it reads architecture specs and file conflict annotations to make intent-aware resolution decisions.
 
-### Git Worktree Isolation
+### Level Gates
 
-Each issue gets its own git worktree on a dedicated branch (`issue/01-project-scaffold`, `issue/02-types-module`, etc.), preventing lock contention and conflicts during parallel coding.
+Every dependency level completes through a sequence of gates:
 
-A **merger agent** integrates completed branches between execution levels, making intent-aware resolution decisions when multiple issues modify the same file. The merger reads architecture specifications and conflict annotations from the planning phase to preserve both changes' intentions.
+1. **Merge gate:** Integrate completed branches
+2. **Integration test gate:** Validate merged code works together
+3. **Debt gate:** Process completed-with-debt results, propagate `debt_notes` downstream
+4. **Split gate:** Inject sub-issues if any issue was split
+5. **Replan gate:** Invoke replanner if failures escalated
+6. **Checkpoint:** Serialize full state to disk
 
-### Gate Sequence Between Levels
+Each gate can be configured for human approval in regulated environments. The sequence remains identical; only approval policy varies.
 
-Every execution level ends with a structured gate sequence:
+## Durability and Checkpointing
 
-1. **Merge gate**: Integrate completed branches
-2. **Integration test gate**: Validate merged code works together
-3. **Debt gate**: Process completed-with-debt results
-4. **Split gate**: Inject sub-issues if any were split
-5. **Replan gate**: Invoke replanner if failures escalated
-6. **Checkpoint**: Serialize full state to disk
+Long-running, expensive builds require checkpoint-based recovery. The diagrams-as-code build cost ~$116 and ran 200+ invocations—a crash at invocation 140 cannot mean restarting from invocation 1.
 
-Each level starts clean, inheriting no dirty state from predecessors.
+### Checkpoint Contents
 
-### Unified API Interface
+Captured at every level boundary:
 
-The control plane provides a single API endpoint regardless of how many agents are spawned or what failure recovery occurs internally:
-
-```bash
-curl -X POST http://localhost:8080/api/v1/execute/async/swe-planner.build \
-  -H "Content-Type: application/json" \
-  -d '{
-    "input": {
-      "goal": "Build a diagrams-as-code CLI tool",
-      "repo_url": "https://github.com/user/my-project",
-      "config": {
-        "runtime": "claude_code",
-        "models": { "default": "sonnet", "coder": "haiku" }
-      }
-    }
-  }'
-```
-
-The response is a 202 Accepted with an `execution_id`. The build runs asynchronously, with checkpoint recovery handling any interruptions.
-
-## Model Selection vs. Architecture
-
-Empirical testing revealed that **architecture beats model selection**. On a Node.js CLI benchmark, the same orchestration architecture scored 95/100 using both:
-- Claude Haiku (cheapest model, ~$20 total)
-- MiniMax M2.5 via OpenRouter (~$6 total)
-
-Single-agent approaches on the same task scored 59-73.
-
-The model configuration is a flat parameter map:
 ```json
 {
-  "runtime": "claude_code",
-  "models
+  "current_level": 3,
+  "completed_levels": [0, 1, 2],
+  "all_issues": [
+    "project-scaffold", "types-module", "error-module",
+    "lexer", "parser", "validator",
+    "layout-engine", "svg-renderer", "ascii-renderer",
+    "smoke-test", "app-module", "cli-module",
+    "integration-tests", "documentation", "final-acceptance-verification"
+  ],
+  "original_plan_summary": "15 issues organized in 6 levels...",
+  "replan_count": 0,
+  "accumulated_debt": [...]
+}
+```
+
+### Recovery Mechanism
+
+`resume_build()` loads checkpoint, skips completed levels, and continues from exact failure point. A 30-minute build failing at minute 25 doesn't restart
