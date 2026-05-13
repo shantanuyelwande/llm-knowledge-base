@@ -2178,3 +2178,55 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1016
 - Time: 2026-05-12 05:45:27
 
+## [2026-05-13 05:53:01] update | ai-tools-catalog
+
+- Source: `ai-tools-catalog.md`
+- Time: 2026-05-13 05:53:01
+
+## [2026-05-13 05:53:26] update | careersatdoordash-com-blog-doordash-unified-dasher-onboarding-a-modular--1776790524
+
+- Source: `careersatdoordash-com-blog-doordash-unified-dasher-onboarding-a-modular--1776790524.md`
+- Time: 2026-05-13 05:53:26
+
+## [2026-05-13 05:53:55] update | anthropic-com-engineering-harness-design-long-running-apps-1776722814
+
+- Source: `anthropic-com-engineering-harness-design-long-running-apps-1776722814.md`
+- Time: 2026-05-13 05:53:55
+
+## [2026-05-13 05:54:20] update | agentfield-ai-blog-beyond-vibe-coding-1776118705
+
+- Source: `agentfield-ai-blog-beyond-vibe-coding-1776118705.md`
+- Time: 2026-05-13 05:54:20
+
+## [2026-05-13 05:54:45] update | openai-com-business-guides-and-resources-a-practical-guide-to-1777602156
+
+- Source: `openai-com-business-guides-and-resources-a-practical-guide-to-1777602156.md`
+- Time: 2026-05-13 05:54:45
+
+## [2026-05-13 05:54:51] update | x-com-i-status-2043726271449112776-1776192965
+
+- Source: `x-com-i-status-2043726271449112776-1776192965.md`
+- Time: 2026-05-13 05:54:51
+
+## [2026-05-13 05:55:15] update | share-google-S4lTnOo7l96jQZFyP-1776347437
+
+- Source: `share-google-S4lTnOo7l96jQZFyP-1776347437.md`
+- Time: 2026-05-13 05:55:15
+
+## [2026-05-13 05:55:22] update | x-com-i-status-2043745099792953508-1776192723
+
+- Source: `x-com-i-status-2043745099792953508-1776192723.md`
+- Time: 2026-05-13 05:55:22
+
+## [2026-05-13 05:55:22] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1023
+- Time: 2026-05-13 05:55:22
+
+## [2026-05-13 05:55:25] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1023
+- Time: 2026-05-13 05:55:25
+
