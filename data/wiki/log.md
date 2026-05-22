@@ -2326,3 +2326,15 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1023
 - Time: 2026-05-21 06:14:27
 
+## [2026-05-22 06:12:20] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1023
+- Time: 2026-05-22 06:12:20
+
+## [2026-05-22 06:12:24] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1023
+- Time: 2026-05-22 06:12:24
+
