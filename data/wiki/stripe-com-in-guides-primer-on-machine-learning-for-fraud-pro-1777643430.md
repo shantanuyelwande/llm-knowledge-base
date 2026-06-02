@@ -4,13 +4,13 @@ source_file: stripe-com-in-guides-primer-on-machine-learning-for-fraud-pro-17776
 source_url: https://stripe.com/in/guides/primer-on-machine-learning-for-fraud-protection?utm_source=substack&utm_medium=email
 ingested_from: url
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-05-12T05:45:01.544908
-raw_file_updated: 2026-05-12T05:45:01.544908
+compiled_at: 2026-06-02T06:49:08.975113
+raw_file_updated: 2026-06-02T06:49:08.975113
 version: 1
 sources:
   - file: stripe-com-in-guides-primer-on-machine-learning-for-fraud-pro-1777643430.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-05-12T05:45:01.544908
+    added_at: 2026-06-02T06:49:08.975113
 tags: []
 related_topics: []
 backlinked_by: []
@@ -19,196 +19,199 @@ backlinked_by: []
 
 ## Summary
 
-This comprehensive guide explains how [[Stripe Radar]], a machine learning-based fraud prevention solution, leverages the [[Stripe network]] to detect and prevent online credit card fraud. It covers fundamental concepts of [[machine learning]], evaluation metrics for fraud detection systems, and practical approaches to balancing false positives and false negatives in fraud prevention strategies.
+This article provides a comprehensive guide to understanding how [[machine learning]] is applied to online payment fraud detection, with a focus on [[Stripe Radar]], Stripe's machine learning-based fraud prevention solution. It covers the fundamentals of machine learning, evaluation metrics for fraud detection systems, deployment challenges, and practical strategies for optimizing fraud prevention performance.
 
 ---
 
-## Overview
+## Introduction
 
-Online payment fraud costs businesses over $20 billion annually, with the true cost to businesses significantly higher when accounting for operational expenses, network fees, and customer churn. [[Stripe Radar]] is a machine learning solution fully integrated within the Stripe platform that uses data from hundreds of billions of dollars in payments processed across the Stripe network each year to accurately detect fraud and adapt to emerging trends.
+The rapid acceleration of e-commerce has created a corresponding surge in online payment fraud, costing businesses an estimated $20 billion annually. Beyond direct losses, fraud imposes significant indirect costs through operational expenses, network fees, and customer churn. [[Stripe Radar]] represents a modern approach to this challenge—a machine learning system that leverages data from hundreds of billions of dollars in payments processed across the Stripe network to detect fraud accurately and adapt to emerging threats.
 
-This guide provides:
-- An introduction to online credit card fraud mechanisms
-- An explanation of how machine learning techniques apply to fraud detection
-- Methods for evaluating fraud detection model performance
-- Practical strategies for deploying and maintaining machine learning models
-- Tools and approaches for optimizing fraud prevention outcomes
+This guide explains the machine learning techniques used in fraud prevention, how to evaluate the effectiveness of fraud detection systems, and how businesses can optimize their fraud prevention strategies through a combination of automated models, custom rules, and manual review processes.
 
 ---
 
-## Table of Contents
+## Understanding Online Credit Card Fraud
 
-1. [Online Credit Card Fraud](#online-credit-card-fraud)
-2. [Stripe Radar and the Stripe Network](#stripe-radar-and-the-stripe-network)
-3. [Machine Learning Fundamentals](#machine-learning-fundamentals)
-4. [Feature Engineering](#feature-engineering)
-5. [Model Evaluation](#model-evaluation)
-6. [Model Deployment and Operations](#model-deployment-and-operations)
-7. [Fraud Prevention Strategy](#fraud-prevention-strategy)
+### What Constitutes Fraud
+
+A payment is considered fraudulent when the cardholder has not authorized the charge. Common scenarios include:
+
+- A fraudster making a purchase with a stolen card number that hasn't been reported
+- The cardholder later disputing the transaction with their bank through a [[chargeback]]
+
+### The Chargeback Process
+
+When a cardholder disputes a transaction, the business can challenge the chargeback by submitting evidence of validity. However, for [[card-not-present transactions]], if networks determine the payment was genuinely fraudulent, the cardholder wins and the business bears the loss of goods plus associated fees.
+
+### Historical Approaches vs. Machine Learning
+
+Historically, businesses relied on hard-coded rules (e.g., "block all cards used abroad") to prevent fraud. While simple to implement, these approaches often block many legitimate transactions, resulting in poor customer experience. [[Machine learning]] enables detection of more nuanced patterns that better distinguish between legitimate and fraudulent activity while maximizing revenue.
 
 ---
 
-## Online Credit Card Fraud
+## The Trade-off Between False Positives and False Negatives
 
-### Definition and Mechanisms
+Understanding the cost-benefit analysis of fraud prevention is crucial for optimization.
 
-A payment is considered fraudulent when the cardholder has not authorized the charge. When a fraudster uses a stolen card number that hasn't been reported, the payment may process successfully. The cardholder later discovers the unauthorized transaction and files a dispute (also called a "chargeback") with their bank.
+### False Negatives (Missed Fraud)
 
-Businesses can challenge chargebacks by submitting evidence of valid payment, but for [[card-not-present transactions]], if networks determine the transaction was genuinely fraudulent, the cardholder wins and the business bears the loss of goods plus associated fees.
+A false negative occurs when the system fails to detect fraudulent activity. Costs include:
 
-### False Positives vs. False Negatives
+- Original transaction amount plus [[chargeback]] fees
+- Higher network fees resulting from disputes
+- Increased operational costs for reviewing and fighting disputes
+- Risk of entering a network chargeback monitoring program, leading to higher costs or payment processing restrictions
 
-The core challenge in fraud prevention involves managing two competing risks:
+### False Positives (False Declines)
 
-**False Negatives (Missed Fraud)**
-- Occur when the system fails to detect fraudulent transactions
-- Cost to business: original transaction amount + chargeback fees + elevated network fees + operational costs for dispute review
-- Excessive chargebacks can result in network monitoring programs, leading to higher costs or payment processing restrictions
+A false positive occurs when a legitimate customer is incorrectly blocked from making a purchase. Consequences include:
 
-**False Positives (False Declines)**
-- Occur when legitimate customers are prevented from making purchases
-- Cost to business: lost revenue + reputational damage
-- Research shows 33% of consumers won't return to a retailer after experiencing a false decline
+- Immediate loss of gross profit on that transaction
+- Reputational damage to the business
+- Customer churn—research shows 33% of consumers won't shop again after a false decline
 
-### Trade-Off Analysis
+### Business-Specific Trade-offs
 
-There is an inherent trade-off between preventing fraud (reducing false negatives) and approving legitimate transactions (reducing false positives). Businesses must balance these based on:
+The optimal balance between false positives and false negatives depends on business characteristics:
 
-- **Profit margins**: Low-margin businesses (e.g., food sales) require stricter fraud prevention because each fraudulent transaction costs many legitimate sales to offset. High-margin businesses (e.g., SaaS) may tolerate more fraud to avoid blocking legitimate customers.
-- **Growth profile**: Different business models have different sensitivities to fraud costs vs. customer friction
-- **Industry factors**: Vertical and operational considerations specific to the business type
+- **Low-margin businesses** (e.g., food e-commerce): Each fraudulent transaction is expensive relative to profit per sale. These businesses may tolerate more false positives to prevent fraud.
+- **High-margin businesses** (e.g., SaaS): Lost revenue from blocking legitimate customers may outweigh fraud losses. These businesses may accept more fraud to reduce false declines.
 
 ---
 
 ## Stripe Radar and the Stripe Network
 
-### How Stripe Radar Works
+### Overview
 
-[[Stripe Radar]] is Stripe's fraud prevention solution powered by [[adaptive machine learning]], developed through years of data science and infrastructure work. The system:
+[[Stripe Radar]] is Stripe's adaptive machine learning-based fraud prevention solution. It evaluates every transaction for fraud risk and takes appropriate action—blocking high-risk payments while enabling [[Radar for Fraud Teams]] to specify custom interventions.
 
-- Evaluates every transaction for fraud risk
-- Blocks high-scoring payments automatically
-- Provides [[Radar for Fraud Teams]] tools for custom actions and manual intervention
+### Network Advantages
 
-### Network Effects and Data Advantages
+Stripe's position as a payment processor provides significant advantages:
 
-Stripe's position as a payment processor creates significant advantages for fraud detection:
+- **Scale**: Processing hundreds of billions in payments annually from millions of businesses
+- **Early signal detection**: Stripe often identifies fraud patterns before smaller networks
+- **Rich data**: Aggregate data from all Stripe transactions automatically improves fraud detection
+- **Card history**: 90% of cards used on Stripe have been seen more than once, providing rich data for risk assessment
 
-**Scale and Pattern Recognition**
-- Processes hundreds of billions in payments annually from millions of businesses
-- Interacts with thousands of partner banks globally
-- Can identify fraud signals and patterns earlier than smaller networks
+### Key Features
 
-**Card History Data**
-- 90% of cards used on the Stripe network have been seen multiple times
-- Provides rich historical data for assessing legitimate vs. fraudulent use patterns
-- Enables learning from previous encounters across the entire network
-
-**Integrated Data Flow**
-- Receives "ground truth" data directly from the Stripe payment flow—no separate integration required
-- Accesses timely, accurate data from card networks and issuers
-- Eliminates engineering overhead and manual labeling that traditional fraud solutions require
-
-### Advantages Over Traditional Solutions
-
-Unlike external fraud prevention services, Radar:
-- Requires no engineering integration or data transmission setup
-- Eliminates the need for payment labeling workflows
-- Works immediately upon activation
-- Continuously improves from network data without additional merchant effort
+**Built-in integration**: Unlike third-party fraud solutions, Radar is integrated directly into Stripe and requires:
+- No engineering work to send payment event data
+- No manual labeling of transactions as fraudulent or legitimate
+- Automatic access to timely, accurate data from card networks and issuers
 
 ---
 
-## Machine Learning Fundamentals
+## The Basics of Machine Learning
 
 ### What is Machine Learning?
 
-[[Machine learning]] refers to techniques for processing large datasets to produce predictive models. In fraud detection, machine learning predicts whether a transaction will result in a fraud dispute based on transaction features.
+[[Machine learning]] refers to techniques for using large amounts of historical data to produce models that predict outcomes. In fraud detection, the goal is to predict whether a payment will result in a fraud dispute based on input variables such as:
 
-### The Prediction Problem
-
-Machine learning models predict an **output variable** (fraudulent: yes/no) based on **input variables** (features), such as:
-- Country where card was issued
-- Number of distinct countries card was used from in past 24 hours
+- Card issuing country
+- Number of distinct countries where the card was used in the past 24 hours
 - Transaction amount
-- IP address location
-- Time zone of device vs. UTC
+- IP address of the transaction
+- Merchant category
 
-### Training Data and Models
+### Training Data and Features
 
-Models are trained on historical records containing both input features and actual outcomes. A simplified example:
+Machine learning models are trained on historical records containing:
 
-| Amount (USD) | Card Country | Countries Used (24h) | Fraudulent? |
-|---|---|---|---|
-| $10.00 | US | 1 | No |
-| $10.00 | CA | 2 | No |
-| $30.00 | US | 1 | Yes |
-| $99.00 | CA | 1 | Yes |
+- **Input values** (called [[features]]): Properties of transactions that may predict fraud
+- **Output values** (called [[labels]] or [[targets]]): Whether each transaction was actually fraudulent
 
-The machine learning algorithm produces a model—such as a [[decision tree]]—that learns patterns from this data. When a new transaction arrives, the model traverses the decision tree based on transaction features to reach a "leaf" containing similar historical transactions. The probability of fraud is calculated as: (fraudulent transactions in leaf) / (total transactions in leaf).
+A collection of input values for a given transaction is called a [[feature vector]]. While the example in this guide uses three features, production models typically use hundreds or thousands of features, with most being aggregates computed across the Stripe network.
 
-### Model Complexity and Techniques
+### Model Output
 
-While [[decision trees]] are intuitive and easy to visualize, industrial fraud detection uses more sophisticated approaches:
+Rather than outputting a simple yes/no classification, machine learning classifiers assign probabilities. For example, a fraud classifier might output: "This payment has a 65% chance of being fraudulent and a 35% chance of being legitimate."
 
-**Traditional Methods**
-- [[Linear regression]]
-- [[Random forests]]
-- Effective for most business applications
+### Machine Learning Techniques
 
-**Advanced Techniques**
-- [[Neural networks]] and [[deep learning]]
-- Inspired by brain neuron architecture
-- Require large datasets to realize full advantages
-- Responsible for breakthroughs like AlphaFold protein folding predictions
+Various techniques can be used to train models:
 
-Stripe leverages its network scale to employ cutting-edge neural network approaches, improving Radar's machine learning performance by over 20% year-over-year while maintaining low false positive rates.
+- **Traditional approaches**: [[Linear regression]], [[decision trees]], [[random forests]]
+- **Advanced techniques**: [[Neural networks]] and [[deep learning]], inspired by brain architecture
+
+While advanced techniques require very large datasets to show advantages, Stripe's network scale enables use of cutting-edge approaches. Recent model improvements have increased Radar's detection performance by over 20% year-over-year.
+
+### Decision Trees Example
+
+A simple decision tree might ask sequential questions:
+1. Is the transaction amount > $25?
+2. Is the card's country the same as the transaction country?
+3. How many distinct countries used this card in the past day?
+
+The model traverses these questions until reaching a leaf node, where the probability of fraud is calculated as: (fraudulent transactions in this leaf) / (total transactions in this leaf).
 
 ---
 
 ## Feature Engineering
 
-### What is Feature Engineering?
+### Overview
 
-[[Feature engineering]] is one of the most involved aspects of industrial machine learning. It consists of:
+[[Feature engineering]] is one of the most involved aspects of industrial machine learning. It consists of two parts:
 
-1. **Feature formulation**: Creating features with predictive value based on domain knowledge of fraud patterns
-2. **Feature engineering**: Making feature values available for both model training and real-time production evaluation
+1. **Formulation**: Developing features with predictive value based on domain expertise
+2. **Engineering**: Making feature values available for both model training and real-time production evaluation
 
-### Developing Predictive Features
+### Developing Features
 
 Data scientists develop feature ideas through:
-- Intuition about fraud patterns
-- Analysis of thousands of fraud cases
-- Domain expertise in payment systems
 
-Examples of effective features:
-- Whether payment originates from previously seen IP addresses for that card
-- Difference between device time and Coordinated Universal Time (UTC)
-- Count of countries where card was successfully authorized
-- IP address commonality with historical card usage patterns
+- Domain knowledge of fraud patterns
+- Examination of thousands of fraud cases
+- Hypothesis testing about transaction properties
 
-### Computing Features at Scale
+Examples of useful features include:
+- Whether a payment originates from an IP address commonly associated with the card
+- Difference between device time and UTC
+- Count of countries where the card was successfully authorized
 
-Once a feature is identified, its historical values must be computed for all training data. For example, computing "two most frequent IP addresses from preceding payments" requires:
+### Computing Feature Values
 
-- Processing all historical Stripe payments
-- Using distributed computing systems like [[Hadoop]]
-- Optimizing with space-saving probabilistic data structures
-- Managing memory and computational constraints
+Once a feature is conceived, its historical values must be computed for all transactions in Stripe's history. This process:
+
+- May require distributed computing (e.g., [[Hadoop]] jobs)
+- Can be optimized using probabilistic data structures
+- Requires dedicated infrastructure and established workflows
 
 ### Embeddings for Categorical Features
 
-[[Embeddings]] are learned representations for categorical variables (merchant, issuing bank, country, etc.). Rather than hard-coding feature values, embeddings allow models to learn coordinates for each category:
+For categorical features (e.g., merchant, issuing bank, country), Stripe uses [[embeddings]]—learned numerical representations that capture similarity relationships.
 
-| Entity | Coordinate 1 | Coordinate 2 | Coordinate 3 |
-|---|---|---|---|
-| Uber | 2.34 | 1.1 | -3.5 |
-| Lyft | 2.1 | 1.2 | -2.0 |
-| Slack | 7.0 | -2.0 | 1.0 |
-
-**Advantages of Embeddings:**
+**How embeddings work:**
+- Each category (e.g., merchant) is represented as coordinates in a multi-dimensional space
 - Similar merchants have similar embeddings (measured by [[cosine distance]])
-- Models transfer learnings between similar merchants
-- Fraud patterns learned in one geography automatically apply to similar geographies
-- Enables pattern recognition
+- Models can transfer learnings from one merchant to similar merchants
+
+**Example:**
+| Entity | Coordinate 1 | Coordinate 2 | Coordinate 3 |
+|--------|-------------|-------------|-------------|
+| Uber   | 2.34        | 1.1         | -3.5        |
+| Lyft   | 2.1         | 1.2         | -2.0        |
+| Slack  | 7.0         | -2.0        | 1.0         |
+
+Uber and Lyft have similar embeddings, reflecting their business similarity, while Slack differs significantly.
+
+**Advantages:**
+- Fraud patterns identified in one geography can automatically be detected in similar geographies
+- The system adapts to new fraud patterns without explicit retraining
+- Enables algorithmic advances that stay ahead of shifting fraud patterns
+
+---
+
+## Evaluating Machine Learning Models
+
+### Key Evaluation Metrics
+
+#### Precision
+
+**Definition**: The fraction of transactions flagged as fraud that are actually fraudulent.
+
+**Formula**: Precision = (True Positives) / (True Positives + False Positives)
+
+**Example**: If 6 transactions are flagged with P(fraud) > 
