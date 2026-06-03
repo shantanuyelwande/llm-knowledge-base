@@ -19,7 +19,7 @@ permissions:
 
 engine:
   type: copilot
-  model: claude-opus-4-8   # Copilot Enterprise supports model selection; use gpt-4o if on Business
+  model: gpt-4o
 
 tools:
   github:
