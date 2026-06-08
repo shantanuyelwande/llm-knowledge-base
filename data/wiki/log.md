@@ -2830,3 +2830,65 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1015
 - Time: 2026-06-07 06:31:49
 
+## [2026-06-08 06:48:19] update | github-blog-ai-and-ml-generative-ai-under-the-hood-security-ar-1776723892
+
+- Source: `github-blog-ai-and-ml-generative-ai-under-the-hood-security-ar-1776723892.md`
+- Time: 2026-06-08 06:48:19
+
+## [2026-06-08 06:48:25] update | x-com-i-status-2043726271449112776-1776192965
+
+- Source: `x-com-i-status-2043726271449112776-1776192965.md`
+- Time: 2026-06-08 06:48:25
+
+## [2026-06-08 06:48:47] update | ai-tools-catalog
+
+- Source: `ai-tools-catalog.md`
+- Time: 2026-06-08 06:48:47
+
+## [2026-06-08 06:49:12] update | openai-com-business-guides-and-resources-a-practical-guide-to-1777602156
+
+- Source: `openai-com-business-guides-and-resources-a-practical-guide-to-1777602156.md`
+- Time: 2026-06-08 06:49:12
+
+## [2026-06-08 06:49:41] update | anthropic-com-engineering-harness-design-long-running-apps-1776722814
+
+- Source: `anthropic-com-engineering-harness-design-long-running-apps-1776722814.md`
+- Time: 2026-06-08 06:49:41
+
+## [2026-06-08 06:50:05] update | careersatdoordash-com-blog-doordash-unified-dasher-onboarding-a-modular--1776790524
+
+- Source: `careersatdoordash-com-blog-doordash-unified-dasher-onboarding-a-modular--1776790524.md`
+- Time: 2026-06-08 06:50:05
+
+## [2026-06-08 06:50:11] update | x-com-i-status-2043745099792953508-1776192723
+
+- Source: `x-com-i-status-2043745099792953508-1776192723.md`
+- Time: 2026-06-08 06:50:11
+
+## [2026-06-08 06:50:35] update | share-google-S4lTnOo7l96jQZFyP-1776347437
+
+- Source: `share-google-S4lTnOo7l96jQZFyP-1776347437.md`
+- Time: 2026-06-08 06:50:35
+
+## [2026-06-08 06:51:03] update | agentfield-ai-blog-beyond-vibe-coding-1776118705
+
+- Source: `agentfield-ai-blog-beyond-vibe-coding-1776118705.md`
+- Time: 2026-06-08 06:51:03
+
+## [2026-06-08 06:51:26] update | stripe-com-in-guides-primer-on-machine-learning-for-fraud-pro-1777643430
+
+- Source: `stripe-com-in-guides-primer-on-machine-learning-for-fraud-pro-1777643430.md`
+- Time: 2026-06-08 06:51:26
+
+## [2026-06-08 06:51:26] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1016
+- Time: 2026-06-08 06:51:26
+
+## [2026-06-08 06:51:29] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1016
+- Time: 2026-06-08 06:51:29
+

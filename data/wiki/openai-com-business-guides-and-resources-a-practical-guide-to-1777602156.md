@@ -4,30 +4,33 @@ source_file: openai-com-business-guides-and-resources-a-practical-guide-to-17776
 source_url: https://openai.com/business/guides-and-resources/a-practical-guide-to-building-ai-agents/
 ingested_from: url
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-06-07T06:29:32.833927
-raw_file_updated: 2026-06-07T06:29:32.833927
+compiled_at: 2026-06-08T06:49:12.795026
+raw_file_updated: 2026-06-08T06:49:12.795026
 version: 1
 sources:
   - file: openai-com-business-guides-and-resources-a-practical-guide-to-1777602156.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-06-07T06:29:32.833927
+    added_at: 2026-06-08T06:49:12.795026
 tags: []
 related_topics: []
 backlinked_by: []
 ---
-# Building AI Agents: A Practical Guide
+# AI Agents: A Practical Guide to Building and Deploying
 
 ## Summary
 
-This comprehensive guide provides a practical framework for developing [[AI agents]]—autonomous systems powered by [[Large Language Models]] (LLMs) that can independently execute complex, multi-step workflows. The guide covers foundational concepts, design patterns, orchestration strategies, and critical safety guardrails needed for reliable agent deployment in production environments.
+AI agents are autonomous systems powered by large language models (LLMs) that can independently accomplish complex, multi-step workflows on behalf of users. Unlike traditional chatbots or simple LLM applications, agents combine reasoning capabilities, tool integration, and decision-making to handle tasks that involve complex decision-making, ambiguous situations, and unstructured data. This guide covers the foundational concepts, design patterns, orchestration strategies, and safety mechanisms required to build effective agents.
 
 ---
 
-## Introduction
+## Table of Contents
 
-[[Large Language Models]] have advanced significantly in reasoning, multimodality, and tool use capabilities, enabling a new category of intelligent systems known as **agents**. Unlike conventional software applications that require explicit user direction for each step, agents can autonomously accomplish tasks on behalf of users with a high degree of independence.
-
-This guide is designed for product and engineering teams building their first agents, synthesizing insights from numerous customer deployments into actionable best practices. It provides frameworks for identifying suitable use cases, clear patterns for designing agent logic and orchestration, and evidence-based practices for ensuring agents operate safely, predictably, and effectively.
+1. [What is an Agent?](#what-is-an-agent)
+2. [When to Build Agents](#when-to-build-agents)
+3. [Agent Design Foundations](#agent-design-foundations)
+4. [Orchestration Patterns](#orchestration-patterns)
+5. [Guardrails and Safety](#guardrails-and-safety)
+6. [Implementation Best Practices](#implementation-best-practices)
 
 ---
 
@@ -35,51 +38,55 @@ This guide is designed for product and engineering teams building their first ag
 
 ### Definition
 
-An **agent** is a system that independently accomplishes tasks on behalf of a user by managing workflow execution with minimal human intervention.
-
-A workflow is a sequence of steps executed to meet a user's goal, such as resolving a customer service issue, booking a reservation, committing code changes, or generating reports.
+An **agent** is a system that independently accomplishes tasks on behalf of a user with a high degree of autonomy. It differs fundamentally from conventional software by using [[Large Language Models|LLMs]] to manage workflow execution and make decisions, rather than following predetermined rules or scripts.
 
 ### Core Characteristics
 
-Agents possess several distinguishing features that enable reliable and consistent task execution:
+Agents possess two essential characteristics that enable reliable and consistent operation:
 
-1. **LLM-Driven Workflow Management**: The agent leverages an LLM to manage workflow execution and make decisions. It recognizes when a workflow is complete, can proactively correct its actions if needed, and can halt execution to transfer control back to the user upon failure.
+1. **Intelligent Workflow Management**: The agent leverages an LLM to manage workflow execution and make decisions. It recognizes when a workflow is complete, can proactively correct its actions if needed, and can halt execution to transfer control back to the user in case of failure.
 
-2. **Tool Integration and Selection**: The agent has access to various tools for interacting with external systems—both to gather context and to take actions. It dynamically selects appropriate tools based on the workflow's current state, always operating within clearly defined guardrails.
+2. **Tool Integration and Dynamic Selection**: The agent has access to various [[Tools and APIs|tools]] to interact with external systems—both to gather context and to take actions. It dynamically selects appropriate tools based on the workflow's current state, always operating within clearly defined [[Guardrails|guardrails]].
 
-### What Agents Are Not
+### What Agents Are NOT
 
-Applications that integrate LLMs but don't use them to control workflow execution are not agents. Examples include:
-- Simple [[Chatbots]]
+Applications that integrate LLMs but don't use them to control workflow execution are not agents. This includes:
+- Simple [[Chatbots|chatbots]]
 - Single-turn LLM applications
-- [[Sentiment analysis]] classifiers
+- [[Sentiment Analysis|Sentiment classifiers]]
 
 ---
 
-## When Should You Build an Agent?
+## When to Build Agents
 
-Building agents requires rethinking how systems make decisions and manage complexity. Agents excel where traditional deterministic and rule-based approaches fall short.
+### Ideal Use Cases
 
-### Use Case Example: Fraud Detection
-
-Traditional rules engines function like checklists, flagging transactions based on preset criteria. In contrast, an LLM agent functions like a seasoned investigator, evaluating context, considering subtle patterns, and identifying suspicious activity even when clear-cut rules aren't violated.
-
-### Ideal Workflows for Agents
-
-Prioritize workflows that have previously resisted automation, especially where traditional methods encounter friction:
+Agents are uniquely suited to workflows where traditional deterministic and [[Rule-based Systems|rule-based approaches]] fall short. Consider building an agent when your workflow exhibits one or more of these characteristics:
 
 #### Complex Decision-Making
-Workflows involving nuanced judgment, exceptions, or context-sensitive decisions. **Example**: Refund approval in customer service workflows.
+Workflows involving nuanced judgment, exceptions, or context-sensitive decisions that require reasoning beyond simple rules. 
+
+**Example**: Refund approval in customer service workflows, where decisions depend on customer history, order context, and policy exceptions.
 
 #### Difficult-to-Maintain Rules
-Systems that have become unwieldy due to extensive and intricate rulesets, making updates costly or error-prone. **Example**: Performing vendor security reviews.
+Systems that have become unwieldy due to extensive and intricate rulesets, making updates costly or error-prone.
+
+**Example**: Vendor security reviews that require evaluating multiple factors and making nuanced assessments.
 
 #### Heavy Reliance on Unstructured Data
-Scenarios involving interpretation of natural language, extraction of meaning from documents, or conversational user interaction. **Example**: Processing home insurance claims.
+Scenarios involving interpretation of natural language, extraction of meaning from documents, or conversational interaction with users.
 
-### Validation
+**Example**: Processing home insurance claims that require understanding narrative descriptions and policy documents.
 
-Before committing to agent development, validate that your use case clearly meets these criteria. Otherwise, a deterministic solution may suffice.
+### Real-World Comparison
+
+Consider **payment fraud analysis**:
+- **Traditional rules engine**: Works like a checklist, flagging transactions based on preset criteria
+- **LLM agent**: Functions like a seasoned investigator, evaluating context, considering subtle patterns, and identifying suspicious activity even when clear-cut rules aren't violated
+
+### Validation Checklist
+
+Before committing to building an agent, validate that your use case clearly meets at least one of the criteria above. Otherwise, a deterministic solution may suffice and offer better cost efficiency.
 
 ---
 
@@ -87,138 +94,97 @@ Before committing to agent development, validate that your use case clearly meet
 
 ### Core Components
 
-An agent in its most fundamental form consists of three core components:
+In its most fundamental form, an agent consists of three core components:
 
-| Component | Description |
-|-----------|-------------|
-| **Model** | The [[LLM]] powering the agent's reasoning and decision-making |
-| **Tools** | External functions or APIs the agent can use to take action |
-| **Instructions** | Explicit guidelines and guardrails defining how the agent behaves |
+#### 1. Model
 
-### Basic Implementation
+The [[Language Model|LLM]] powering the agent's reasoning and decision-making. Different models have different strengths related to task complexity, latency, and cost.
 
-```python
-weather_agent = Agent(
-    name="Weather agent",
-    instructions="You are a helpful agent who can talk to users about the weather",
-    tools=[get_weather],
-)
-```
+**Model Selection Strategy**:
+- Build your agent prototype with the most capable model available to establish a performance baseline
+- Set up [[Evaluation Metrics|evals]] to measure performance
+- Focus on meeting accuracy targets with the best models available
+- Optimize for cost and latency by replacing larger models with smaller ones where acceptable results are maintained
+- Not every task requires the smartest model—simple [[Information Retrieval|retrieval]] or [[Intent Classification|intent classification]] tasks may use smaller, faster models
 
----
+#### 2. Tools
 
-## Selecting Models
+[[External APIs|External functions or APIs]] that the agent can use to take action. Tools extend the agent's capabilities by enabling interaction with underlying applications and systems.
 
-Different models have different strengths and tradeoffs related to task complexity, latency, and cost. Not every task requires the most capable model—simple retrieval or intent classification may be handled by smaller, faster models, while complex tasks like refund approval may benefit from more capable models.
-
-### Model Selection Strategy
-
-1. **Establish Performance Baseline**: Set up evaluations using the most capable model available for every task.
-
-2. **Focus on Accuracy Targets**: Prioritize meeting accuracy requirements with the best models available.
-
-3. **Optimize Cost and Latency**: Replace larger models with smaller ones where acceptable results are still achieved.
-
-### Recommendation
-
-Build your agent prototype with the most capable model to establish a performance baseline. Then systematically swap in smaller models to identify where they succeed or fail. This approach avoids prematurely limiting agent abilities while enabling cost optimization.
-
----
-
-## Defining Tools
-
-Tools extend an agent's capabilities by providing access to APIs from underlying applications or systems. For legacy systems without APIs, agents can rely on [[computer-use models]] to interact directly with applications through web and application UIs.
-
-### Tool Best Practices
-
-- **Standardized Definitions**: Each tool should have a standardized definition enabling flexible, many-to-many relationships between tools and agents.
-
-- **Documentation and Testing**: Well-documented, thoroughly tested, and reusable tools improve discoverability, simplify version management, and prevent redundant definitions.
-
-### Types of Tools
+**Types of Tools**:
 
 | Type | Description | Examples |
 |------|-------------|----------|
-| **Data** | Enable agents to retrieve context and information necessary for workflow execution | Query transaction databases, read PDFs, search the web |
-| **Action** | Enable agents to interact with systems to take actions | Send emails/texts, update CRM records, escalate tickets |
-| **Orchestration** | Agents serving as tools for other agents (Manager Pattern) | Refund agent, Research agent, Writing agent |
+| **Data** | Enable agents to retrieve context and information necessary for executing workflows | Query transaction databases, CRMs, read PDF documents, search the web |
+| **Action** | Enable agents to interact with systems to take actions and modify state | Send emails/texts, update CRM records, hand off to human agents |
+| **Orchestration** | Agents themselves can serve as tools for other agents (see [[#Manager Pattern]]) | Refund agent, Research agent, Writing agent |
 
-### Implementation Example
+**Tool Design Best Practices**:
+- Each tool should have a standardized definition, enabling flexible relationships between tools and agents
+- Well-documented, thoroughly tested, and reusable tools improve discoverability and simplify version management
+- For legacy systems without APIs, agents can use [[Computer Vision|computer-use]] models to interact directly with UIs
 
-```python
-from agents import Agent, WebSearchTool, function_tool
-import datetime
+**Scaling Tools**:
+- As the number of required tools increases, consider splitting tasks across multiple agents
+- Tool similarity and overlap matter more than absolute number—15 well-defined, distinct tools work better than 10 overlapping tools
+- Use multiple agents if improving tool clarity through descriptive names, clear parameters, and detailed descriptions doesn't improve performance
 
-@function_tool
-def save_results(output):
-    db.insert({
-        "output": output,
-        "timestamp": datetime.datetime.now(),
-    })
-    return "File saved"
+#### 3. Instructions
 
-search_agent = Agent(
-    name="Search agent",
-    instructions="Help the user search the internet and save results if asked.",
-    tools=[WebSearchTool(), save_results],
-)
-```
+Explicit guidelines and guardrails defining how the agent behaves. High-quality instructions are essential for any LLM-powered application, but especially critical for agents.
 
-### Tool Scaling
+**Best Practices for Agent Instructions**:
 
-As the number of required tools increases, consider splitting tasks across multiple agents (see [[#Orchestration]]).
+- **Use existing documents**: When creating instructions, use existing operating procedures, support scripts, or policy documents to create LLM-friendly routines. In customer service, routines can roughly map to individual articles in your knowledge base.
 
----
+- **Prompt agents to break down tasks**: Providing smaller, clearer steps from dense resources helps minimize ambiguity and helps the model better follow instructions.
 
-## Configuring Instructions
+- **Define clear actions**: Make sure every step in your routine corresponds to a specific action or output. For example, a step might instruct the agent to ask for an order number or call an API to retrieve account details. Being explicit about the action leaves less room for interpretation errors.
 
-High-quality instructions are essential for any LLM-powered application, but are especially critical for agents. Clear instructions reduce ambiguity and improve agent decision-making, resulting in smoother workflow execution and fewer errors.
+- **Capture edge cases**: Real-world interactions often create decision points. A robust routine anticipates common variations and includes instructions on how to handle them with conditional steps or branches.
 
-### Best Practices for Agent Instructions
+**Automated Instruction Generation**:
 
-#### Use Existing Documents
-When creating routines, leverage existing operating procedures, support scripts, or policy documents to create LLM-friendly instructions. In customer service, routines can map to individual knowledge base articles.
-
-#### Prompt Task Breakdown
-Provide smaller, clearer steps from dense resources to minimize ambiguity and help the model follow instructions more effectively.
-
-#### Define Clear Actions
-Ensure every step in your routine corresponds to a specific action or output. For example, instruct the agent to ask for an order number or call an API to retrieve account details. Being explicit about actions and even user-facing message wording leaves less room for interpretation errors.
-
-#### Capture Edge Cases
-Real-world interactions create decision points such as how to proceed when users provide incomplete information or ask unexpected questions. Robust routines anticipate common variations and include conditional steps or branches for handling them.
-
-### Automated Instruction Generation
-
-Advanced models like [[o1]] or [[o3-mini]] can automatically generate instructions from existing documents:
+Advanced models like [[o1|o1]] or [[o3-mini|o3-mini]] can automatically generate instructions from existing documents. Example prompt:
 
 ```
-"You are an expert in writing instructions for an LLM agent.
+You are an expert in writing instructions for an LLM agent.
 Convert the following help center document into a clear set of instructions,
 written in a numbered list.
 The document will be a policy followed by an LLM.
 Ensure that there is no ambiguity, and that the instructions are written as directions for an agent.
-The help center document to convert is the following {{help_center_doc}}"
+The help center document to convert is the following {{help_center_doc}}
 ```
 
 ---
 
-## Orchestration
+## Orchestration Patterns
 
-With foundational components in place, orchestration patterns enable agents to execute workflows effectively. While tempting to immediately build fully autonomous agents with complex architecture, customers typically achieve greater success with an incremental approach.
+### Overview
 
-### Two Categories of Orchestration
+With the foundational components in place, orchestration patterns enable agents to execute workflows effectively. Orchestration patterns fall into two main categories:
 
-1. **Single-Agent Systems**: A single model equipped with appropriate tools and instructions executes workflows in a loop.
+1. **[[#Single-Agent Systems|Single-agent systems]]**: A single model equipped with appropriate tools and instructions executes workflows in a loop
+2. **[[#Multi-Agent Systems|Multi-agent systems]]**: Workflow execution is distributed across multiple coordinated agents
 
-2. **Multi-Agent Systems**: Workflow execution is distributed across multiple coordinated agents.
+**Key Principle**: Customers typically achieve greater success with an incremental approach, starting simple and adding complexity only when needed.
 
----
+### Single-Agent Systems
 
-## Single-Agent Systems
+A single agent can handle many tasks by incrementally adding tools, keeping complexity manageable and simplifying evaluation and maintenance.
 
-A single agent can handle many tasks by incrementally adding tools, keeping complexity manageable while simplifying evaluation and maintenance. Each new tool expands capabilities without forcing premature multi-agent orchestration.
+#### The Run Loop
 
-### The Run Loop Concept
+Every orchestration approach needs the concept of a 'run'—typically implemented as a loop that lets agents operate until an exit condition is reached. Common exit conditions include:
+- Tool calls
+- A certain [[Structured Output|structured output]]
+- Errors
+- Reaching a maximum number of turns
 
-Every orchestration approach needs the concept of a
+**Exit conditions** typically include:
+1. A **final-output tool** is invoked, defined by a specific output type
+2. The model returns a response without any tool calls (e.g., a direct user message)
+
+#### Managing Complexity with Prompt Templates
+
+An effective strategy for managing complexity without switching to a multi-agent framework is to use [[Prompt Engineering|prompt templates]]. Rather than maintaining numerous individual prompts for distinct use cases, use a
