@@ -3298,3 +3298,15 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1005
 - Time: 2026-06-26 06:14:37
 
+## [2026-06-27 05:57:45] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1005
+- Time: 2026-06-27 05:57:45
+
+## [2026-06-27 05:57:47] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1005
+- Time: 2026-06-27 05:57:47
+
