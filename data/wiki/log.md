@@ -3346,3 +3346,45 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1005
 - Time: 2026-06-30 06:15:42
 
+## [2026-07-01 06:37:39] update | anthropic-com-engineering-harness-design-long-running-apps-1776722814
+
+- Source: `anthropic-com-engineering-harness-design-long-running-apps-1776722814.md`
+- Time: 2026-07-01 06:37:39
+
+## [2026-07-01 06:37:59] update | stripe-com-in-guides-primer-on-machine-learning-for-fraud-pro-1777643430
+
+- Source: `stripe-com-in-guides-primer-on-machine-learning-for-fraud-pro-1777643430.md`
+- Time: 2026-07-01 06:37:59
+
+## [2026-07-01 06:38:25] update | share-google-S4lTnOo7l96jQZFyP-1776347437
+
+- Source: `share-google-S4lTnOo7l96jQZFyP-1776347437.md`
+- Time: 2026-07-01 06:38:25
+
+## [2026-07-01 06:38:49] update | careersatdoordash-com-blog-doordash-unified-dasher-onboarding-a-modular--1776790524
+
+- Source: `careersatdoordash-com-blog-doordash-unified-dasher-onboarding-a-modular--1776790524.md`
+- Time: 2026-07-01 06:38:49
+
+## [2026-07-01 06:38:55] update | x-com-i-status-2043726271449112776-1776192965
+
+- Source: `x-com-i-status-2043726271449112776-1776192965.md`
+- Time: 2026-07-01 06:38:55
+
+## [2026-07-01 06:39:14] update | ai-tools-catalog
+
+- Source: `ai-tools-catalog.md`
+- Time: 2026-07-01 06:39:14
+
+## [2026-07-01 06:39:15] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-07-01 06:39:15
+
+## [2026-07-01 06:39:18] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-07-01 06:39:18
+

@@ -2,13 +2,13 @@
 title: ai-tools-catalog
 source_file: ai-tools-catalog.md
 source_hash: 0000000000000000000000000000000000000000000000000000000000000000
-compiled_at: 2026-06-12T06:48:07.168669
-raw_file_updated: 2026-06-12T06:48:07.168669
+compiled_at: 2026-07-01T06:39:14.985496
+raw_file_updated: 2026-07-01T06:39:14.985496
 version: 1
 sources:
   - file: ai-tools-catalog.md
     hash: 0000000000000000000000000000000000000000000000000000000000000000
-    added_at: 2026-06-12T06:48:07.168669
+    added_at: 2026-07-01T06:39:14.985496
 tags: []
 related_topics: []
 backlinked_by: []
@@ -17,148 +17,168 @@ backlinked_by: []
 
 ## Overview
 
-The **AI Tools Catalog** is a comprehensive taxonomy of software solutions and frameworks designed to build, deploy, and manage artificial intelligence applications. This catalog organizes over 300+ tools across 10 functional categories, from [[Agent Memory & Context]] systems to specialized [[Voice & Vision Models]]. It serves as a reference guide for developers, AI engineers, and product teams selecting appropriate tools for their specific use cases.
+The **AI Tools Catalog** is a comprehensive taxonomy of software tools and frameworks designed to support artificial intelligence development, deployment, and operations. This catalog organizes over 300+ AI tools into ten functional categories, each addressing specific aspects of the AI development lifecycle—from agent memory management to production monitoring and evaluation.
 
 ## Quick Summary
 
-| Category | Tool Count | Primary Use Case |
+| Category | Tool Count | Primary Purpose |
 |----------|-----------|-----------------|
 | [[Agent Memory & Context]] | 18 | Long-term persistence and semantic recall |
 | [[Agent Orchestration & Frameworks]] | 32 | Multi-step planning and collaboration |
-| [[MCP & Data Tools]] | 19 | Protocol-based external data integration |
-| [[RAG & Document Processing]] | 24 | Document ingestion and semantic search |
+| [[MCP & Data Tools]] | 19 | Protocol standardization and data connection |
+| [[RAG & Document Processing]] | 24 | Document ingestion and vector search |
 | [[Computer Use & Browser Automation]] | 20 | UI interaction and web automation |
 | [[Evaluation, Security & Ops]] | 28 | Testing, monitoring, and safety |
-| [[Developer Tools & IDEs]] | 22 | AI-augmented coding environments |
-| [[Voice & Vision Models]] | 21 | Multi-modal AI processing |
+| [[Developer Tools & IDEs]] | 22 | AI-augmented development environments |
+| [[Voice & Vision Models]] | 21 | Multi-modal processing |
 | [[Serving, Inference & Fine-tuning]] | 17 | Model deployment and optimization |
-| [[Miscellaneous & General]] | 36 | Utilities and workflow automation |
+| [[Miscellaneous & General]] | 36 | Utilities and specialized tools |
 
 ---
 
 ## 1. Agent Memory & Context
 
-### Description
-Systems for long-term persistence, state management, and semantic recall for [[AI Agents]]. These tools enable agents to maintain context across multiple sessions and interactions.
+### Purpose
+Systems for long-term persistence, state management, and semantic recall for agents.
 
 ### Key Tools
-Mem0, Claude-mem, Byterover, Lang-mem, Letta/Mem-GPT, Zep, Cognee, Rowboat, Acontext, Context hub, Superpowers, Context mode, Context7, Skillscreator, Skills.sh, Skills patterns (Google), Qodo aware, Repo Prompt, Claude context semantic search
+Mem0, Claude-mem, Byterover, Lang-mem, Letta/Mem-GPT, Zep, Cognee, Rowboat, Acontext, Context hub, Superpowers, Context mode, Context7, Skillscreator, Skills.sh, Skills patterns google, Qodo aware, Repo Prompt, Claude context semantic search.
 
 ### Use Cases
-- Preserving user preferences across sessions
-- Maintaining [[Codebase Context]] for development agents
-- Building persistent [[Conversational AI]] systems
-- Semantic memory retrieval for complex workflows
+- Enabling agents to "remember" user preferences across sessions
+- Maintaining [[Codebase Context|codebase context]] for extended interactions
+- Preserving conversational history for multi-turn dialogues
+- Semantic recall of relevant information from past interactions
 
-### When to Use
-Use when agents need to "remember" user preferences or codebase context across sessions. Critical for applications requiring continuity and personalization.
+### Related Concepts
+[[Agent Orchestration & Frameworks]], [[RAG & Document Processing]]
 
 ---
 
 ## 2. Agent Orchestration & Frameworks
 
-### Description
-Logic engines that manage multi-step planning and multi-agent collaboration. These frameworks provide the foundational architecture for coordinating complex AI workflows.
+### Purpose
+Logic engines that manage multi-step planning and multi-agent collaboration.
 
 ### Key Tools
-Goose AI, Autoagent harness, Hermes, Ralph orchestrator, OpenCode, PentaAGI, rtk-ai, Smolagents, AutoGen, CrewAI, Langchain/Langgraph, Atomic agents, DSpy, OpenAI agent sdk, Copilotkit, Autoagent, Firebase.studio, Agentsdk, PySpur, Agno, Manus AI, Camel-AI, Owl, Julep-ai, Flock ai, Langflow, Flowise, Gumloop, n8n, Langraph builder, Rivet
-
-### Key Concepts
-- **Multi-Agent Systems**: Coordinating multiple [[AI Agents]] toward common goals
-- **Workflow Orchestration**: Managing sequential and parallel task execution
-- **Agent Planning**: Enabling agents to decompose complex problems
-- **Collaboration Protocols**: Defining inter-agent communication patterns
+Goose AI, Autoagent harness, Hermes, Ralph orchestrator, OpenCode, PentaAGI, rtk-ai, Smolagents, AutoGen, CrewAI, Langchain/Langgraph, Atomic agents, DSpy, OpenAI agent sdk, Copilotkit, Autoagent, Firebase.studio, Agentsdk, PySpur, Agno, Manus AI, Camel-AI, Owl, Julep-ai, Flock ai, Langflow, Flowise, Gumloop, n8n, Langraph builder, Rivet.
 
 ### Use Cases
-- Building complex multi-step workflows
-- Coordinating specialized agents with different capabilities
-- Creating autonomous systems that can adapt to changing conditions
-- Implementing hierarchical task decomposition
+- Complex workflows requiring multiple AI agents
+- Multi-step planning and task decomposition
+- Coordinating different specialized agents
+- Building no-code/low-code AI automation workflows
 
-### When to Use
-Use for complex workflows where one "brain" isn't enough. Ideal when you need multiple specialized agents working together or sequential task pipelines requiring decision-making.
+### Related Concepts
+[[Agent Memory & Context]], [[Evaluation, Security & Ops]], [[Developer Tools & IDEs]]
 
 ---
 
-## 3. MCP & Data Tools
+## 3. MCP (Model Context Protocol) & Data Tools
 
-### Description
-Standardized protocols for connecting [[Large Language Models]] to external data sources and local machine tools. The [[Model Context Protocol]] (MCP) provides a unified interface for tool integration.
+### Purpose
+Standardized protocols for connecting [[Large Language Models|LLMs]] to external data and local machine tools.
 
 ### Key Tools
-Google mcp toolbox, KitOps MCP, mcp.so, Smithery, MCP CLI, Pixeltable, SDV data generator, Blender MCP 3D, OpenTools, MCP Studio, mcp.getflow.dev, Gen AI Toolbox (Google), Magic mcp, Cline mcp, Composio, Zapier, Airweave, LangChain Payman, Dataverse
-
-### Key Concepts
-- **Model Context Protocol**: Standardized interface for LLM tool access
-- **Data Integration**: Connecting models to structured and unstructured data
-- **Local Machine Tools**: Enabling file system and application access
-- **API Bridging**: Connecting to third-party services and databases
+Google mcp toolbox, KitOps MCP, mcp.so, Smithery, MCP CLI, Pixeltable, SDV data generator, Blender MCP 3D, OpenTools, MCP Studio, mcp.getflow.dev, Gen AI Toolbox (Google), Magic mcp, Cline mcp, Composio, Zapier, Airweave, LangChain Payman, Dataverse.
 
 ### Use Cases
-- Integrating LLMs with local development environments
-- Connecting models to specialized databases
-- Automating workflows through third-party APIs
-- Providing real-time data access to models
+- Bridging the gap between models and local file systems
+- Connecting to specific databases and APIs
+- Standardizing tool integration across platforms
+- Enabling seamless data pipeline connections
 
-### When to Use
-Use when bridging the gap between the model and your local file system or specific databases. Essential for applications requiring dynamic data access or system integration.
+### Related Concepts
+[[RAG & Document Processing]], [[Computer Use & Browser Automation]], [[Serving, Inference & Fine-tuning]]
 
 ---
 
 ## 4. RAG & Document Processing
 
-### Description
-Ingestion pipelines that convert unstructured data (PDFs, videos, websites) into searchable vector representations. [[Retrieval-Augmented Generation]] (RAG) enables models to reference external knowledge bases.
+### Purpose
+Ingestion pipelines that transform messy PDFs, videos, and websites into searchable vectors for [[Retrieval-Augmented Generation|retrieval-augmented generation (RAG)]].
 
 ### Key Tools
-Langextraxt, Llamaparse, Liteparse, Docling (IBM), Rag flow, ragi.ai (video), LlamaExtract, Vectorize, LlamaIndex, Mistral ocr, GroudX, Smoldocling, Openrag eval, SiteRAG, Unstructured, Qmd cli, Qmd bm25, Milvus db, QDrant, pgVector, Elastic search, ChromaDB, Colivara
-
-### Key Concepts
-- **Document Parsing**: Extracting text from PDFs, images, and videos
-- **Vectorization**: Converting text to embeddings for semantic search
-- **Vector Databases**: Storing and retrieving semantic embeddings
-- **Evaluation Metrics**: Assessing RAG system quality and relevance
+Langextraxt, Llamaparse, Liteparse, Docling (IBM), Rag flow, ragi.ai (video), LlamaExtract, Vectorize, LLamaIndex, Mistral ocr, GroudX, Smoldocling, Openrag eval, SiteRAG, Unstructured, Qmd cli, Qmd bm25, Milvus db, QDrant, pgVector, Elastic search, ChromaDB, Colivara.
 
 ### Use Cases
 - Building "Chat with your Docs" features
+- Processing unstructured document data
 - Creating searchable knowledge bases
-- Implementing semantic document retrieval
-- Processing multi-modal documents (text, images, video)
+- Video and multimedia ingestion
+- Optical character recognition (OCR) workflows
 
-### When to Use
-Use when you need to build applications that can search and reason over custom documents or data sources. Essential for knowledge-intensive applications.
+### Related Concepts
+[[Agent Memory & Context]], [[MCP & Data Tools]], [[Evaluation, Security & Ops]]
 
 ---
 
 ## 5. Computer Use & Browser Automation
 
-### Description
-Tools enabling [[AI Agents]] to interact with user interfaces, click buttons, navigate websites, and perform actions like humans. Bridges the gap between [[Large Language Models]] and desktop/web applications.
+### Purpose
+Allowing agents to interact with user interfaces, click buttons, and navigate the web autonomously like a human operator.
 
 ### Key Tools
-Vercel labs agent browser, Claude dev-browser, Fellou ai, WebRover, BrowserBase, Browsertools v1.2, Stagehand, Playwright, Convergence AI, Google mariner, Proxy web agent, vibetest, Browser use (Smooth/OpenAI/Open), Proxy lite, Omniparser (Microsoft), Agentdesk, Simular, Computer use (Anthropic)
-
-### Key Concepts
-- **UI Automation**: Programmatic interaction with graphical interfaces
-- **Web Navigation**: Autonomous browsing and information extraction
-- **Visual Understanding**: Processing screenshots and visual layouts
-- **Human-in-the-Loop**: Combining automation with human oversight
+Vercel labs agent browser, Claude dev-browser, Fellou ai, WebRover, BrowserBase, Browsertools v1.2, Stagehand, Playwright, Convergence AI, Google mariner, Proxy web agent, vibetest, Browser use (Smooth/OpenAI/Open), Proxy lite, Omniparser (Microsoft), Agentdesk, Simular, Computer use (Anthropic).
 
 ### Use Cases
-- Automated web research and information gathering
-- Testing web applications at scale
-- Automating repetitive UI tasks
-- Creating assistants that interact with legacy systems
+- Automated web research and data collection
+- "Human-in-the-loop" UI task automation
+- End-to-end web application testing
+- Robotic process automation (RPA)
+- Screen understanding and navigation
 
-### When to Use
-Use for automated web research or "human-in-the-loop" UI tasks. Valuable when you need to interact with systems that don't expose APIs or when visual understanding is required.
+### Related Concepts
+[[Agent Orchestration & Frameworks]], [[MCP & Data Tools]], [[Evaluation, Security & Ops]]
 
 ---
 
 ## 6. Evaluation, Security & Ops
 
-### Description
-Testing, monitoring, and securing [[Large Language Model]] outputs to prevent [[Hallucinations]], data leaks, and ensure production reliability. Includes [[Red Teaming]] and continuous monitoring solutions.
+### Purpose
+Testing, monitoring, and securing [[Large Language Models|LLM]] outputs to prevent hallucinations, security breaches, and ensure reliability in production environments.
 
 ### Key Tools
-Deepteam, Parlant, Plano ai, DeepEval, PentaAGI, DeepTeam LLM Red teaming, Debug-gym, Guardrails AI, LlamaGaurd, Opik, LangSmith, OpenTelemetry, Langfuse, LiteEval, LangWatch, AgentOps, Arize, Weights and Biases, Helicone, Maxim, LM Evaluation harness, EvalVerse, Livebench, BLEU,
+Deepteam, Parlant, Plano ai, DeepEval, PentaAGI, DeepTeam LLM Red teaming, Debug-gym, Guardrails AI, LlamaGaurd, Opik, LangSmith, OpenTelemetry, Langfuse, LiteEval, LangWatch, AgentOps, Arize, Weights and Biases, Helicone, Maxim, LM Evaluation harness, EvalVerse, Livebench, Bleu, Rogue, Bigbench, Superglue, Truthfulqa.
+
+### Use Cases
+- Production-grade safety assurance
+- Hallucination detection and prevention
+- Red-teaming and adversarial testing
+- Monitoring model performance in production
+- Compliance and audit logging
+- Benchmark evaluation against standard datasets
+
+### Related Concepts
+[[Agent Orchestration & Frameworks]], [[Serving, Inference & Fine-tuning]], [[Developer Tools & IDEs]]
+
+---
+
+## 7. Developer Tools & IDEs
+
+### Purpose
+AI-augmented development environments that accelerate code writing, repository management, and software engineering workflows.
+
+### Key Tools
+Warp.dev, Graphite, Diamond, Deepwiki, Talktogithub, Cursor, Windsurf, Trae, CodeLLM, Augment code, Codium, Qodo, Github Copilot, LM Studio, Tabnine, Traycer ai, OpenAI Canvas, Canvas in gemini, Project idx, Lightning AI, RooCode, Chaoscoder.net.
+
+### Use Cases
+- Daily development cycle acceleration
+- Code generation and completion
+- Repository understanding and navigation
+- Collaborative AI-assisted coding
+- Canvas-based code visualization
+- Documentation generation
+
+### Related Concepts
+[[Agent Orchestration & Frameworks]], [[Evaluation, Security & Ops]], [[Serving, Inference & Fine-tuning]]
+
+---
+
+## 8. Voice & Vision Models
+
+### Purpose
+Multi-modal tools for generating and processing audio, images, and video content with AI capabilities.
+
+### Key Tools
+Veo2 (video), Landing
