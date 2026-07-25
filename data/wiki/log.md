@@ -3652,3 +3652,15 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1001
 - Time: 2026-07-24 05:23:49
 
+## [2026-07-25 05:17:51] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-07-25 05:17:51
+
+## [2026-07-25 05:17:55] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-07-25 05:17:55
+
