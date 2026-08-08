@@ -3820,3 +3820,15 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1001
 - Time: 2026-08-07 04:28:32
 
+## [2026-08-08 03:28:52] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-08-08 03:28:52
+
+## [2026-08-08 03:28:55] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-08-08 03:28:55
+
