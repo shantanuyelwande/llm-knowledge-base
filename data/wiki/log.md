@@ -3940,3 +3940,15 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1001
 - Time: 2026-08-17 03:03:28
 
+## [2026-08-18 02:57:54] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-08-18 02:57:54
+
+## [2026-08-18 02:57:57] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-08-18 02:57:57
+
