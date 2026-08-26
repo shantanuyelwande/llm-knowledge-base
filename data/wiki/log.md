@@ -4036,3 +4036,15 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1001
 - Time: 2026-08-25 03:01:35
 
+## [2026-08-26 03:07:53] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-08-26 03:07:53
+
+## [2026-08-26 03:07:57] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-08-26 03:07:57
+
