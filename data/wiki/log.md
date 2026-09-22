@@ -4360,3 +4360,15 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1001
 - Time: 2026-09-21 07:45:39
 
+## [2026-09-22 07:28:49] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-09-22 07:28:49
+
+## [2026-09-22 07:28:52] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-09-22 07:28:52
+
