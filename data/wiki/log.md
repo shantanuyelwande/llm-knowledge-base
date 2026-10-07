@@ -4540,3 +4540,15 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1001
 - Time: 2026-10-06 08:43:48
 
+## [2026-10-07 08:17:56] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-10-07 08:17:56
+
+## [2026-10-07 08:17:59] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-10-07 08:17:59
+
