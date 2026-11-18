@@ -5044,3 +5044,15 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1001
 - Time: 2026-11-17 10:21:25
 
+## [2026-11-18 09:52:53] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-11-18 09:52:53
+
+## [2026-11-18 09:52:56] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-11-18 09:52:56
+
