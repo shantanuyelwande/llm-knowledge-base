@@ -5092,3 +5092,15 @@ Append-only log of all ingestions, queries, and maintenance operations.
 - Broken links found: 1001
 - Time: 2026-11-21 09:21:45
 
+## [2026-11-22 09:29:39] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-11-22 09:29:39
+
+## [2026-11-22 09:29:42] maintenance | Forward links applied
+
+- Updated: 0 article(s)
+- Broken links found: 1001
+- Time: 2026-11-22 09:29:42
+
